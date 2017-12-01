@@ -3,8 +3,8 @@ var async = require('async');
 var dbConf = {
     host: 'localhost',
     user: 'root',
-    password: '12345678',
-    port: '3306',
+    password: '',
+    port: '3307',
     acquireTimeout: 900000 //15 min
 };
 
@@ -18,7 +18,7 @@ function checkDB(con, callback) {
         if (err) {
             console.error(err);
             callback(err);
-        } else if (Object.keys(result).length>0) {
+        } else if (Object.keys(result).length > 0) {
             callback(null, true);
         } else {
             callback(null, false)
@@ -75,6 +75,7 @@ module.exports = {
             "`id` int(11) NOT NULL AUTO_INCREMENT," +
             "`order_chain_name` varchar(45) NOT NULL," +
             "`api_id_fk` int(11) DEFAULT NULL," +
+            "`active` tinyint(1) NOT NULL," +
             "PRIMARY KEY (`id`)," +
             "KEY `api_fk__idx` (`api_id_fk`)," +
             "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
@@ -93,12 +94,13 @@ module.exports = {
             "`amount` float NOT NULL," +
             "`price` float NOT NULL," +
             "`total_price` float NOT NULL," +
-            "`nex_order_id_fk` int(11) DEFAULT NULL," +
+            "`next_order_id_fk` int(11) DEFAULT NULL," +
             "`success` smallint(2) DEFAULT '0'," +
             "`order_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
             "`order_success_time` timestamp NULL DEFAULT NULL," +
             "`api_site_order_id` bigint(20) DEFAULT NULL," +
             "`order_chain_id_fk` int(11) DEFAULT NULL," +
+            "`active` tinyint(1) NOT NULL," +
             "PRIMARY KEY (`id`)," +
             "KEY `order_chain_fk_idx` (`order_chain_id_fk`)," +
             "CONSTRAINT `order_chain_fk` FOREIGN KEY (`order_chain_id_fk`) REFERENCES `order_chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
@@ -110,7 +112,7 @@ module.exports = {
         });
 
         //create index on order table for next order
-        var create_index_on_next_order_id_sql = "ALTER TABLE kekko.order ADD INDEX `order_next_fk_idx` (`nex_order_id_fk` ASC)";
+        var create_index_on_next_order_id_sql = "ALTER TABLE kekko.order ADD INDEX `order_next_fk_idx` (`next_order_id_fk` ASC)";
         con.query(create_index_on_next_order_id_sql, function (err, result) {
             if (err) {
                 return console.error(err);
@@ -118,7 +120,7 @@ module.exports = {
             console.log('Index created on Order table with Next_order_id column');
         });
         //create fk on order with next_order_id
-        var alter_table_order_next_order_id_fk = "ALTER TABLE kekko.order ADD CONSTRAINT `order_next_fk` FOREIGN KEY (`nex_order_id_fk`) REFERENCES `kekko`.`order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ";
+        var alter_table_order_next_order_id_fk = "ALTER TABLE kekko.order ADD CONSTRAINT `order_next_fk` FOREIGN KEY (`next_order_id_fk`) REFERENCES `kekko`.`order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ";
         con.query(alter_table_order_next_order_id_fk, function (err, result) {
             if (err) {
                 return console.error(err);
