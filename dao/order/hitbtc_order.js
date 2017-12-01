@@ -1,6 +1,7 @@
 /**
  * Created by khobsyzl28 on 11/26/2017.
  */
+
 var HitBTC = require('../../api/hitbtc/hitbtc');
 var client = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
 
