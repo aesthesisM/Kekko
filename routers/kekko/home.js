@@ -8,7 +8,7 @@ router.get('/', function (req, res, next) {
 
     var list = null;
 
-    async.parallel([
+    async.series([
         function (callback) {
             client.tickerAll(function (err, data) {
                 if (err) {
