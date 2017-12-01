@@ -3,38 +3,123 @@
  */
 
 var HitBTC = require('../../api/hitbtc/hitbtc');
-var client = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
+var api = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
+var db = require('../../config/database/mysql');
 
 module.exports = {
     //api calls
     hitbtc_api_getAllPairs: function (callback) {
-        return client.tickerAll(callback);
+        return api.tickerAll(callback);
     },
     hitbtc_api_getPair: function (pair, callback) {
-        return client.tickerPair(pair, callback);
+        return api.tickerPair(pair, callback);
     },
     hitbtc_api_getOrders: function (callback) {
-        return client.activeOrders(callback);
+        return api.activeOrders(callback);
     },
-    hitbtc_api_addOrder: function (pair, side, price, quantity, type, timeInForce, expireTime, callback) {
+    hitbtc_api_addOrder: function (orderObj, callback) {
         var obj = {
-            "symbol": pair,
-            "side": side,
-            "quantity": quantity,
-            "price": price,
+            "symbol": orderObj.pair,
+            "side": orderObj.side,
+            "quantity": orderObj.quantity,
+            "price": orderObj.price,
             "type": type,
-            "timeInForce": timeInForce
+            "timeInForce": orderObj.timeInForce
         };
-        if (timeInForce === 'GTD') {
-            obj['expireTime'] = expireTime;
+        if (orderObj.timeInForce === 'GTD') {
+            obj['expireTime'] = orderObj.expireTime;
         }
-        return client.addOrder(obj, callback);
+        return api.addOrder(obj, callback);
     },
     hitbtc_api_cancelOrder: function (clientOrderId, callback) {
-        return client.cancelOrder(clientOrderId, callback);
-    }
+        return api.cancelOrder(clientOrderId, callback);
+    },
     //db calls
+    hitbtc_db_addOrderChain: function (orderChainObj, callback) {
+        db.executeSQL("INSERT INTO kekko.order_chain (order_chain_name,api_id_fk) VALUES (?,?)", [orderChainObj.order_chain_name, orderChainObj.api_id_fk], function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
+        });
+    },
+    hitbtc_db_updateOrderChain: function (orderChainObj, callback) {
+        db.executeSQL("UPDATE kekko.order_chain SET order_chain_name = ? WHERE id =? ", [orderChainObj.order_chain_name, orderChainObj.id], function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
+        });
+    },
+    hitbtc_db_deleteOrderChain: function (orderChainObj, callback) {
+        db.executeSQL("UPDATE  kekko.order_chain SET active = 0 WHERE id =? ", [orderChainObj.id], function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
+        });
+    },
+    hitbtc_db_getAllOrderChains: function (apiName, callback) {
+        db.executeSQL("SELECT * FROM  kekko.order_chain WHERE active = 1", null, function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
+        });
+    },
+    hitbtc_db_addOrder: function (orderObj, callback) {
+        db.executeSQL("INSERT INTO kekko.order (from,to,amount,price,total_price,next_order_id_fk,success,order_created_time,order_success_time,api_site_order_id,order_chain_id_fk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);",
+            [orderObj.from, orderObj.to, orderObj.amount, orderObj.price, orderObj.total_price, orderObj.next_order_id, orderObj.success, orderObj.order_created_time, orderObj.order_success_time, api_site_order_id, order_chain_id_fk],
+            function (data, err) {
+                if (err) {
+                    console.error('err:' + err);
+                    callback(null, err);
+                } else {
+                    callback(data);
+                }
+            });
+    },
+    hitbtc_db_updateOrder: function (orderObj, callback) {
+        db.executeSQL("UPDATE kekko.order SET from=?,to=?,price=?,total_price=?,next_order_id_fk=?,success=?,order_success_time=?,api_site_order_id=? WHERE id = ?",
+            [orderObj.from, orderObj.to, orderObj.price, orderObj.total_price, orderObj.next_order_id_fk, orderObj.success, orderObj.order_success_time, orderObj.api_site_order_id, orderObj.id],
+            function (data, err) {
+                if (err) {
+                    console.error('err:' + err);
+                    callback(null, err);
+                } else {
+                    callback(data);
+                }
+            });
+    },
+    hitbtc_db_deleteOrder: function (orderObject, callback) {
+        db.executeSQL("UPDATE kekko.order SET active=0 WHERE id =?", [orderObject.id], function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
 
+        });
+    },
+    hitbtc_db_getOrdersByOrderChainId: function (orderObject, callback) {
+        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and order_chain_id_fk=? group by success", [orderObject.order_chain_id_fk], function (data, err) {
+            if (err) {
+                console.error('err:' + err);
+                callback(null, err);
+            } else {
+                callback(data);
+            }
+        });
+    }
 };
 
 
