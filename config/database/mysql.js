@@ -3,8 +3,8 @@ var async = require('async');
 var dbConf = {
     host: 'localhost',
     user: 'root',
-    password: '',
-    port: '3307',
+    password: '12345678',
+    port: '3306',
     acquireTimeout: 900000 //15 min
 };
 
@@ -71,7 +71,7 @@ module.exports = {
         });
 
         //create order chain table sql;
-        var create_table_order_chain_sql = "CREATE TABLE kekko.order_chain (" +
+        var create_table_order_chain_sql = "CREATE TABLE IF NOT EXISTS kekko.order_chain (" +
             "`id` int(11) NOT NULL AUTO_INCREMENT," +
             "`order_chain_name` varchar(45) NOT NULL," +
             "`api_id_fk` int(11) DEFAULT NULL," +
@@ -86,7 +86,7 @@ module.exports = {
         });
 
         //create order table sql
-        var create_table_order_sql = "CREATE TABLE kekko.order (" +
+        var create_table_order_sql = "CREATE TABLE IF NOT EXISTS kekko.order (" +
             "`id` int(11) NOT NULL AUTO_INCREMENT," +
             "`from` varchar(10) NOT NULL," +
             "`to` varchar(10) NOT NULL," +
