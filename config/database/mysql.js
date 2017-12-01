@@ -75,7 +75,7 @@ module.exports = {
             "`id` int(11) NOT NULL AUTO_INCREMENT," +
             "`order_chain_name` varchar(45) NOT NULL," +
             "`api_id_fk` int(11) DEFAULT NULL," +
-            "`active` tinyint(1) NOT NULL," +
+            "`active` tinyint(1) NOT NULL DEFAULT 1 ," +
             "PRIMARY KEY (`id`)," +
             "KEY `api_fk__idx` (`api_id_fk`)," +
             "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
@@ -100,7 +100,7 @@ module.exports = {
             "`order_success_time` timestamp NULL DEFAULT NULL," +
             "`api_site_order_id` bigint(20) DEFAULT NULL," +
             "`order_chain_id_fk` int(11) DEFAULT NULL," +
-            "`active` tinyint(1) NOT NULL," +
+            "`active` tinyint(1) NOT NULL DEFAULT 1 ," +
             "PRIMARY KEY (`id`)," +
             "KEY `order_chain_fk_idx` (`order_chain_id_fk`)," +
             "CONSTRAINT `order_chain_fk` FOREIGN KEY (`order_chain_id_fk`) REFERENCES `order_chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
