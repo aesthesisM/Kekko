@@ -39,9 +39,9 @@ module.exports = {
         db.executeSQL("INSERT INTO kekko.order_chain (order_chain_name,api_id_fk) VALUES (?,?)", [orderChainObj.order_chain_name, orderChainObj.api_id_fk], function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
         });
     },
@@ -49,9 +49,9 @@ module.exports = {
         db.executeSQL("UPDATE kekko.order_chain SET order_chain_name = ? WHERE id =? ", [orderChainObj.order_chain_name, orderChainObj.id], function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
         });
     },
@@ -59,9 +59,9 @@ module.exports = {
         db.executeSQL("UPDATE  kekko.order_chain SET active = 0 WHERE id =? ", [orderChainObj.id], function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
         });
     },
@@ -69,9 +69,9 @@ module.exports = {
         db.executeSQL("SELECT * FROM  kekko.order_chain WHERE active = 1", null, function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
         });
     },
@@ -81,9 +81,9 @@ module.exports = {
             function (data, err) {
                 if (err) {
                     console.error('err:' + err);
-                    callback(null, err);
+                    callback(err);
                 } else {
-                    callback(data);
+                    callback(null, data);
                 }
             });
     },
@@ -93,9 +93,9 @@ module.exports = {
             function (data, err) {
                 if (err) {
                     console.error('err:' + err);
-                    callback(null, err);
+                    callback(err);
                 } else {
-                    callback(data);
+                    callback(null, data);
                 }
             });
     },
@@ -103,9 +103,9 @@ module.exports = {
         db.executeSQL("UPDATE kekko.order SET active=0 WHERE id =?", [orderObject.id], function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
 
         });
@@ -114,12 +114,12 @@ module.exports = {
         db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and order_chain_id_fk=? group by success", [orderObject.order_chain_id_fk], function (data, err) {
             if (err) {
                 console.error('err:' + err);
-                callback(null, err);
+                callback(err);
             } else {
-                callback(data);
+                callback(null, data);
             }
         });
     }
 };
-
+exports.apiName = 'hitbtc';
 
