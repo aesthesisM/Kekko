@@ -32,7 +32,7 @@ module.exports = {
         var con = getConnection();
         console.log('connected to ' + dbConf.host);
 
-        async.parallel(
+        async.series(
             [
                 function (callback) {
                     //created database sql
