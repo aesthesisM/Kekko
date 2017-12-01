@@ -28,7 +28,6 @@ function checkDB(con, callback) {
 }
 
 module.exports = {
-
     initializeDb: function () {
         var con = getConnection();
         console.log('connected to ' + dbConf.host);
@@ -72,7 +71,6 @@ module.exports = {
                         "`secretKey` varchar(45) DEFAULT NULL," +
                         "PRIMARY KEY (`id`)" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
-
                     con.query(create_table_api_sql, function (err, result) {
                         if (err) {
                             callback(err);
@@ -151,8 +149,20 @@ module.exports = {
                         callback();
                         console.log('FK created on Order table with next order id and id column');
                     });
-                }
+                },
+                function (callback) {
+                    var api_insert_sql = "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
+                        "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('poloniex',null,null);" +
+                        "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('bittrex',null,null);";
 
+                    con.query(api_insert_sql, function (err, result) {
+                        if (err) {
+                            callback(err);
+                        }
+                        callback();
+                        console.log('api rows inserted successfully!');
+                    });
+                }
             ], function (err) {
                 if (err) {
                     console.error(err);
@@ -176,7 +186,6 @@ module.exports = {
         });
     }
 };
-
 
 var dbInitialized = null;
 async.parallel(
