@@ -39,7 +39,7 @@ module.exports = {
                     var create_db_sql = 'CREATE DATABASE IF NOT EXISTS kekko DEFAULT CHARACTER SET utf8';
                     con.query(create_db_sql, function (err, result) {
                         if (err) {
-                            callback(err)
+                            callback(err);
                         }
                         console.log('Database KEKKO initialized successfully');
                         callback();
