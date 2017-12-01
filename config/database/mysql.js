@@ -172,7 +172,6 @@ module.exports = {
 
     }, executeSQL: function (sql, params, callback) {
         var con = mysql.createConnection(dbConf);
-
         con.connect();
         con.query(sql, params, function (err, rows) {
             if (err) {
