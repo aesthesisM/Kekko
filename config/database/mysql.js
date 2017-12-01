@@ -5,6 +5,7 @@ var dbConf = {
     user: 'root',
     password: '',
     port: '3307',
+    multipleStatements: true,
     acquireTimeout: 900000 //15 min
 };
 
@@ -47,7 +48,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create user table sql
-                    var create_table_user_sql = "CREATE TABLE IF NOT EXISTS kekko.user (" +
+                    var create_table_user_sql = "USE kekko; " +
+                        "CREATE TABLE kekko.user (" +
                         "`id`  INT NOT NULL AUTO_INCREMENT," +
                         "`user_name` VARCHAR(45) NOT NULL," +
                         "`password` VARCHAR(45) NOT NULL," +
@@ -62,7 +64,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create api table sql
-                    var create_table_api_sql = "CREATE TABLE IF NOT EXISTS kekko.api (" +
+                    var create_table_api_sql = "USE kekko;" +
+                        "CREATE TABLE kekko.api (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
                         "`api_name` varchar(45) NOT NULL," +
                         "`publicKey` varchar(45) DEFAULT NULL," +
@@ -80,7 +83,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create order chain table sql;
-                    var create_table_order_chain_sql = "CREATE TABLE IF NOT EXISTS kekko.order_chain (" +
+                    var create_table_order_chain_sql = "USE kekko;" +
+                        "CREATE TABLE kekko.order_chain (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
                         "`order_chain_name` varchar(45) NOT NULL," +
                         "`api_id_fk` int(11) DEFAULT NULL," +
@@ -98,7 +102,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create order table sql
-                    var create_table_order_sql = "CREATE TABLE IF NOT EXISTS kekko.order (" +
+                    var create_table_order_sql = "USE kekko;" +
+                        "CREATE TABLE kekko.order (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
                         "`from` varchar(10) NOT NULL," +
                         "`to` varchar(10) NOT NULL," +
@@ -125,7 +130,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create index on order table for next order
-                    var create_index_on_next_order_id_sql = "ALTER TABLE kekko.order ADD INDEX `order_next_fk_idx` (`next_order_id_fk` ASC)";
+                    var create_index_on_next_order_id_sql = "USE kekko;" +
+                        "ALTER TABLE kekko.order ADD INDEX `order_next_fk_idx` (`next_order_id_fk` ASC)";
                     con.query(create_index_on_next_order_id_sql, function (err, result) {
                         if (err) {
                             callback(err);
@@ -136,7 +142,8 @@ module.exports = {
                 },
                 function (callback) {
                     //create fk on order with next_order_id
-                    var alter_table_order_next_order_id_fk = "ALTER TABLE kekko.order ADD CONSTRAINT `order_next_fk` FOREIGN KEY (`next_order_id_fk`) REFERENCES `kekko`.`order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ";
+                    var alter_table_order_next_order_id_fk = "USE kekko;" +
+                        "ALTER TABLE kekko.order ADD CONSTRAINT `order_next_fk` FOREIGN KEY (`next_order_id_fk`) REFERENCES `kekko`.`order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ";
                     con.query(alter_table_order_next_order_id_fk, function (err, result) {
                         if (err) {
                             callback(err);
