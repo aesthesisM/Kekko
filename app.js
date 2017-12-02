@@ -44,10 +44,10 @@ app.use(express.static(path.join(__dirname, '/public/')));
  */
 app.use('/', router_index);
 app.use('/home', router_home);
-app.use('/settings', router_settings);
-app.use('/order/hitbtc', router_hitbtc_home);
-app.use('/order/bittrex', router_bittrex_home);
-app.use('/order/poloniex', router_poloniex_home);
+app.use('/dashboard/api', router_settings);
+app.use('/api/hitbtc', router_hitbtc_home);
+app.use('/api/bittrex', router_bittrex_home);
+app.use('/api/poloniex', router_poloniex_home);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
