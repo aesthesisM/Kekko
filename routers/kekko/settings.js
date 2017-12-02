@@ -2,12 +2,13 @@ var express = require('express');
 var api = require('../../dao/api');
 var async = require('async');
 var router = express.Router();
+var responseObject = require('../../util/response');
 
-router.get('/api', function (req, res, next) {
+router.get('/', function (req, res, next) {
 
     var apis = null;
 
-    async.parallel(
+    async.series(
         [
             function (callback) {
                 api.getAllAPIs(function (data, err) {
@@ -25,12 +26,25 @@ router.get('/api', function (req, res, next) {
                 console.error(err);
                 res.render('error', {title: 'Error Page', errorMessage: 'API call couldnt get apis from db'});
             }
-            res.render("settings/api", {
+            res.render("dashboard/api", {
                 title: 'KEKKO API Dashboard Page',
                 modelAPI: apis
             });
         });
 
+
+});
+
+router.post('/update', function (req, res, next) {
+    //apiObject must come from request
+    var apiObj = {id: 1, api_name: 'hitbtc', publicKey: 'public', secretKey: 'secret'};
+    api.updateAPI(apiObj, function (data, err) {
+        if (err) {
+            console.error(err);
+            res.render('error', {errorMessage: err});
+        }
+        res.send(data);
+    });
 
 });
 
