@@ -1,10 +1,11 @@
 var mysql = require('mysql');
 var async = require('async');
 var dbConf = {
-    host: 'localhost',
+    //vmware win7 mysql ip
+    host: '172.16.166.128',
     user: 'root',
-    password: '',
-    port: '3307',
+    password: '11231123',
+    port: '3306',
     multipleStatements: true,
     acquireTimeout: 900000 //15 min
 };
