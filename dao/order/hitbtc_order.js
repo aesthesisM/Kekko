@@ -65,8 +65,8 @@ module.exports = {
             }
         });
     },
-    hitbtc_db_getAllOrderChains: function (apiName, callback) {
-        db.executeSQL("SELECT * FROM  kekko.order_chain WHERE active = 1", null, function (data, err) {
+    hitbtc_db_getAllOrderChainsByApi: function (api_id_fk, callback) {
+        db.executeSQL("SELECT * FROM  kekko.order_chain WHERE active = 1 AND api_id_fk=?", [api_id_fk], function (data, err) {
             if (err) {
                 console.error('err:' + err);
                 callback(err);
@@ -75,9 +75,9 @@ module.exports = {
             }
         });
     },
-    hitbtc_db_addOrder: function (orderObj, callback) {
+    hitbtc_db_addOrder: function (orderObj,order_chain_id_fk, callback) {
         db.executeSQL("INSERT INTO kekko.order (from,to,amount,price,total_price,next_order_id_fk,success,order_created_time,order_success_time,api_site_order_id,order_chain_id_fk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);",
-            [orderObj.from, orderObj.to, orderObj.amount, orderObj.price, orderObj.total_price, orderObj.next_order_id, orderObj.success, orderObj.order_created_time, orderObj.order_success_time, api_site_order_id, order_chain_id_fk],
+            [orderObj.from, orderObj.to, orderObj.amount, orderObj.price, orderObj.total_price, orderObj.next_order_id, orderObj.success, orderObj.order_created_time, orderObj.order_success_time, orderObj.api_site_order_id, order_chain_id_fk],
             function (data, err) {
                 if (err) {
                     console.error('err:' + err);
@@ -99,8 +99,8 @@ module.exports = {
                 }
             });
     },
-    hitbtc_db_getOrdersByOrderChainId: function (orderObject, callback) {
-        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and order_chain_id_fk=? group by success", [orderObject.order_chain_id_fk], function (data, err) {
+    hitbtc_db_getOrdersByOrderChainId: function (order_chain_id_fk, callback) {
+        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and order_chain_id_fk=? group by success", [order_chain_id_fk], function (data, err) {
             if (err) {
                 console.error('err:' + err);
                 callback(err);
