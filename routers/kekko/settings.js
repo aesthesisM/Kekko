@@ -2,7 +2,7 @@ var express = require('express');
 var api = require('../../dao/api');
 var async = require('async');
 var router = express.Router();
-var responseObject = require('../../util/response');
+var responseObject = require('../../util/response').response;
 
 router.get('/', function (req, res, next) {
 
@@ -24,11 +24,18 @@ router.get('/', function (req, res, next) {
         ], function (err) {
             if (err) {
                 console.error(err);
-                res.render('error', {title: 'Error Page', errorMessage: 'API call couldnt get apis from db'});
+                responseObject.data = null;
+                responseObject.message = 'API call couldnt get apis from db';
+                responseObject.result = -1;
+                res.render('error', {title: 'Error Page', respObj: responseObject});
             }
+            responseObject.data = apis;
+            responseObject.message = 'ok';
+            responseObject.result = 1;
+
             res.render("dashboard/api", {
                 title: 'KEKKO API Dashboard Page',
-                modelAPI: apis
+                respObj: responseObject
             });
         });
 
@@ -40,10 +47,16 @@ router.post('/update', function (req, res, next) {
     var apiObj = {id: 1, api_name: 'hitbtc', publicKey: 'public', secretKey: 'secret'};
     api.updateAPI(apiObj, function (data, err) {
         if (err) {
+            responseObject.data = null;
+            responseObject.message = 'API call couldnt update apis in db';
+            responseObject.result = -1;
             console.error(err);
-            res.render('error', {errorMessage: err});
+            res.render('error', {respObj: responseObject});
         }
-        res.send(data);
+        responseObject.data = data;
+        responseObject.message = 'ok';
+        responseObject.result = 1;
+        res.send({respObj: responseObject});
     });
 
 });
