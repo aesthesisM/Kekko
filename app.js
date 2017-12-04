@@ -2,7 +2,7 @@
 var path = require('path');
 var bodyParser = require('body-parser');
 var express = require('express');
-var handleBars = require('express-handlebars');
+//var handleBars = require('express-handlebars');
 var logger = require('morgan');
 var expressValidator = require('express-validator');
 var expressSession = require('express-session');
@@ -25,15 +25,15 @@ var router_poloniex_home = require('./routers/kekko/order/poloniex_order');
  */
 app.use(logger('dev'));
 
-// view engine setup
-app.engine('hbs', handleBars({
-    extname: 'hbs',
-    defaultLayout: 'layout',
-    layoutsDir: path.join(__dirname, '/views/layouts')
-}));
+//// view engine setup
+//app.engine('hbs', handleBars({
+//    extname: 'hbs',
+//    defaultLayout: 'layout',
+//    layoutsDir: path.join(__dirname, '/views/layouts')
+//}));
 
-app.set('views', path.join(__dirname, 'views/layouts'));
-app.set('view engine', 'hbs');
+//app.set('views', path.join(__dirname, 'views/layouts'));
+//app.set('view engine', 'hbs');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
