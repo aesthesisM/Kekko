@@ -1,11 +1,11 @@
 var mysql = require('mysql');
 var async = require('async');
 var dbConf = {
-    //vmware win7 mysql ip
-    host: '172.16.166.128',
+    //vmware win7 mysql ip 172.16.166.128
+    host: 'localhost',
     user: 'root',
-    password: '11231123',
-    port: '3306',
+    password: '', //vmware win7 mysql root password 11231123
+    port: '3307',
     multipleStatements: true,
     acquireTimeout: 900000 //15 min
 };
@@ -116,6 +116,9 @@ module.exports = {
                         "`api_site_order_id` bigint(20) DEFAULT NULL," +
                         "`order_chain_id_fk` int(11) DEFAULT NULL," +
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
+                        "`stop_loss` tinyint(1) DEFAULT NULL," +
+                        "`stop_loss_price` float DEFAULT NULL," +
+                        "`stop_loss_amount` float DEFAULT NULL," +
                         "PRIMARY KEY (`id`)," +
                         "KEY `order_chain_fk_idx` (`order_chain_id_fk`)," +
                         "CONSTRAINT `order_chain_fk` FOREIGN KEY (`order_chain_id_fk`) REFERENCES `order_chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
