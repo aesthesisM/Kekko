@@ -3,7 +3,7 @@ var router = express.Router();
 var hitOrderManager = require('../../../dao/order/hitbtc');
 var responseObject = require('../../../util/response').response;
 router.get('/', function (req, res, next) {
-    res.render('order/hitbtc/hitbtc', { title: 'HitBtc Home Page' });
+    res.render('order/hitbtc/hitbtc_home', { title: 'HitBtc Home Page' });
 });
 
 router.get('/chains', function (req, res, next) {
