@@ -5,9 +5,7 @@ var router = express.Router();
 var responseObject = require('../../util/response').response;
 
 router.get('/', function (req, res, next) {
-
     var apis = null;
-
     async.series(
         [
             function (callback) {
