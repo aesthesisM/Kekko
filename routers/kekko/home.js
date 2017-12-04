@@ -23,7 +23,7 @@ router.get('/', function (req, res, next) {
             console.error(err);
             return res.render('error', {title: 'Error Page', errorMessage: err});
         }
-        res.render('home/home', {title: 'Home Page', pairs: list});
+        res.send(list);
     });
 
 
