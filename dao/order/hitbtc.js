@@ -78,9 +78,9 @@ module.exports = {
                 }
             });
     },
-    hitbtc_db_updateOrder: function (orderObj, callback) {
-        db.executeSQL("UPDATE kekko.order SET from=?,to=?,amount=?,price=?,total_price=?,next_order_id_fk=?,active=?,stop_loss=?,stop_loss_price=? where id = ?",
-            [orderObj.from, orderObj.to, orderObj.amount, orderObj.price, orderObj.total_price, orderObj.next_order_id_fk, orderObj.active, orderObj.stop_loss, orderObj.stop_loss_price],
+    hitbtc_db_updateOrder: function (orderObj,chainId, callback) {
+        db.executeSQL("UPDATE kekko.order SET from=?,to=?,amount=?,price=?,total_price=?,next_order_id_fk=?,active=?,stop_loss=?,stop_loss_price=? where id = ? and chain_id_fk = ?",
+            [orderObj.from, orderObj.to, orderObj.amount, orderObj.price, orderObj.total_price, orderObj.next_order_id_fk, orderObj.active, orderObj.stop_loss, orderObj.stop_loss_price,orderObj.id,chainId],
             function (data, err) {
                 if (err) {
                     console.error(err);
