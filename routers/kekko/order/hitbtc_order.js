@@ -96,7 +96,7 @@ router.get('/chain/:chainId/getOrders', function (req, res, next) {
         }
     });
 });
-
+//localhost:50000/order/hitbtc/chain/:chainId/addOrder
 router.post('/chain/:chainId/addOrder', function (req, res, next) {
     var orderObj = req.body;
 
