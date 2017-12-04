@@ -51,7 +51,7 @@ module.exports = {
                     var create_table_user_sql = "USE kekko; " +
                         "CREATE TABLE kekko.user (" +
                         "`id`  INT NOT NULL AUTO_INCREMENT," +
-                        "`user_name` VARCHAR(45) NOT NULL," +
+                        "`name` VARCHAR(45) NOT NULL," +
                         "`password` VARCHAR(45) NOT NULL," +
                         "PRIMARY KEY (`id`))";
                     con.query(create_table_user_sql, function (err, result) {
@@ -67,7 +67,7 @@ module.exports = {
                     var create_table_api_sql = "USE kekko;" +
                         "CREATE TABLE kekko.api (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
-                        "`api_name` varchar(45) NOT NULL," +
+                        "`name` varchar(45) NOT NULL," +
                         "`publicKey` varchar(45) DEFAULT NULL," +
                         "`secretKey` varchar(45) DEFAULT NULL," +
                         "PRIMARY KEY (`id`)" +
@@ -82,16 +82,17 @@ module.exports = {
                 },
                 function (callback) {
                     //create order chain table sql;
-                    var create_table_order_chain_sql = "USE kekko;" +
-                        "CREATE TABLE kekko.order_chain (" +
+                    var create_table_chain_sql = "USE kekko;" +
+                        "CREATE TABLE kekko.chain (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
-                        "`order_chain_name` varchar(45) NOT NULL," +
+                        "`name` varchar(45) NOT NULL," +
                         "`api_id_fk` int(11) DEFAULT NULL," +
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
+                        "`status` tinyint(1) DEFAULT '1'," +
                         "PRIMARY KEY (`id`)," +
                         "KEY `api_fk__idx` (`api_id_fk`)," +
                         "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
-                    con.query(create_table_order_chain_sql, function (err, result) {
+                    con.query(create_table_chain_sql, function (err, result) {
                         if (err) {
                             callback(err);
                         }
@@ -114,14 +115,13 @@ module.exports = {
                         "`order_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
                         "`order_success_time` timestamp NULL DEFAULT NULL," +
                         "`api_site_order_id` bigint(20) DEFAULT NULL," +
-                        "`order_chain_id_fk` int(11) DEFAULT NULL," +
+                        "`chain_id_fk` int(11) DEFAULT NULL," +
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
                         "`stop_loss` tinyint(1) DEFAULT NULL," +
                         "`stop_loss_price` float DEFAULT NULL," +
-                        "`stop_loss_amount` float DEFAULT NULL," +
                         "PRIMARY KEY (`id`)," +
-                        "KEY `order_chain_fk_idx` (`order_chain_id_fk`)," +
-                        "CONSTRAINT `order_chain_fk` FOREIGN KEY (`order_chain_id_fk`) REFERENCES `order_chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
+                        "KEY `order_chain_fk_idx` (`chain_id_fk`)," +
+                        "CONSTRAINT `chain_fk` FOREIGN KEY (`chain_id_fk`) REFERENCES `chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
                     con.query(create_table_order_sql, function (err, result) {
                         if (err) {
                             callback(err);
@@ -155,9 +155,9 @@ module.exports = {
                     });
                 },
                 function (callback) {
-                    var api_insert_sql = "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
-                        "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('poloniex',null,null);" +
-                        "INSERT INTO kekko.api (api_name,publicKey,secretKey) VALUES ('bittrex',null,null);";
+                    var api_insert_sql = "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
+                        "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('poloniex',null,null);" +
+                        "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('bittrex',null,null);";
 
                     con.query(api_insert_sql, function (err, result) {
                         if (err) {

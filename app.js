@@ -2,7 +2,7 @@
 var path = require('path');
 var bodyParser = require('body-parser');
 var express = require('express');
-//var handleBars = require('express-handlebars');
+var handleBars = require('express-handlebars');
 var logger = require('morgan');
 var expressValidator = require('express-validator');
 var expressSession = require('express-session');
@@ -12,28 +12,29 @@ var app = express();
 var router_index = require('./routers/index');
 var router_home = require('./routers/kekko/home');
 var router_settings = require('./routers/kekko/settings');
-var router_hitbtc_home = require('./routers/kekko/order/hitbtc_order');
-var router_bittrex_home = require('./routers/kekko/order/bittrex_order');
-var router_poloniex_home = require('./routers/kekko/order/poloniex_order');
+var router_hitbtc_home = require('./routers/kekko/order/hitbtc');
+var router_bittrex_home = require('./routers/kekko/order/bittrex');
+var router_poloniex_home = require('./routers/kekko/order/poloniex');
+
+//create a write stream (in append mode)
 /*
- // create a write stream (in append mode)
  var accessLogStream = fs.createWriteStream(
  path.join(__dirname, 'access.log'), {flags: 'a'}
  );
  // setup the logger
  app.use(morgan('combined', {stream: accessLogStream}));
- */
+ 
 app.use(logger('dev'));
-
+*/
 //// view engine setup
-//app.engine('hbs', handleBars({
-//    extname: 'hbs',
-//    defaultLayout: 'layout',
-//    layoutsDir: path.join(__dirname, '/views/layouts')
-//}));
+app.engine('html', handleBars({
+    extname: 'html',
+    defaultLayout: 'layout',
+    layoutsDir: path.join(__dirname, '/public/views/')
+}));
 
-//app.set('views', path.join(__dirname, 'views/layouts'));
-//app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'public/views/'));
+app.set('view engine', 'html');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -44,10 +45,10 @@ app.use(express.static(path.join(__dirname, '/public/')));
  */
 app.use('/', router_index);
 app.use('/home', router_home);
-app.use('/dashboard/api', router_settings);
-app.use('/order/hitbtc', router_hitbtc_home);
-app.use('/order/bittrex', router_bittrex_home);
-app.use('/order/poloniex', router_poloniex_home);
+app.use('/api', router_settings);
+app.use('/hitbtc', router_hitbtc_home);
+app.use('/bittrex', router_bittrex_home);
+app.use('/poloniex', router_poloniex_home);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

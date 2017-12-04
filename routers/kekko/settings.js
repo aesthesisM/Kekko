@@ -43,7 +43,7 @@ router.get('/', function (req, res, next) {
 router.post('/update', function (req, res, next) {
     //apiObject must come from request
     var apiObj = {id: 1, api_name: 'hitbtc', publicKey: 'public', secretKey: 'secret'};
-    api.updateAPI(apiObj, function (data, err) {
+    api.updateAPI(req.body, function (data, err) {
         if (err) {
             responseObject.data = null;
             responseObject.message = 'API call couldnt update apis in db';

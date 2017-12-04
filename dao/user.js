@@ -5,7 +5,7 @@
 var db = require('../config/database/mysql');
 module.exports = {
     getUser: function (params, callback) {
-        db.executeSQL("SELECT * FROM kekko.user WHERE user_name = ? AND password = ?", [params.user_name, params.password], function (data, err) {
+        db.executeSQL("SELECT * FROM kekko.user WHERE name = ? AND password = ?", [params.name, params.password], function (data, err) {
             if (err) {
                 console.error(err);
                 callback(null, err);
@@ -24,7 +24,7 @@ module.exports = {
             }
         });
     }, updateUser: function (params, callback) {
-        db.executeSQL("UPDATE kekko.user SET password = ? WHERE user_name= ?", [params.password, params.user_name], function (data, err) {
+        db.executeSQL("UPDATE kekko.user SET password = ? WHERE name= ?", [params.password, params.name], function (data, err) {
             if (err) {
                 console.error('err:' + err);
                 callback(null, err);
@@ -33,7 +33,7 @@ module.exports = {
             }
         });
     }, insertUser: function (params, callback) {
-        db.executeSQL("INSERT INTO kekko.user (user_name,password) VALUES (?,?)", [params.user_name, params.password], function (data, err) {
+        db.executeSQL("INSERT INTO kekko.user (name,password) VALUES (?,?)", [params.name, params.password], function (data, err) {
             if (err) {
                 console.error('err:' + err);
                 callback(null, err);

@@ -25,10 +25,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each modelAPI}}
+                            {{#each respObj.data}}
                             <tr>
                                 <td>{{this.id}}</td>
-                                <td>{{this.api_name}}</td>
+                                <td>{{this.name}}</td>
                                 <td><input type="text" id="model[{{this.id}}].publicKey" name="model[{{this.id}}].publicKey" value=" {{this.publicKey}}" class="form-control" /></td>
                                 <td><input type="text" id="model[{{this.id}}].publicKey" name="model[{{this.id}}].publicKey" value=" {{this.secretKey}}" class="form-control" /></td>
                                 <td><button class="btn btn-success"><i class="fa fa-save"></i></button></td>

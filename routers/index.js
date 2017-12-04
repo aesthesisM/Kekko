@@ -18,14 +18,14 @@ router.post('/login', function (req, res, next) {
         if (err) {
             res.render('login', { title: 'Simple Chain Order Application', layout: false}); //error message will be added
         } else if (data.length == 1) {//if there is a user then check if its ours
-            if (data[0].user_name == req.body.username && data[0].password == req.body.password) {
+            if (data[0].name == req.body.username && data[0].password == req.body.password) {
                 console.log(data);
                 res.redirect('/home');
             } else {
                 res.render('login', { title: 'Simple Chain Order Application', layout: false}); //error message will be added
             }
         } else {//user doesnt exist and sing up that user for the first time
-            user.insertUser({user_name: req.body.username, password: req.body.password}, function (data, err) {
+            user.insertUser({name: req.body.username, password: req.body.password}, function (data, err) {
                 if (err) {
                     res.render('login', { title: 'Simple Chain Order Application', layout: false}); //error message will be added
                 } else {
