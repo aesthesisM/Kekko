@@ -1,5 +1,5 @@
 var HitBTC = require('./hitbtc');
-var client = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
+//var client = new HitBTC('f6162add43cb90c6750b111feeed0010', 'de7bf2ff1889ab9edd9cfad906fda42b', 'live');
 
 /*
 
@@ -10,9 +10,7 @@ var client = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f730674
 
 //private methods require authentication
 //client.activeOrders(console.log);
-client.activeOrderById('47d9ca49cc694ca4b27319ef28d67bb7',console.log);
+//client.activeOrderById('47d9ca49cc694ca4b27319ef28d67bb7',console.log);
 //client.addOrder(); //has not tested yet
 //client.cancelOrder(); //has not tested yet
 //client.cancellAllOrders(); //has not tested yet
-
-

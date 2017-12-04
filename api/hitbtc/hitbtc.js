@@ -21,7 +21,7 @@ HitBTCClient.prototype._get = function (destination, params, account, callback) 
         headers: {
             'User-Agent': 'Mozilla/4.0 (compatible; HitBTC node.js client)',
             'Content-Type': 'application/json'
-        }
+          }
     };
 
     if (!account.includes('public')) {
