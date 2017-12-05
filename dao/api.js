@@ -23,7 +23,7 @@ module.exports = {
         });
     },
     updateAPI: function (params, callback) {
-        db.executeSQL("UPDATE kekko.api SET publicKey=?,secretKey=? WHERE api_name=?", [params.publicKey, params.secretKey, params.api_name], function (data, err) {
+        db.executeSQL("UPDATE kekko.api SET publicKey=?,secretKey=? WHERE id=?", [params.publicKey, params.secretKey, params.id], function (data, err) {
             if (err) {
                 console.error(err);
                 callback(null, err);

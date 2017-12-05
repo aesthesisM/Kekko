@@ -11,7 +11,7 @@ var expressSession = require('express-session');
 var app = express();
 var router_index = require('./routers/index');
 var router_home = require('./routers/kekko/home');
-var router_settings = require('./routers/kekko/settings');
+var router_api = require('./routers/kekko/api');
 var router_hitbtc_home = require('./routers/kekko/order/hitbtc');
 var router_bittrex_home = require('./routers/kekko/order/bittrex');
 var router_poloniex_home = require('./routers/kekko/order/poloniex');
@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, '/public/')));
  */
 app.use('/', router_index);
 app.use('/home', router_home);
-app.use('/api', router_settings);
+app.use('/api', router_api);
 app.use('/hitbtc', router_hitbtc_home);
 app.use('/bittrex', router_bittrex_home);
 app.use('/poloniex', router_poloniex_home);
