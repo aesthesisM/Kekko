@@ -1,9 +1,7 @@
 
 <p>Welcome Home</p>
 
-{{#each pairs}}
-    <p>{{@index}}. {{this.symbol}} + {{this.last}}</p>
-{{/each}}
+<p ng-repeat="item in mainCtrl.pairs">{{$index}}. {{item.symbol}} + {{item.last}}</p>
 <!-- Info boxes -->
 <div class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
