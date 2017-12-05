@@ -3,6 +3,7 @@ var debug = require('debug')('Kekko:server');
 var app = require('../app.js');
 var port = 50000;
 app.set('port', port);
+
 var server = http.createServer(app);
 
 
@@ -12,15 +13,7 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-/*
-test apis
-*/
-//////////////////--TESTER---BEGINS---/////////////////
-var tester = require('../tests/routers/hitbtc');
-setTimeout(function(){
-    tester.testApiUrls();
-},3000);
-//////////////////--TESTER---ENDS---/////////////////
+
 /**
  * Event listener for HTTP server "error" event.
  */
