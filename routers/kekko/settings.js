@@ -25,16 +25,13 @@ router.get('/', function (req, res, next) {
                 responseObject.data = null;
                 responseObject.message = 'API call couldnt get apis from db';
                 responseObject.result = -1;
-                res.render('error', {title: 'Error Page', respObj: responseObject});
+                res.send({ respObj: responseObject });
             }
             responseObject.data = apis;
             responseObject.message = 'ok';
             responseObject.result = 1;
 
-            res.render("dashboard/api", {
-                title: 'KEKKO API Dashboard Page',
-                respObj: responseObject
-            });
+            res.send({ respObj: responseObject });
         });
 
 
@@ -42,19 +39,19 @@ router.get('/', function (req, res, next) {
 
 router.post('/update', function (req, res, next) {
     //apiObject must come from request
-    var apiObj = {id: 1, api_name: 'hitbtc', publicKey: 'public', secretKey: 'secret'};
+    var apiObj = { id: 1, api_name: 'hitbtc', publicKey: 'public', secretKey: 'secret' };
     api.updateAPI(req.body, function (data, err) {
         if (err) {
             responseObject.data = null;
             responseObject.message = 'API call couldnt update apis in db';
             responseObject.result = -1;
             console.error(err);
-            res.render('error', {respObj: responseObject});
+            res.send({ respObj: responseObject });
         }
         responseObject.data = data;
         responseObject.message = 'ok';
         responseObject.result = 1;
-        res.send({respObj: responseObject});
+        res.send({ respObj: responseObject });
     });
 
 });
