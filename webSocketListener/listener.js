@@ -16,9 +16,11 @@ var connect = function () {
         };
         ws.send(JSON.stringify(obj));
     });
+    /*
     ws.on('error', function () {
         console.log('socket error');
     });
+    */
     ws.on('close', function () {
         console.log('socket close');
         setTimeout(connect, reconnectInterval);
