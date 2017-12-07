@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 
-var reconnectInterval = x * 1000 * 5; //5seconds
+var reconnectInterval = 1000 * 5; //5seconds
 var ws;
 var connect = function () {
     ws = new WebSocket('wss://api.hitbtc.com/api/2/ws');
