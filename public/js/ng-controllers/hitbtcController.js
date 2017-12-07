@@ -1,4 +1,4 @@
-﻿angular.module('kekko', ['ngRoute'])
+﻿kekkoApp
     .controller('HitBtcController', function ($location) {
         var hitbtcCtrl = this;
 

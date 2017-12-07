@@ -5,6 +5,9 @@
                 <h3 class="box-title">API Info</h3>
 
                 <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" ng-click="apiCtrl.getAllApis()">
+                        <i class="fa fa-refresh"></i>
+                    </button>
                     <button type="button" class="btn btn-box-tool" data-widget="collapse">
                         <i class="fa fa-minus"></i>
                     </button>
@@ -27,7 +30,7 @@
                         <tbody>                            
                             <tr ng-repeat="item in apiCtrl.apiList">
                                 <td>{{item.id}}</td>
-                                <td>{{item.api_name}}</td>
+                                <td>{{item.name}}</td>
                                 <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.publicKey}}" class="form-control" /></td>
                                 <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.secretKey}}" class="form-control" /></td>
                                 <td><button class="btn btn-success"><i class="fa fa-save"></i></button></td>

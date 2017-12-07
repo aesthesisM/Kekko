@@ -25,15 +25,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each respObj.data}}
-                            <tr>
-                                <td>{{this.id}}</td>
-                                <td>{{this.name}}</td>
-                                <td><input type="text" id="model[{{this.id}}].publicKey" name="model[{{this.id}}].publicKey" value=" {{this.publicKey}}" class="form-control" /></td>
-                                <td><input type="text" id="model[{{this.id}}].publicKey" name="model[{{this.id}}].publicKey" value=" {{this.secretKey}}" class="form-control" /></td>
-                                <td><button class="btn btn-success"><i class="fa fa-save"></i></button></td>
+                            <tr ng-repeat="item in apiCtrl.apiList">
+                                <td>{{item.id}}</td>
+                                <td>{{item.name}}</td>
+                                <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.publicKey}}" class="form-control" /></td>
+                                <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.secretKey}}" class="form-control" /></td>
+                                <td><button type="button" class="btn btn-success" ng-click="apiCtrl.save(item)"><i class="fa fa-save"></i></button></td>
                             </tr>
-                            {{/each}}
+
                         </tbody>
                     </table>
                 </div>
