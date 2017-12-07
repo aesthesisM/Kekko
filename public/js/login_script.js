@@ -1,31 +1,41 @@
 ﻿
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 
     /*
         Fullscreen background
     */
     $.backstretch([
-                    "../img/backgrounds/1.jpg"
-	              , "../img/backgrounds/2.jpg"
-	             ], {duration: 3000, fade: 750});
+        "../img/backgrounds/1.jpg"
+        , "../img/backgrounds/2.jpg"
+    ], { duration: 3000, fade: 750 });
 
     /*
         Form validation
     */
-    $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea').on('focus', function() {
-    	$(this).removeClass('input-error');
+    $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea').on('focus', function () {
+        $(this).removeClass('input-error');
     });
 
-    $('.login-form').on('submit', function(e) {
+    $('.login-form').on('submit', function (e) {
 
-    	$(this).find('input[type="text"], input[type="password"], textarea').each(function(){
-    		if( $(this).val() == "" ) {
-    			e.preventDefault();
-    			$(this).addClass('input-error');
-    		}
-    		else {
-    			$(this).removeClass('input-error');
-    		}
-    	});
+        $(this).find('input[type="text"], input[type="password"], textarea').each(function () {
+            if ($(this).val() == "") {
+                e.preventDefault();
+                $(this).addClass('input-error');
+            }
+            else {
+                $(this).removeClass('input-error');
+            }
+        });
+        $.post("/login", $(this).serialize())
+            .done(function (data) {
+                console.log(data);
+                if (data.respObj.result === 1) {
+                    location.href = "/views/index.html";
+                } else {
+                    alert("nop");
+                }
+            });
+        e.preventDefault();
     });
 });
