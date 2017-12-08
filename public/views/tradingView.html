@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <!-- TradingView Widget BEGIN -->
+    <div id="tdChart"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        function getParameterByName(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        var val = getParameterByName("value");
+        new TradingView.widget({
+            "container_id": "tdChart",
+            "width": 980,
+            "height": 610,
+            "symbol": "HITBTC:" + val,
+            "interval": "3",
+            "timezone": "Etc/UTC",
+            "theme": "Light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "hideideas": true
+        });
+    </script>
+    <!-- TradingView Widget END -->
+</body>
+</html>
