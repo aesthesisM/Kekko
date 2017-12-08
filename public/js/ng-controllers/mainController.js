@@ -1,12 +1,12 @@
-﻿var app = angular.module('kekkoApp', ['ngRoute']);
-app.factory('Page', function () {
+﻿var kekkoApp = angular.module('kekkoApp', ['ngRoute']);
+kekkoApp.factory('Page', function () {
     var title = 'Dashboard';
     return {
         title: function () { return title; },
         setTitle: function (newTitle) { title = newTitle; }
     };
 });
-app.config(function ($routeProvider) {
+kekkoApp.config(function ($routeProvider) {
     $routeProvider
         .when('/', {
             controller: 'APIController as apiCtrl',
@@ -37,17 +37,19 @@ app.config(function ($routeProvider) {
             redirectTo: '/'
         });
 });
-app.controller('MainController', function ($scope, $http) {
+kekkoApp.controller('MainController', function ($http, Page) {
     var mainCtrl = this;
-    $scope.pairs = [];
-    var getPairs = function () {
+    mainCtrl.Page = Page;
+    mainCtrl.pairs = [];
+    Page.setTitle("Dashboard");
+    mainCtrl.getPairs = function () {
         $http({
             method: 'GET',
             url: '/home'
         }).then(function successCallback(response) {
             // this callback will be called asynchronously
             // when the response is available
-            $scope.pairs = response;
+            mainCtrl.pairs = response.data.slice(0, 20);
             console.log(response);
         }, function errorCallback(response) {
             // called asynchronously if an error occurs
@@ -55,12 +57,12 @@ app.controller('MainController', function ($scope, $http) {
             mainCtrl.pairs = [{ symbol: 1, last: 12.1212 }];
         });
     };
-    getPairs();
+    //mainCtrl.getPairs();
 
-    var saveApi = function () {
+    mainCtrl.saveApi = function () {
         //save api json
     };
-    var getAllApis = function () {
+    mainCtrl.getAllApis = function () {
 
     };
 });

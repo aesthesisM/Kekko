@@ -1,4 +1,4 @@
-﻿angular.module('kekko', ['ngRoute'])
+﻿kekkoApp
     .controller('BittrexController', function ($location) {
         var bittrexCtrl = this;
 
