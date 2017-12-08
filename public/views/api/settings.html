@@ -1,0 +1,63 @@
+<div class="row">
+    <section class="content-header">
+        <h1>
+            API Info
+            <small>Preview of API Keys</small>
+        </h1>
+        <button type="button" class="btn btn-box-tool" ng-click="apiCtrl.getAllApis()">
+            <i class="fa fa-2x fa-refresh"></i>
+        </button>
+    </section>
+
+
+    <div class="col-sm-6" ng-repeat="item in apiCtrl.apiList">
+        <div class="box box-success">
+            <div class="box-header">
+                <h3 class="box-title">{{item.name}}</h3>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <input type="text" ng-model="item.publicKey" placeholder="Public Key" class="form-control" />
+                            <span class="input-group-btn" style="width:0px;"></span>
+                            <input type="text" ng-model="item.secretKey" placeholder="Secret Key" class="form-control" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-info btn-flat" ng-click="apiCtrl.updateApi(item)"><i class="fa fa-save"></i>&nbsp;Save</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <!-- Loading (remove the following to stop the loading)-->
+            <div class="overlay" ng-show="apiCtrl.updateProcess">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
+            <!-- end loading -->
+        </div>
+    </div>
+
+    <!--<div class="table-responsive">
+        <table class="table no-margin">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Public Key</th>
+                    <th>Secret Key</th>
+                    <th>Save</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in apiCtrl.apiList">
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.publicKey}}" class="form-control" /></td>
+                    <td><input type="text" id="model[{{item.id}}].publicKey" name="model[{{item.id}}].publicKey" value=" {{item.secretKey}}" class="form-control" /></td>
+                    <td><button class="btn btn-success"><i class="fa fa-save"></i></button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>-->
+</div>

@@ -3,7 +3,18 @@ kekkoApp.factory('Page', function () {
     var title = 'Dashboard';
     return {
         title: function () { return title; },
-        setTitle: function (newTitle) { title = newTitle; }
+        setTitle: function (newTitle) { title = newTitle; },
+        showMessage: function (type, title, message) {
+            swal({
+                type: type,
+                title: title,
+                html: $('<div>')
+                    .text(message),
+                //animation: false,
+                //customClass: 'animated tada',
+                allowOutsideClick: false
+            });
+        }
     };
 });
 kekkoApp.config(function ($routeProvider) {
@@ -15,7 +26,7 @@ kekkoApp.config(function ($routeProvider) {
         })
         .when('/dashboard/api', {
             controller: 'APIController as apiCtrl',
-            templateUrl: 'api/index.html'
+            templateUrl: 'api/settings.html'
             //resolve: function () { return []; }
         })
         .when('/order/bittrex', {
