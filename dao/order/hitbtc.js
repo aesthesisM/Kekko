@@ -1,38 +1,10 @@
 /**
  * Created by khobsyzl28 on 11/26/2017.
  */
-var HitBTC = require('../../api/hitbtc/hitbtc');
-var api = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
 var db = require('../../config/database/mysql');
 
 module.exports = {
-    //api calls
-    hitbtc_api_getAllPairs: function (callback) {
-        return api.tickerAll(callback);
-    },
-    hitbtc_api_getPair: function (pair, callback) {
-        return api.tickerPair(pair, callback);
-    },
-    hitbtc_api_getOrders: function (callback) {
-        return api.activeOrders(callback);
-    },
-    hitbtc_api_addOrder: function (orderObj, callback) {
-        var obj = {
-            "symbol": orderObj.pair,
-            "side": orderObj.side,
-            "quantity": orderObj.quantity,
-            "price": orderObj.price,
-            "type": type,
-            "timeInForce": orderObj.timeInForce
-        };
-        if (orderObj.timeInForce === 'GTD') {
-            obj['expireTime'] = orderObj.expireTime;
-        }
-        return api.addOrder(obj, callback);
-    },
-    hitbtc_api_cancelOrder: function (clientOrderId, callback) {
-        return api.cancelOrder(clientOrderId, callback);
-    },
+
     //db calls
     //api_id_fk = 1 hitbtc
     hitbtc_db_getChains: function (params, callback) {
