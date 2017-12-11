@@ -12,9 +12,9 @@ var app = express();
 var router_index = require('./routers/index');
 var router_home = require('./routers/kekko/home');
 var router_api = require('./routers/kekko/api');
-var router_hitbtc_home = require('./routers/kekko/order/hitbtc');
-var router_bittrex_home = require('./routers/kekko/order/bittrex');
-var router_poloniex_home = require('./routers/kekko/order/poloniex');
+var router_hitbtc = require('./routers/kekko/order/hitbtc');
+var router_bittrex = require('./routers/kekko/order/bittrex');
+var router_poloniex = require('./routers/kekko/order/poloniex');
 
 //create a write stream (in append mode)
 /*
@@ -37,18 +37,24 @@ app.set('views', path.join(__dirname, 'public/views/'));
 app.set('view engine', 'html');
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public/')));
 
+/*
+session configuration
+Here ‘secret‘ is used for cookie handling etc but we have to put some secret for managing Session in Express.
+*/
+
+app.use(expressSession({ secret: 'KekkoSecret' }));
 /*
  routers
  */
 app.use('/', router_index);
 app.use('/home', router_home);
 app.use('/api', router_api);
-app.use('/hitbtc', router_hitbtc_home);
-app.use('/bittrex', router_bittrex_home);
-app.use('/poloniex', router_poloniex_home);
+app.use('/hitbtc', router_hitbtc);
+app.use('/bittrex', router_bittrex);
+app.use('/poloniex', router_poloniex);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -65,7 +71,7 @@ app.use(function (err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error', {title: 'Error Page', errorMessage: err.stack});
+    res.render('error', { title: 'Error Page', errorMessage: err.stack });
 });
 
 

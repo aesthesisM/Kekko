@@ -21,9 +21,10 @@ router.post('/login', function (req, res, next) {
             if (data[0].name == req.body.username && data[0].password == req.body.password) {
                 console.log(data);
                 data[0].password = '';
-                responseObject.data = data[0];
+                responseObject.data = null;
                 responseObject.message = 'success';
                 responseObject.result = 1;
+
                 res.send({ respObj: responseObject });
             } else {
                 responseObject.data = null;
