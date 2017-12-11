@@ -1,5 +1,5 @@
 var http = require('http');
-var debug = require('debug')('Kekko:server');
+//var debug = require('debug')('Kekko:server');
 var app = require('../app.js');
 var port = 50000;
 app.set('port', port);
@@ -51,6 +51,6 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    //debug('Listening on ' + bind);
 }
 

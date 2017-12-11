@@ -46,10 +46,9 @@ router.post('/update', function (req, res, next) {
             responseObject.data = null;
             responseObject.message = 'API call couldnt update apis in db';
             responseObject.result = -1;
-            console.error(err);
             res.send({ respObj: responseObject });
         } else {
-            responseObject.data = data;
+            responseObject.data = null;
             responseObject.message = 'ok';
             responseObject.result = 1;
             res.send({ respObj: responseObject });

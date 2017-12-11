@@ -70,7 +70,7 @@ router.get('/chains/:chainId', function (req, res, next) {
             responseObject.result = -1;
             res.send({ respObj: responseObject });
         } else {
-            responseObject.data = null;
+            responseObject.data = data;
             responseObject.message = 'successful';
             responseObject.result = 1;
             res.send({ respObj: responseObject });

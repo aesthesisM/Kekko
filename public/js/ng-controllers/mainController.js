@@ -5,7 +5,7 @@ kekkoApp.factory('Page', function () {
         title: function () { return title; },
         setTitle: function (newTitle) { title = newTitle; },
         showMessage: function (type, title, message) {
-            swal({
+            eval({
                 type: type,
                 title: title,
                 html: $('<div>')
