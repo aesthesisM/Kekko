@@ -48,8 +48,8 @@ connect(null, console.log);
 
 module.exports = {
     run: function () {
-        var activeChains = null;
-
+        var activeChains = new Array();
+        var activeOrders = new Array();
         async.series(
             [
                 function () {
@@ -69,36 +69,16 @@ module.exports = {
                     //if all orders is done in chain than make it passive to not to run again
                     for (var i = 0; i < activeChains.length; i++) {
                         var activeOrders = null;
-                        async.series(
-                            [
-                                function () {
-                                    activeOrders = db.hitbtc_db_getChainOrders(activeChains[i], function (data, err) {
-                                        if (err) {
-                                            callback(err);
-                                        } else {
-                                            activeOrders = data;
-                                            callback();
-                                        }
-                                    });
-                                }
-                            ],
-                            function (err) {
-                                if (err) {
-                                    console.error(err);
-                                }
+
+                        activeOrders = db.hitbtc_db_getChainOrders(activeChains[i], function (data, err) {
+                            if (err) {
+                                callback(err);
+                            } else {
+                                activeOrders[i] = data;
                             }
-                        );
-
-                        //active orders
-                        //for any of it
-                        //listen all of their values
-                        for (var j = 0; j < activeOrders.length; j++) {
-
-
-                        }
-
+                        });
                     }
-
+                    callback();
                 }
             ],
             function (err) {
