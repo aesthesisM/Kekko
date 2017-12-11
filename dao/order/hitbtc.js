@@ -38,7 +38,17 @@ module.exports = {
         });
     },
     hitbtc_db_getChainOrders: function (chainId, callback) {
-        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and chain_id_fk=? ", [parseInt(chainId)], function (data, err) {
+        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and chain_id_fk=? order by order_ asc", [parseInt(chainId)], function (data, err) {
+            if (err) {
+                console.error(err);
+                callback(err);
+            } else {
+                callback(null, data);
+            }
+        });
+    },
+    hitbtc_db_getChainWaitingOrders: function (chainId, callback) {
+        db.executeSQL("SELECT * FROM kekko.order WHERE active=1 and success=0 and chain_id_fk = ? order by order_ asc", [parseInt(chainId)], function (data, err) {
             if (err) {
                 console.error(err);
                 callback(err);
@@ -48,8 +58,8 @@ module.exports = {
         });
     },
     hitbtc_db_addOrder: function (orderObj, chainId, callback) {
-        db.executeSQL("INSERT INTO kekko.order (from,to,amount,price,total_price,next_order_id_fk,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            [orderObj.from, orderObj.to, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.next_order_id_fk), new Date(orderObj.order_created_time), parseInt(chain_id_fk), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price)],
+        db.executeSQL("INSERT INTO kekko.order (from,to,amount,price,total_price,order_,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            [orderObj.from, orderObj.to, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.order_), new Date(orderObj.order_created_time), parseInt(chain_id_fk), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price)],
             function (data, err) {
                 if (err) {
                     console.error(err);
@@ -60,8 +70,8 @@ module.exports = {
             });
     },
     hitbtc_db_updateOrder: function (orderObj, chainId, callback) {
-        db.executeSQL("UPDATE kekko.order SET from=?,to=?,amount=?,price=?,total_price=?,next_order_id_fk=?,active=?,stop_loss=?,stop_loss_price=? where id = ? and chain_id_fk = ?",
-            [orderObj.from, orderObj.to, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.next_order_id_fk), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price), parseInt(orderObj.id), parseInt(chainId)],
+        db.executeSQL("UPDATE kekko.order SET from=?,to=?,amount=?,price=?,total_price=?,order_=?,active=?,stop_loss=?,stop_loss_price=? where id = ? and chain_id_fk = ?",
+            [orderObj.from, orderObj.to, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.order_), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price), parseInt(orderObj.id), parseInt(chainId)],
             function (data, err) {
                 if (err) {
                     console.error(err);

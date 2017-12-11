@@ -110,7 +110,7 @@ module.exports = {
                         "`amount` float NOT NULL," +
                         "`price` float NOT NULL," +
                         "`total_price` float NOT NULL," +
-                        "`next_order_id_fk` int(11) DEFAULT NULL," +
+                        "`order_` int(11) DEFAULT NULL," +
                         "`success` smallint(2) DEFAULT '0'," +
                         "`order_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
                         "`order_success_time` timestamp NULL DEFAULT NULL," +
@@ -128,30 +128,6 @@ module.exports = {
                         }
                         callback();
                         console.log('Table Order initialized successfully');
-                    });
-                },
-                function (callback) {
-                    //create index on order table for next order
-                    var create_index_on_next_order_id_sql = "USE kekko;" +
-                        "ALTER TABLE kekko.order ADD INDEX `order_next_fk_idx` (`next_order_id_fk` ASC)";
-                    con.query(create_index_on_next_order_id_sql, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        }
-                        callback();
-                        console.log('Index created on Order table with Next_order_id column');
-                    });
-                },
-                function (callback) {
-                    //create fk on order with next_order_id
-                    var alter_table_order_next_order_id_fk = "USE kekko;" +
-                        "ALTER TABLE kekko.order ADD CONSTRAINT `order_next_fk` FOREIGN KEY (`next_order_id_fk`) REFERENCES `kekko`.`order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ";
-                    con.query(alter_table_order_next_order_id_fk, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        }
-                        callback();
-                        console.log('FK created on Order table with next order id and id column');
                     });
                 },
                 function (callback) {

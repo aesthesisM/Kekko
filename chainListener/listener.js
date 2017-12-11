@@ -7,7 +7,7 @@ const WebSocket = require('ws');
 var reconnectInterval = 1000 * 5; //5seconds
 var ws;
 
-var connect = function (obj, callback) {
+var connect = function (kill) {
 
     var obj = {
         "method": "getCurrency",
@@ -39,17 +39,23 @@ var connect = function (obj, callback) {
 
     ws.on('message', function incoming(data) {
         callback(null, data);
-        ws.close();
     });
 };
 
-connect(null, console.log);
+//connect(false);
 
+function startHitbtcStalk() {
+
+}
+
+var activeChains = null;
+var activeOrders = null;
 
 module.exports = {
     run: function () {
-        var activeChains = new Array();
-        var activeOrders = new Array();
+        activeChains = new Array();
+        activeOrders = new Array();
+
         async.series(
             [
                 function () {
@@ -68,9 +74,7 @@ module.exports = {
                     //for every chain listen the orders state and if its done , update the order and make the new order request. update that request with new clientOrderId
                     //if all orders is done in chain than make it passive to not to run again
                     for (var i = 0; i < activeChains.length; i++) {
-                        var activeOrders = null;
-
-                        activeOrders = db.hitbtc_db_getChainOrders(activeChains[i], function (data, err) {
+                        db.hitbtc_db_getChainOrders(activeChains[i], function (data, err) {
                             if (err) {
                                 callback(err);
                             } else {
@@ -82,9 +86,15 @@ module.exports = {
                 }
             ],
             function (err) {
-
+                if (err) {
+                    console.error(err);
+                } else {
+                    startHitbtcStalk();
+                }
             }
         );
-
+        //db work done.
+        //now lets go for hitbtc api and check our order states
+        //
     }
 }
