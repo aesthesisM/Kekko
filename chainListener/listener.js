@@ -1,9 +1,11 @@
 var async = require('async');
 var db = require('../dao/order/hitbtc');
-var HitBTC = require('../api/hitbtc/hitbtc');
+var HitBTC = require('../api/socket/hitbtc');
 var api = new HitBTC('', '');
 
 const WebSocket = require('ws');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 
 var reconnectInterval = 1000 * 10; //10 seconds
 ws = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
@@ -13,6 +15,7 @@ ws = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
 
 
 var connect = function (obj, callback) {
+    
     ws.send(JSON.stringify(obj));
     ws.on('open', function open() {
         console.log('connected');
@@ -31,6 +34,7 @@ var connect = function (obj, callback) {
 
     ws.on('message', function incoming(data) {
         callback(null, data);
+        eventEmitter.removeListener('message',this);
     });
 };
 
@@ -44,14 +48,14 @@ var obj = {
 };
 
 
-/*
+
 connect(obj, console.log);
 setTimeout(function () {
     if (socketInitialized) {
         ws.send(JSON.stringify(obj2));
     }
 }, 3000);
-*/
+
 api.activeOrders(console.log);
 
 

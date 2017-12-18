@@ -23,9 +23,9 @@ var router_poloniex = require('./routers/kekko/order/poloniex');
  );
  // setup the logger
  app.use(morgan('combined', {stream: accessLogStream}));
- 
+ */
 app.use(logger('dev'));
-*/
+
 //// view engine setup
 app.engine('html', handleBars({
     extname: 'html',

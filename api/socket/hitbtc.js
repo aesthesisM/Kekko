@@ -4,9 +4,67 @@ var queryString = require('querystring');
 var async = require('async');
 var WebSocket = require('ws');
 
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+
 ws = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
     handshakeTimeout: 12000
 });
+
+var ws2 = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
+    handshakeTimeout: 12000
+});
+
+var ws3 = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
+    handshakeTimeout: 12000
+});
+
+
+
+var wsOrderListener = function (obj, callback) {
+    ws3.send(JSON.stringify(obj));
+    ws3.on('open', function () {
+        console.log('Websocket opened');
+    });
+
+    ws3.on('error', function (err) {
+        callback(err);
+        console.error(err);
+    });
+
+    ws3.on('close', function () {
+        console.log('Websocket closed');
+    });
+
+    ws3.on('message', function (data) {
+        callback(null, data);
+    });
+}
+
+var wsOrderManager = function (obj, callback) {
+    ws2.send(JSON.stringify(obj));
+    ws2.on('open', function () {
+        console.log('Websocket opened');
+    });
+
+    ws2.on('error', function (err) {
+        callback(err);
+        console.error(err);
+    });
+
+    ws2.on('close', function () {
+        console.log('Websocket closed');
+    });
+
+    ws2.on('message', function (data) {
+        callback(null, data);
+    });
+}
+
+
+
+
 
 var wsHitBTC = function (obj, callback) {
     ws.send(JSON.stringify(obj));
@@ -25,7 +83,10 @@ var wsHitBTC = function (obj, callback) {
 
     ws.on('message', function (data) {
         callback(null, data);
-    })
+        //eventEmitter.removeListener('message',this);
+    });
+
+    
 }
 
 function HitBTCClient(APIKey, APISecret) {
@@ -62,17 +123,19 @@ HitBTCClient.prototype._activeOrders = function (callback) {
     return activeOrdersObj;
 }
 
-var a = new HitBTCClient('f6162add43cb90c6750b111feeed0010', '');
+var a = new HitBTCClient('f6162add43cb90c6750b111feeed0010', 'de7bf2ff1889ab9edd9cfad906fda42b');
 
 setTimeout(function () {
     //1 authenticate
     var authObj = a._authorize();
-    wsHitBTC(authObj, console.log);
-    //2 listening active orders
-    var orderObj = a._activeOrders();
-    //wsHitBTC(orderObj, console.log);
-
-    ws.send(JSON.stringify(orderObj));
-
+    //wsHitBTC(authObj, console.log);
+    wsOrderListener(authObj, console.log);
+    //wsOrderManager(authObj, console.log);
+    wsOrderListener(authObj, function (err, data) {
+        console.log("BAMBAM");
+    })
+    /*wsOrderListener(a._activeOrders(), function (err, data) {
+        //console.error(data);
+    })*/
 
 }, 3000);
