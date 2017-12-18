@@ -92,7 +92,7 @@ wsOrderListener.prototype._authorize = function (data) {
     this.ws.send(JSON.stringify(data));
 }
 
-wsOrderListener.prototype._listenOrders = function (listen) {
+wsOrderListener.prototype._listen = function (listen) {
     //order status = new, suspended, partiallyFilled, filled, canceled, expired
     var obj = {
         "method": "subscribeReports",
@@ -121,7 +121,7 @@ function HitBTCClient(APIKey, APISecret) {
 HitBTCClient.HOSTS = {
     live: 'api.hitbtc.com',
     sandbox: 'demo-api.hitbtc.com'
-}; 
+};
 
 HitBTCClient.prototype._authorize = function (callback) {
     var authObj = {};
@@ -137,12 +137,12 @@ HitBTCClient.prototype._authorize = function (callback) {
 }
 
 setTimeout(function () {
-    
+
     hitBTCClient = new HitBTCClient('', '');
     //1 authenticate
     var authObj = hitBTCClient._authorize();
 
-    orderListener._authorize(authObj);
+    //orderListener._authorize(authObj);
     pairListener._authorize(authObj);
 
     pairListener._listen("EOSUSD", true);
@@ -151,7 +151,7 @@ setTimeout(function () {
     setTimeout(function () {
         pairListener._listen("EOSUSD", false);
         pairListener._listen("XRPUSDT", false);
-
+        //orderListener._listen(false);
     }, 5000);
 
 }, 6000);
