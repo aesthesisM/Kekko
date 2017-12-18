@@ -5,16 +5,17 @@ var async = require('async');
 var WebSocket = require('ws');
 
 var hitBTCClient;
-
+var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(console.log);
 var pairListener = new wsPairListener(console.log);
 
 //Socket Pair Listener
 function wsPairListener(callback) {
-    var ws;
-    ws = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
-        handshakeTimeout: 12000
+    var ws = null;
+    ws = new WebSocket(hitBTCSocketUrl, null, {
+        handshakeTimeout: 5500
     });
+
     ws.on('open', function () {
         console.log('WSOrderListener Websocket opened');
     });
@@ -63,8 +64,8 @@ wsPairListener.prototype._close = function () {
 
 //Socket Order Listener
 function wsOrderListener(callback) {
-    var ws = new WebSocket('wss://api.hitbtc.com/api/2/ws', null, {
-        handshakeTimeout: 12000
+    var ws = new WebSocket(hitBTCSocketUrl, null, {
+        handshakeTimeout: 5500
     });
 
     ws.on('open', function () {
@@ -83,7 +84,7 @@ function wsOrderListener(callback) {
     ws.on('message', function (data) {
         callback(null, data);
     });
-    
+
     this.ws = ws;
 }
 
@@ -120,7 +121,7 @@ function HitBTCClient(APIKey, APISecret) {
 HitBTCClient.HOSTS = {
     live: 'api.hitbtc.com',
     sandbox: 'demo-api.hitbtc.com'
-}; "111"
+}; 
 
 HitBTCClient.prototype._authorize = function (callback) {
     var authObj = {};
@@ -136,6 +137,7 @@ HitBTCClient.prototype._authorize = function (callback) {
 }
 
 setTimeout(function () {
+    
     hitBTCClient = new HitBTCClient('f6162add43cb90c6750b111feeed0010', 'de7bf2ff1889ab9edd9cfad906fda42b');
     //1 authenticate
     var authObj = hitBTCClient._authorize();
@@ -145,16 +147,11 @@ setTimeout(function () {
 
     pairListener._listen("EOSUSD", true);
     pairListener._listen("XRPUSDT", true);
-    orderListener._listenOrders(true);
+
     setTimeout(function () {
         pairListener._listen("EOSUSD", false);
         pairListener._listen("XRPUSDT", false);
-        orderListener._listenOrders(false);
+
     }, 5000);
 
-}, 3000);
-
-exports = wsOrderListener;
-exports = wsPairListener;
-
-
+}, 6000);
