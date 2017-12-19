@@ -118,10 +118,6 @@ function HitBTCClient(APIKey, APISecret) {
     this.AuthorizationType = 'BASIC';
 };
 
-HitBTCClient.HOSTS = {
-    live: 'api.hitbtc.com',
-    sandbox: 'demo-api.hitbtc.com'
-};
 
 HitBTCClient.prototype._authorize = function (callback) {
     var authObj = {};
@@ -137,7 +133,12 @@ HitBTCClient.prototype._authorize = function (callback) {
 }
 
 var pairCount = 0;
+var sellOrdersWithStoppLoss = new Array();
+
 function pairManager(err,socketData){
+    //this will listen orders which have stop loss
+    //we must save active sell orders in redis or in here with clientOrderId;
+    
     if(err){
         console.error(err);
     }else{
