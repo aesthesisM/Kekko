@@ -6,8 +6,8 @@ var WebSocket = require('ws');
 
 var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
-var orderListener = new wsOrderListener(console.log);
-var pairListener = new wsPairListener(console.log);
+var orderListener = new wsOrderListener(orderManager);
+var pairListener = new wsPairListener(pairManager);
 
 //Socket Pair Listener
 function wsPairListener(callback) {
@@ -136,9 +136,25 @@ HitBTCClient.prototype._authorize = function (callback) {
     return authObj;
 }
 
+var pairCount = 0;
+function pairManager(err,socketData){
+    if(err){
+        console.error(err);
+    }else{
+        console.log((++pairCount)+" - "+socketData);
+    }
+}
+
+function orderManager(err,socketData){
+    if(err){
+        console.error(err);
+    }else{
+    console.log(socketData);
+    }
+}
 setTimeout(function () {
 
-    hitBTCClient = new HitBTCClient('', '');
+    hitBTCClient = new HitBTCClient('ca50230befd43870f2510003414e4e67', 'bc4abead178830dd4fa02eec8735263e');
     //1 authenticate
     var authObj = hitBTCClient._authorize();
 
@@ -155,3 +171,4 @@ setTimeout(function () {
     }, 5000);
 
 }, 6000);
+
