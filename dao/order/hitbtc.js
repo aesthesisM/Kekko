@@ -2,6 +2,7 @@
  * Created by khobsyzl28 on 11/26/2017.
  */
 var db = require('../../config/database/mysql');
+var async = require('async');
 
 module.exports = {
 
@@ -60,6 +61,24 @@ module.exports = {
             })
     },
     hitbtc_db_addOrder: function (orderObj, chainId, callback) {
+        
+        /*
+        check db if chain is active then dont allow to add order that chain
+        */
+        /*
+        async.series(
+            [
+                function (callbackInner) {
+                    db.executeSQL("SELECT * FROM kekko.chain WHERE id = ? and active=0")
+                },
+                function (callbackInner) {
+
+                }
+            ], function (err) {
+
+            });
+            */
+            
         db.executeSQL("INSERT INTO kekko.order (pair,buysell,amount,price,total_price,order_,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price,) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
             [orderObj.pair, orderObj.buysell, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.order_), new Date(orderObj.order_created_time), parseInt(chain_id_fk), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price)],
             function (data, err) {

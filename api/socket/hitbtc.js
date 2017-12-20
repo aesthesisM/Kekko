@@ -156,7 +156,7 @@ function _has(object, key) {
 function tryParseInt(str) {
     var result = -1;
     if (str !== null) {
-        if (str.length > 0 && str.length < 11) {
+        if (str.length > 0 && str.length < 32) { // hitbtc generated clientOrderId example e9cae3fd9c8f4bbd9373d3e49dacafea, length = 32
             if (!isNaN(str)) {
                 result = parseInt(str);
             }
@@ -167,11 +167,15 @@ function tryParseInt(str) {
 
 function orderManager(err, socketData) {
     socketData = JSON.parse(socketData);
+
     if (err) { //socket error
         console.error(err);
     } else if (_has(socketData, 'error')) {//socket api order error
         console.error(socketData.error.message + "," + socketData.error.description);
+    } else if (_has(socketData, 'method') && socketData.method == 'activeOrders') {
+        console.log("site awakening orders : " + JSON.stringify(socketData));
     } else if (_has(socketData, 'method') && socketData.method == 'report') {//check order status if the socketData is about orders
+
         if (socketData.params.status == 'filled') { //order has completed with success
             //then lets check if there is a waiting orther for this chain
             //clientOrderid is the id of our order so if its a integer and if it exist in db then its Kekko's order. if itsnot then keep it on siteOrder list.
@@ -231,26 +235,23 @@ function orderManager(err, socketData) {
                 );
 
                 //check if order successfully placed
-
                 if (success && nextOrder != null && Object.keys(nextOrder).length > 0) {
-                    orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell);
+                    //orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell);
                     console.log("next Order :" + JSON.stringify(nextOrder) + " has been successfully placed");
                 } else {
                     console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
-            } else {// site order
+            } else {// site order filled
                 //forget about it right now...
+                console.log("site order has been filled successfully" + JSON.stringify(socketData));
             }
-
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain
             console.log('cancelled order :' + JSON.stringify(socketData));
         } else if (socketData.params.status == 'new') { // no need to listen this event. just in case 
-            //console.log('newOrder :' + JSON.stringify(socketData));
+            console.log('newOrder :' + JSON.stringify(socketData));
         }
     } else if (_has(socketData, 'result')) {//result attribute used to check if new order has been successfully defined
 
-    } else if (_has(socketData, 'method') && socketData.method == 'activeReports') {//at first hitbtc sends all defined orders and send it with activeReports method
-        //we will use this method to determine which order made on hitbtc site and which order made by Kekko.
     }
 }
 
