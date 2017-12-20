@@ -114,7 +114,6 @@ module.exports = {
                         "`success` smallint(2) DEFAULT '0'," +
                         "`order_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
                         "`order_success_time` timestamp NULL DEFAULT NULL," +
-                        "`api_site_order_id` bigint(20) DEFAULT NULL," +
                         "`chain_id_fk` int(11) DEFAULT NULL," +
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
                         "`stop_loss` tinyint(1) DEFAULT NULL," +
