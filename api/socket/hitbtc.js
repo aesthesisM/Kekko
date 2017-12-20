@@ -154,7 +154,7 @@ function orderManager(err,socketData){
 }
 setTimeout(function () {
 
-    hitBTCClient = new HitBTCClient('ca50230befd43870f2510003414e4e67', 'bc4abead178830dd4fa02eec8735263e');
+    hitBTCClient = new HitBTCClient('ca50230befd43870f2510003414e4e67', '');
     //1 authenticate
     var authObj = hitBTCClient._authorize();
 
