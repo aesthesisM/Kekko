@@ -34,9 +34,11 @@ function wsPairListener(callback) {
     });
 
     this.ws = ws;
+
 }
 
 wsPairListener.prototype._listen = function (pair, listening) {
+
     var obj = {
         "method": "subscribeTicker",
         "params": {
@@ -65,12 +67,13 @@ wsPairListener.prototype._close = function () {
 
 //Socket Order Listener
 function wsOrderListener(callback) {
+
     var ws = new WebSocket(hitBTCSocketUrl, null, {
         handshakeTimeout: 5500
     });
 
     ws.on('open', function () {
-        console.log('wsOrderListener connected');
+        console.log('wsOrderListener Websocket connected');
     });
 
     ws.on('close', function () {
@@ -99,31 +102,44 @@ wsOrderListener.prototype._listen = function () {
         "method": "subscribeReports",
         "params": {}
     }
+
     this.ws.send(JSON.stringify(obj));
+
+}
+wsOrderListener.prototype._placeOrder = function (clientOrderId, pair, price, amount, buysell) {
+    var obj = {
+        "method": "newOrder",
+        "params": {
+            "clientOrderId": clientOrderId,
+            "symbol": pair,
+            "side": buysell,
+            "price": price,
+            "quantity": amount
+        }
+    };
+
+    this.ws.send(JSON.stringify(obj));
+
 }
 
 wsOrderListener.prototype._close = function () {
     this.ws.close();
 }
 
-function HitBTCClient(APIKey, APISecret) {
-    this.APIKey = APIKey;
-    this.APISecret = APISecret;
-    this.APIVersion = '2';
-};
+function HitBTCAuth(APIKey, APISecret) {
 
-HitBTCClient.prototype._authorize = function (callback) {
     var authObj = {};
-
     authObj.method = "login";
     authObj.params = {};
     authObj.params.algo = "HS256";
-    authObj.params.pKey = this.APIKey;
+    authObj.params.pKey = APIKey;
     authObj.params.nonce = Date.now().toString();
-    authObj.params.signature = crypto.createHmac('sha256', this.APISecret).update(authObj.params.nonce, "utf8").digest('hex');
+    authObj.params.signature = crypto.createHmac('sha256', APISecret).update(authObj.params.nonce, "utf8").digest('hex');
 
-    return authObj;
-}
+    this.auth = authObj;
+
+};
+
 
 var pairCount = 0;
 function pairManager(err, socketData) {
@@ -136,6 +152,17 @@ function pairManager(err, socketData) {
 function _has(object, key) {
     return object ? hasOwnProperty.call(object, key) : false;
 }
+function tryParseInt(str) {
+    var result = -1;
+    if (str !== null) {
+        if (str.length > 0) {
+            if (!isNaN(str)) {
+                result = parseInt(str);
+            }
+        }
+    }
+    return result;
+}
 function orderManager(err, socketData) {
     socketData = JSON.parse(socketData);
     if (err) { //socket error
@@ -145,13 +172,80 @@ function orderManager(err, socketData) {
     } else if (_has(socketData, 'method') && socketData.method == 'report') {//check order status if the socketData is about orders
         if (socketData.params.status == 'filled') { //order has completed with success
             //then lets check if there is a waiting orther for this chain
-            //first get this filled orders id,
-            //second get this orders chain id,
-            //thirth and last, find next order id if it exist then make a order request else close the chain
+            //clientOrderid is the id of our order so if its a integer and if it exist in db then its Kekko's order. if itsnot then keep it on siteOrder list.
+            var orderId = null;
+            var chainId = null;
+            var nextOrder = null;
+            var success = false;
+
+            orderId = tryParseInt(socketData.params.clientOrderId);
+            if (orderId > 0) { //Kekko order
+                //first finish order in db.
+                async.series(
+                    [
+                        function (callback) {
+                            orderDao.hitbtc_db_updateOrder(orderId, 1, function (data, err) { //1 = success 0 = fail
+                                if (err) {
+                                    console.error(err);
+                                    callback(err);
+                                } else {
+                                    callback();
+                                }
+                            });
+                        },
+                        //second get order and find which chain its in
+                        function (callback) {
+                            orderDao.hitbtc_db_getOrder(id, function (data, err) {
+                                if (err) {
+                                    console.error(err);
+                                    callback(err);
+                                } else {
+                                    if (Object.keys(data).length > 0) {
+                                        chainId = data.chain_id_fk;
+                                        callback();
+                                    }
+                                }
+                            });
+                        },
+                        function (callback) {
+                            orderDao.hitbtc_db_getChainNextOrder(orderId, chainId, function (data, err) {
+                                if (err) {
+                                    console.error(err);
+                                    callback(err);
+                                } else {
+                                    nextOrder = data;
+                                    callback();
+                                }
+                            })
+                        }
+                    ],
+                    function (err) {
+                        if (err) {
+                            success = false;
+                        } else {
+                            success = true;
+                        }
+                    }
+                );
+
+                //check if order successfully placed
+
+                if (success) {
+                    orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell);
+                    console.log("next Order :" + JSON.stringify(nextOrder) + " has been successfully placed");
+                } else {
+                    console.error("next Order :" + JSON.stringify(nextOrder) + " hasnot placed. Error occured");
+                }
+
+
+            } else {// site order
+
+            }
+
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain
             console.log('cancelled order :' + JSON.stringify(socketData));
-        } else if (socketData.params.status == 'new') {
-            console.log('newOrder :' + JSON.stringify(socketData));
+        } else if (socketData.params.status == 'new') { // no need to listen this event. just in case 
+            //console.log('newOrder :' + JSON.stringify(socketData));
         }
     } else if (_has(socketData, 'result')) {//result attribute used to check if new order has been successfully defined
 
@@ -163,11 +257,9 @@ function orderManager(err, socketData) {
 
 setTimeout(function () {
 
-    hitBTCClient = new HitBTCClient('ca50230befd43870f2510003414e4e67', '');
+    hitBTCClient = new HitBTCAuth('ca50230befd43870f2510003414e4e67', '');
     //1 authenticate
-    var authObj = hitBTCClient._authorize();
-
-    orderListener._authorize(authObj);
+    orderListener._authorize(hitBTCClient.auth);
     //pairListener._authorize(authObj);
 
     //pairListener._listen("EOSUSD", true);
