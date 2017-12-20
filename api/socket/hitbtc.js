@@ -44,7 +44,7 @@ wsPairListener.prototype._listen = function (pair, listening) {
         "params": {
             "symbol": pair
         },
-        "id": "Kekko"
+        "id": "Kekko BamBam"
     }
     if (!listening) {
         obj.method = "unsubscribeTicker";
@@ -115,7 +115,8 @@ wsOrderListener.prototype._placeOrder = function (clientOrderId, pair, price, am
             "side": buysell,
             "price": price,
             "quantity": amount
-        }
+        },
+        "id": "Kekko BamBam"
     };
 
     this.ws.send(JSON.stringify(obj));
@@ -155,7 +156,7 @@ function _has(object, key) {
 function tryParseInt(str) {
     var result = -1;
     if (str !== null) {
-        if (str.length > 0) {
+        if (str.length > 0 && str.length < 11) {
             if (!isNaN(str)) {
                 result = parseInt(str);
             }
@@ -163,6 +164,7 @@ function tryParseInt(str) {
     }
     return result;
 }
+
 function orderManager(err, socketData) {
     socketData = JSON.parse(socketData);
     if (err) { //socket error
@@ -186,7 +188,6 @@ function orderManager(err, socketData) {
                         function (callback) {
                             orderDao.hitbtc_db_updateOrder(orderId, 1, function (data, err) { //1 = success 0 = fail
                                 if (err) {
-                                    console.error(err);
                                     callback(err);
                                 } else {
                                     callback();
@@ -197,12 +198,13 @@ function orderManager(err, socketData) {
                         function (callback) {
                             orderDao.hitbtc_db_getOrder(id, function (data, err) {
                                 if (err) {
-                                    console.error(err);
                                     callback(err);
                                 } else {
                                     if (Object.keys(data).length > 0) {
                                         chainId = data.chain_id_fk;
                                         callback();
+                                    } else {
+                                        callback(null);
                                     }
                                 }
                             });
@@ -210,7 +212,6 @@ function orderManager(err, socketData) {
                         function (callback) {
                             orderDao.hitbtc_db_getChainNextOrder(orderId, chainId, function (data, err) {
                                 if (err) {
-                                    console.error(err);
                                     callback(err);
                                 } else {
                                     nextOrder = data;
@@ -222,6 +223,7 @@ function orderManager(err, socketData) {
                     function (err) {
                         if (err) {
                             success = false;
+                            console.error(err);
                         } else {
                             success = true;
                         }
@@ -230,16 +232,14 @@ function orderManager(err, socketData) {
 
                 //check if order successfully placed
 
-                if (success) {
+                if (success && nextOrder != null && Object.keys(nextOrder).length > 0) {
                     orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell);
                     console.log("next Order :" + JSON.stringify(nextOrder) + " has been successfully placed");
                 } else {
-                    console.error("next Order :" + JSON.stringify(nextOrder) + " hasnot placed. Error occured");
+                    console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
-
-
             } else {// site order
-
+                //forget about it right now...
             }
 
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain
