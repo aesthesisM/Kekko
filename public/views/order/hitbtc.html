@@ -1,1 +1,114 @@
-cccc
+<div class="row">
+    <div class="col-md-6">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <input type="text" ng-model="hitbtcCtrl.addChainModel.name" />
+            </div>
+        </div>
+        <div class="col-sm-12 text-right">
+            <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addChain()">Save</button>
+            <button type="button" class="btn btn-danger" ng-click="hitbtcCtrl.clearChain()">Clear</button>
+        </div>
+        <div class="col-sm-12">
+            <div class="text-right"><button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChains()"></button></div>
+            <div class="box box-solid" ng-repeat="item in hitbtcCtrl.chains">
+                <div class="box-header ui-sortable-handle" style="cursor: move;">
+                    <i class="fa fa-envelope"></i>
+                    <h3 class="box-title">{{item.name}}</h3>
+                    <div class="pull-right box-tools">
+                        <button type="button" class="btn btn-danger btn-sm" data-original-title="Remove" ng-click="hitbtcCtrl.removeChain(item)">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getOrders()">Refresh Orders</button>
+            <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.showAddOrderModal()">Add Order</button>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-responsive table-bordered">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>from</th>
+                        <th>to</th>
+                        <th>amount</th>
+                        <th>success</th>
+                        <th>*</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in hitbtcCtrl.orders">
+                        <td>{{item.id}}</td>
+                        <td>{{item.from}}</td>
+                        <td>{{item.to}}</td>
+                        <td>{{item.amount}}</td>
+                        <td>{{item.success}}</td>
+                        <td>
+                            <button type="button" class="btn-danger btn" ng-click="hitbtcCtrl.removeOrder(item)"><i class="fa fa-remove"></i></button>
+                            <button type="button" class="btn-primary btn" ng-click="hitbtcCtrl.updateOrder(item)"><i class="fa fa-edit"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-primary fade" id="modal-addOrder">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Save order</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">From</label>
+                            <div class="col-sm-8">
+                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.from" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">To</label>
+                            <div class="col-sm-8">
+                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.to" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Amount</label>
+                            <div class="col-sm-8">
+                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.amount" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Price</label>
+                            <div class="col-sm-8">
+                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.price" />
+                            </div>
+                        </div>
+                        <div class="form-group">                            
+                            <div class="col-sm-12 text-right">
+                                <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()"><i class="fa fa-save"></i> &nbsp; Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
