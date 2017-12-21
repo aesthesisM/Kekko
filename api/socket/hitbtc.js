@@ -255,7 +255,6 @@ function orderManager(err, socketData) {
     }
 }
 
-
 setTimeout(function () {
 
     hitBTCClient = new HitBTCAuth('ca50230befd43870f2510003414e4e67', '');
@@ -273,6 +272,4 @@ setTimeout(function () {
         pairListener._close();
         //orderListener._close();
     }, 5000);
-
 }, 6000);
-
