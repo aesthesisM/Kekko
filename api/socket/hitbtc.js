@@ -9,6 +9,39 @@ var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(orderManager);
 var pairListener = new wsPairListener(pairManager);
+var walletListener = null;
+
+//Socket Wallet Listener
+function wsWalletListener(callback) {
+    var ws = null;
+    ws = new WebSocket(hitBTCSocketUrl, null, {
+        handshakeTimeout: 5500
+    });
+
+    ws.on('open', function () {
+        console.log('WSWalletListener Websocket opened');
+    });
+    ws.on('close', function () {
+        console.log('WSWalletListener Websocket closed');
+    });
+
+    ws.on('error', function (err) {
+        callback(err);
+        console.error("WSWalletListener error :" + err);
+    });
+
+    ws.on('message', function (data) {
+        callback(null, data);
+    });
+
+    this.ws = ws;
+}
+
+wsWalletListener.prototype._authorize = function (data) {
+    ws.send(JSON.stringify(data));
+}
+
+
 
 //Socket Pair Listener
 function wsPairListener(callback) {
@@ -269,7 +302,7 @@ setTimeout(function () {
     setTimeout(function () {
         //pairListener._listen("EOSUSD", false);
         //pairListener._listen("XRPUSDT", false);
-        pairListener._close();
+        //pairListener._close();
         //orderListener._close();
     }, 5000);
 }, 6000);
