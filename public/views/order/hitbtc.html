@@ -1,16 +1,16 @@
 <div class="row">
     <div class="col-md-6">
-        <div class="col-sm-12">
-            <div class="form-group">
-                <input type="text" ng-model="hitbtcCtrl.addChainModel.name" />
-            </div>
+        <div class="form-group">
+                <input type="text" class="form-control" ng-model="hitbtcCtrl.addChainModel.name" />
         </div>
-        <div class="col-sm-12 text-right">
+        <div class="form-group text-right">
             <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addChain()">Save</button>
             <button type="button" class="btn btn-danger" ng-click="hitbtcCtrl.clearChain()">Clear</button>
         </div>
         <div class="col-sm-12">
-            <div class="text-right"><button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChains()"></button></div>
+            <div class="form-group">
+                <div class="text-right"><button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChains()">Get Chains</button></div>
+            </div>
             <div class="box box-solid" ng-repeat="item in hitbtcCtrl.chains">
                 <div class="box-header ui-sortable-handle" style="cursor: move;">
                     <i class="fa fa-envelope"></i>
@@ -44,8 +44,7 @@
                 <tbody>
                     <tr ng-repeat="item in hitbtcCtrl.orders">
                         <td>{{item.id}}</td>
-                        <td>{{item.from}}</td>
-                        <td>{{item.to}}</td>
+                        <td>{{item.pair}}</td>
                         <td>{{item.amount}}</td>
                         <td>{{item.success}}</td>
                         <td>
@@ -59,7 +58,7 @@
     </div>
 </div>
 
-<div class="modal modal-primary fade" id="modal-addOrder">
+<div class="modal fade" id="modal-addOrder">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,30 +71,39 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <label class="control-label col-sm-4">From</label>
+                            <label class="control-label col-sm-4">Pair</label>
                             <div class="col-sm-8">
-                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.from" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">To</label>
-                            <div class="col-sm-8">
-                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.to" />
+                                <ui-select ng-model="hitbtcCtrl.addOrderModel.pair" theme="bootstrap">
+                                    <ui-select-match placeholder="Select or search a pair in the list...">{{$select.selected.symbol}}</ui-select-match>
+                                    <ui-select-choices repeat="item in hitbtcCtrl.pairs | filter: $select.search">
+                                        <div ng-bind-html="item.symbol | highlight: $select.search"></div>
+                                        <small ng-bind-html="item.last"></small>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-sm-4">Amount</label>
                             <div class="col-sm-8">
-                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.amount" />
+                                <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.amount" placeholder="Amount" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-sm-4">Price</label>
                             <div class="col-sm-8">
-                                <input type="text" ng-model="hitbtcCtrl.addOrderModel.price" />
+                                <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.price" placeholder="Price" />
                             </div>
                         </div>
-                        <div class="form-group">                            
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Type</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" ng-model="hitbtcCtrl.addOrderModel.buysell">
+                                    <option value="buy">Buy</option>
+                                    <option value="sell">Sell</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <div class="col-sm-12 text-right">
                                 <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()"><i class="fa fa-save"></i> &nbsp; Save</button>
                             </div>
@@ -105,7 +113,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline">Save changes</button>
+                <button type="button" class="btn btn-outline" ng-click="hitbtcCtrl.addOrder()">Save changes</button>
             </div>
         </div>
         <!-- /.modal-content -->

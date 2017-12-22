@@ -1,4 +1,4 @@
-﻿var kekkoApp = angular.module('kekkoApp', ['ngRoute']);
+﻿var kekkoApp = angular.module('kekkoApp', ['ngSanitize', 'ngRoute', 'ui.select']);
 kekkoApp.factory('Page', function () {
     var title = 'Dashboard';
     return {

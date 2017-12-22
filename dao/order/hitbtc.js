@@ -9,7 +9,7 @@ module.exports = {
     //db calls
     //api_id_fk = 1 hitbtc
     hitbtc_db_getChains: function (params, callback) {
-        db.executeSQL("SELECT * FROM kekko.chain WHERE api_id_fk=1 and active=1 order by id desc limit ?,? ", [params.take, params.skip], function (data, err) {
+        db.executeSQL("SELECT * FROM kekko.chain WHERE api_id_fk=1 and active=1 order by id desc limit ?,? ", [params.start, params.take], function (data, err) {
             if (err) {
                 console.error(err);
                 callback(null, err);
@@ -19,7 +19,7 @@ module.exports = {
         });
     },
     hitbtc_db_addChain: function (chainObj, callback) {
-        db.executeSQL("INSERT INTO kekko.chain(name,api_id_fk) VALUES (?,1)", [chainObj.order_chain_name], function (data, err) {
+        db.executeSQL("INSERT INTO kekko.chain(name,api_id_fk) VALUES (?,1)", [chainObj.name], function (data, err) {
             if (err) {
                 console.error(err);
                 callback(null, err);
@@ -48,9 +48,9 @@ module.exports = {
             }
         });
     },
-    hitbtc_db_getChainNextOrder: function (orderId, chainId, callback) {
-        db.executeSQL("SELECT * FROM kekko.order WHERE  active=1 and success=0 and id > ? and chain_id_fk = ? order by order_ asc limit 1 ",
-            [orderId, parseInt(chainId)],
+    hitbtc_db_getChainNextOrder: function (chainId, callback) {
+        db.executeSQL("SELECT * FROM kekko.order WHERE  active=1 and success=0  and chain_id_fk = ? order by order_ asc limit 1 ",
+            [parseInt(chainId)],
             function (data, err) {
                 if (err) {
                     console.error(err);
@@ -117,7 +117,7 @@ module.exports = {
     hitbtc_db_completeOrder: function (orderId, result, callback) {
         var order_success_time = null;
         if (result > 0) {
-            order_success_time = new Date().toLocaleTimeString;
+            order_success_time = new Date().getTime();
         }
 
         db.executeSQL("UPDATE kekko.order SET success= ?,order_success_time=? where id = ?",

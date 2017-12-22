@@ -214,7 +214,7 @@ function orderManager(err, socketData) {
                             });
                         },
                         function (callback) {
-                            orderDao.hitbtc_db_getChainNextOrder(orderId, chainId, function (data, err) {
+                            orderDao.hitbtc_db_getChainNextOrder(chainId, function (data, err) {
                                 if (err) {
                                     callback(err);
                                 } else {
