@@ -105,8 +105,8 @@ module.exports = {
                     var create_table_order_sql = "USE kekko;" +
                         "CREATE TABLE kekko.order (" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT," +
-                        "`from` varchar(10) NOT NULL," +
-                        "`to` varchar(10) NOT NULL," +
+                        "`pair` varchar(15) NOT NULL," +
+                        "`buysell` varchar(4) NOT NULL," +
                         "`amount` float NOT NULL," +
                         "`price` float NOT NULL," +
                         "`total_price` float NOT NULL," +
@@ -114,7 +114,6 @@ module.exports = {
                         "`success` smallint(2) DEFAULT '0'," +
                         "`order_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
                         "`order_success_time` timestamp NULL DEFAULT NULL," +
-                        "`api_site_order_id` bigint(20) DEFAULT NULL," +
                         "`chain_id_fk` int(11) DEFAULT NULL," +
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
                         "`stop_loss` tinyint(1) DEFAULT NULL," +
@@ -131,7 +130,8 @@ module.exports = {
                     });
                 },
                 function (callback) {
-                    var api_insert_sql = "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
+                    var api_insert_sql = 
+                        "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
                         "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('poloniex',null,null);" +
                         "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('bittrex',null,null);";
 

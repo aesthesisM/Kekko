@@ -48,7 +48,7 @@ app.get('/logout', function (req, res) {
         } else {
             res.redirect('/');
         }
-    })
+    });
 });
 
 app.listen(3000, function () {
