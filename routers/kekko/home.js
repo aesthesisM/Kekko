@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var HitBTC = require('../../api/hitbtc/hitbtc');
+var HitBTC = require('../../api/rest/hitbtc/hitbtc');
 var async = require('async');
 router.get('/', function (req, res, next) {
     console.log('home get request has come to here');
-    var client = new HitBTC('f39356b5f3bd407da77c042d55625dd7', '58f9d3ece954f73067485b11a5d5602a', 'live');
+    var client = new HitBTC('', '');
 
     var list = null;
 
