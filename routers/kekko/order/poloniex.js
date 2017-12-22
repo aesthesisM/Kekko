@@ -1,5 +1,5 @@
 var express = require('express');
-var poloniex = require('../../../api/poloniex/poloniex');
+var poloniex = require('../../../api/rest/poloniex/poloniex');
 var router = express.Router();
 
 router.get('/', function (req, res, next) {
