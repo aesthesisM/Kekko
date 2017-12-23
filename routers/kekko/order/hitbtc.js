@@ -5,6 +5,9 @@ var HitBTC = require('../../../api/rest/hitbtc/hitbtc');
 var responseObject = require('../../../util/response').response;
 var async = require('async');
 //localhost:50000/hitbtc/chains
+//sql's will be changed with chains
+//active = deleted
+//status = 0 removed, 1 = waiting, 2 running , 3success
 router.get('/chains', function (req, res, next) {
 
     var start = parseInt(req.query.start);
@@ -36,7 +39,7 @@ router.post('/chains/add', function (req, res, next) {
             responseObject.result = -1;
             res.send({ respObj: responseObject });
         } else {
-            responseObject.data = null;
+            responseObject.data = data.insertId;
             responseObject.message = 'successful';
             responseObject.result = 1;
             res.send({ respObj: responseObject });
@@ -89,7 +92,7 @@ router.post('/chains/:chainId/addOrder', function (req, res, next) {
             responseObject.result = -1;
             res.send({ respObj: responseObject });
         } else {
-            responseObject.data = data;
+            responseObject.data = data.insertId;
             responseObject.message = 'successful';
             responseObject.result = 1;
             res.send({ respObj: responseObject });
