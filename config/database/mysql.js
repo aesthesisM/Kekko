@@ -2,10 +2,10 @@ var mysql = require('mysql');
 var async = require('async');
 var dbConf = {
     //vmware win7 mysql ip 172.16.166.128
-    host: 'localhost',
+    host: '172.16.166.128',
     user: 'root',
-    password: '', //vmware win7 mysql root password 11231123
-    port: '3307',
+    password: '11231123', //vmware win7 mysql root password 11231123
+    port: '3306',
     multipleStatements: true,
     acquireTimeout: 900000 //15 min
 };
@@ -41,9 +41,10 @@ module.exports = {
                     con.query(create_db_sql, function (err, result) {
                         if (err) {
                             callback(err);
+                        } else {
+                            console.log('Database KEKKO initialized successfully');
+                            callback();
                         }
-                        console.log('Database KEKKO initialized successfully');
-                        callback();
                     });
                 },
                 function (callback) {
@@ -53,13 +54,15 @@ module.exports = {
                         "`id`  INT NOT NULL AUTO_INCREMENT," +
                         "`name` VARCHAR(45) NOT NULL," +
                         "`password` VARCHAR(45) NOT NULL," +
-                        "PRIMARY KEY (`id`))";
+                        "PRIMARY KEY (`id`))" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
                     con.query(create_table_user_sql, function (err, result) {
                         if (err) {
                             callback(err);
+                        } else {
+                            console.log('Table User initialized successfully');
+                            callback();
                         }
-                        console.log('Table User initialized successfully');
-                        callback();
                     });
                 },
                 function (callback) {
@@ -75,9 +78,10 @@ module.exports = {
                     con.query(create_table_api_sql, function (err, result) {
                         if (err) {
                             callback(err);
+                        } else {
+                            console.log('Table Api initialized successfully');
+                            callback();
                         }
-                        console.log('Table Api initialized successfully');
-                        callback();
                     });
                 },
                 function (callback) {
@@ -91,13 +95,37 @@ module.exports = {
                         "`status` tinyint(1) DEFAULT '1'," +
                         "PRIMARY KEY (`id`)," +
                         "KEY `api_fk__idx` (`api_id_fk`)," +
-                        "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
+                        "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
                     con.query(create_table_chain_sql, function (err, result) {
                         if (err) {
                             callback(err);
+                        } else {
+                            console.log('Table Order Chain initialized successfully');
+                            callback();
                         }
-                        console.log('Table Order Chain initialized successfully');
-                        callback();
+                    });
+                }, function (callback) {
+                    var pump_dump_sql = "USE kekko;" +
+                        "CREATE TABLE `kekko`.`pump_dump` (" +
+                        "`id` INT NOT NULL AUTO_INCREMENT," +
+                        "`pair` VARCHAR(10) NOT NULL," +
+                        "`amount` FLOAT NOT NULL," +
+                        "`buysell` VARCHAR(4) NOT NULL," +
+                        "`buy_lower_percent` INT NOT NULL," +
+                        "`sell_higher_percent` INT NOT NULL," +
+                        "`check_price` FLOAT NOT NULL," +
+                        "`active` SMALLINT(2) NOT NULL," +
+                        "`status` SMALLINT(2) NOT NULL," +
+                        "PRIMARY KEY (`id`))" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+                    con.query(pump_dump_sql, function (err, result) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            console.log('Table Pump_Dump initialized successfully');
+                            callback();
+                        }
                     });
                 },
                 function (callback) {
@@ -118,19 +146,24 @@ module.exports = {
                         "`active` tinyint(1) NOT NULL DEFAULT 1," +
                         "`stop_loss` tinyint(1) DEFAULT NULL," +
                         "`stop_loss_price` float DEFAULT NULL," +
+                        "`pump_dump_id_fk` int(11) DEFAULT NULL," +
                         "PRIMARY KEY (`id`)," +
                         "KEY `order_chain_fk_idx` (`chain_id_fk`)," +
-                        "CONSTRAINT `chain_fk` FOREIGN KEY (`chain_id_fk`) REFERENCES `chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)";
+                        "KEY `pumdump_fk_idx` (`pump_dump_id_fk`)," +
+                        "CONSTRAINT `chain_fk` FOREIGN KEY (`chain_id_fk`) REFERENCES `chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION," +
+                        "CONSTRAINT `pumdump_fk` FOREIGN KEY (`pump_dump_id_fk`) REFERENCES `pump_dump` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
                     con.query(create_table_order_sql, function (err, result) {
                         if (err) {
                             callback(err);
+                        } else {
+                            console.log('Table Order initialized successfully');
+                            callback();
                         }
-                        callback();
-                        console.log('Table Order initialized successfully');
                     });
                 },
                 function (callback) {
-                    var api_insert_sql = 
+                    var api_insert_sql = "USE kekko;" +
                         "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('hitbtc',null,null);" +
                         "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('poloniex',null,null);" +
                         "INSERT INTO kekko.api (name,publicKey,secretKey) VALUES ('bittrex',null,null);";
@@ -165,7 +198,7 @@ module.exports = {
 };
 
 var dbInitialized = null;
-async.parallel(
+async.series(
     [
         function (callback) {
             var con = getConnection();
