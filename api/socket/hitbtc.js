@@ -9,7 +9,8 @@ var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(orderManager);
 var pairListener = new wsPairListener(pairManager);
-
+var chainOrderSignature = "Kekko.chain#";
+var pumpDumpOrderSignature = "Kekko.pumpDump#";
 //Socket Pair Listener
 function wsPairListener(callback) {
     var ws = null;
@@ -106,11 +107,11 @@ wsOrderListener.prototype._listen = function () {
     this.ws.send(JSON.stringify(obj));
 
 }
-wsOrderListener.prototype._placeOrder = function (clientOrderId, pair, price, amount, buysell) {
+wsOrderListener.prototype._placeOrder = function (clientOrderId, pair, price, amount, buysell, orderSignature) {
     var obj = {
         "method": "newOrder",
         "params": {
-            "clientOrderId": clientOrderId,
+            "clientOrderId": orderSignature + clientOrderId,
             "symbol": pair,
             "side": buysell,
             "price": price,
@@ -156,7 +157,7 @@ function _has(object, key) {
 function tryParseInt(str) {
     var result = -1;
     if (str !== null) {
-        if (str.length > 0 && str.length < 32) { // hitbtc generated clientOrderId example e9cae3fd9c8f4bbd9373d3e49dacafea, length = 32
+        if (str.length > 0) {
             if (!isNaN(str)) {
                 result = parseInt(str);
             }
@@ -183,10 +184,8 @@ function orderManager(err, socketData) {
             var chainId = null;
             var nextOrder = null;
             var success = false;
-
-            orderId = tryParseInt(socketData.params.clientOrderId);
-            if (orderId > 0) { //Kekko order
-                //first finish order in db.
+            if (socketData.params.clientOrderId.indexOf(chainOrderSignature) > 0) { //kekko chain order listener
+                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1));
                 async.series(
                     [
                         function (callback) {
@@ -236,15 +235,21 @@ function orderManager(err, socketData) {
 
                 //check if order successfully placed
                 if (success && nextOrder != null && Object.keys(nextOrder).length > 0) {
-                    //orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell);
+                    //orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell,chainOrderSignature);
                     console.log("next Order :" + JSON.stringify(nextOrder) + " has been successfully placed");
                 } else {
                     console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
-            } else {// site order filled
-                //forget about it right now...
-                console.log("site order has been filled successfully" + JSON.stringify(socketData));
+            } else if (socketData.params.clientOrderId.indexOf(pumpDumpOrderSignature) > 0) { //pump_dump_listener works here
+                //pump_dump order has been completed with success lets update it and give another order by giving conditions
+                var orderId = null;
+                var nextOrder = null;
+                var success = false;
+                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#")+1));
+                var completedOrder = null;
+                
             }
+
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain
             console.log('cancelled order :' + JSON.stringify(socketData));
         } else if (socketData.params.status == 'new') { // no need to listen this event. just in case 
@@ -269,7 +274,7 @@ setTimeout(function () {
     setTimeout(function () {
         //pairListener._listen("EOSUSD", false);
         //pairListener._listen("XRPUSDT", false);
-        pairListener._close();
+        //pairListener._close();
         //orderListener._close();
     }, 5000);
 }, 6000);
