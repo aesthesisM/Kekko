@@ -14,5 +14,32 @@
     "redis": "^2.8.0",
     "socket.io": "^2.0.4",
     "ws": "^3.3.2"
-  }
+  },
+  "name": "kekko",
+  "description": "Kekko bambam",
+  "version": "1.0.0",
+  "main": "app.js",
+  "bin": {
+    "kekko": "server.js"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aesthesisM/Kekko.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "pump",
+    "dump",
+    "analyse"
+  ],
+  "author": "aesthesisM",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aesthesisM/Kekko/issues"
+  },
+  "homepage": "https://github.com/aesthesisM/Kekko#readme"
 }
