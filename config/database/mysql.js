@@ -1,11 +1,15 @@
 var mysql = require('mysql');
 var async = require('async');
+require('dotenv').config();
+var conf = process.env;
+
 var dbConf = {
     //vmware win7 mysql ip 172.16.166.128
-    host: '127.0.0.1',
-    user: 'root',
-    password: '', //vmware win7 mysql root password 11231123
-    port: '3307',
+    host: conf.DB_HOST,
+    user: conf.DB_USER,
+    password: conf.DB_PASSWORD, //vmware win7 mysql root password 11231123
+    port: conf.DB_PORT,
+    database: conf.DB_NAME,
     multipleStatements: true,
     acquireTimeout: 900000 //15 min
 };
@@ -30,6 +34,7 @@ function checkDB(con, callback) {
 
 module.exports = {
     initializeDb: function () {
+        console.log(config);
         var con = getConnection();
         console.log('connected to ' + dbConf.host);
 
