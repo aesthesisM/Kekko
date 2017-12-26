@@ -93,6 +93,7 @@ module.exports = {
                     callback(data);
                 }
             });
+            
     },
     hitbtc_db_getOrder: function (orderId, callback) {
         db.executeSQL("SELECT * FROM kekko.order WHERE id = ?",
