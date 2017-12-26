@@ -1,14 +1,24 @@
 ﻿kekkoApp
-    .controller('HitBtcController', function ($location, $http, Page) {
+    .controller('HitBtcController', function ($location, $http, Page, $scope) {
         var hitbtcCtrl = this;
         hitbtcCtrl.updateProcess = false;
+        hitbtcCtrl.viewOrder = false;
         hitbtcCtrl.chainsStart = 0;
         hitbtcCtrl.chainsTake = 100;
+        hitbtcCtrl.currentChain = {};
 
         hitbtcCtrl.addChainModel = {};
         hitbtcCtrl.addOrderModel = {};
+        hitbtcCtrl.addOrderModel.pair = null;
         hitbtcCtrl.pairs = [];
         hitbtcCtrl.chains = [];
+
+        $scope.$watch('hitbtcCtrl.addOrderModel.pair', function (newValue, oldValue) {
+            console.log(hitbtcCtrl.addOrder);
+            if (hitbtcCtrl.addOrderModel.pair != null) {
+                hitbtcCtrl.addOrderModel.price = hitbtcCtrl.addOrderModel.pair.last;
+            }
+        });
         hitbtcCtrl.addChain = function () {
             //save api json
             console.log(hitbtcCtrl.addChainModel);
@@ -70,7 +80,7 @@
                     Page.showMessage("success", "Başarılı", "");
                     hitbtcCtrl.chains = resp.data;
                 } else {
-                    Page.showMessage("error", "Başarısız", "" +  resp.data.message);
+                    Page.showMessage("error", "Başarısız", "" + resp.data.message);
                 }
                 hitbtcCtrl.updateProcess = false;
             }, function errorCallback(response) {
@@ -79,7 +89,34 @@
                 hitbtcCtrl.updateProcess = false;
             });
         };
-        hitbtcCtrl.getChains();
+
+        hitbtcCtrl.getChainOrders = function (chain) {
+            //save api json
+            if (chain != null) {
+                hitbtcCtrl.currentChain = chain;
+            }
+            hitbtcCtrl.updateProcess = true;
+            $http({
+                method: 'GET',
+                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id
+            }).then(function successCallback(response) {
+                console.log(response);
+                var resp = response.data.respObj;
+                if (resp.result == 1) {
+                    Page.showMessage("success", "Başarılı", "");
+                    hitbtcCtrl.orders = resp.data;
+                } else {
+                    Page.showMessage("error", "Başarısız", "" + resp.data.message);
+                }
+                hitbtcCtrl.updateProcess = false;
+                hitbtcCtrl.viewOrder = true;
+            }, function errorCallback(response) {
+                Page.showMessage("error", "Başarısız", "Hata oluştu.");
+                console.log(response);
+                hitbtcCtrl.updateProcess = false;
+            });
+        };
+        //hitbtcCtrl.getChains();
         hitbtcCtrl.getpairs = function () {
             //save api json
             hitbtcCtrl.updateProcess = true;
@@ -153,9 +190,10 @@
 
         hitbtcCtrl.addOrder = function () {
             hitbtcCtrl.updateProcess = true;
+            hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pair.symbol;
             $http({
                 method: 'POST',
-                url: '/hitbtc/addOrder',
+                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/addOrder',
                 data: hitbtcCtrl.addOrderModel
             }).then(function successCallback(response) {
                 console.log(response);
@@ -180,6 +218,7 @@
         hitbtcCtrl.showAddOrderModal = function () {
             hitbtcCtrl.addOrderModel = {};
             $('#modal-addOrder').modal('toggle');
+            console.log($scope);
         };
         hitbtcCtrl.clearChain = function () {
             hitbtcCtrl.addChainModel = {};

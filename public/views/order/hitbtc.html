@@ -19,14 +19,17 @@
                         <button type="button" class="btn btn-danger btn-sm" data-original-title="Remove" ng-click="hitbtcCtrl.removeChain(item)">
                             <i class="fa fa-times"></i>
                         </button>
+                        <button type="button" class="btn btn-success btn-sm" data-original-title="Orders" ng-click="hitbtcCtrl.getChainOrders(item)">
+                            <i class="fa fa-hand-o-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6" ng-show="hitbtcCtrl.viewOrder">
         <div class="col-md-12 text-right">
-            <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getOrders()">Refresh Orders</button>
+            <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChainOrders()">Refresh Orders</button>
             <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.showAddOrderModal()">Add Order</button>
         </div>
         <div class="col-md-12">
