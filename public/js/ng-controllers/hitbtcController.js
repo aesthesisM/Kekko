@@ -180,6 +180,9 @@
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
                     Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
+                    hitbtcCtrl.addOrderModel.id = resp.data;
+                    hitbtcCtrl.orders.push(hitbtcCtrl.addOrderModel);
+                    hitbtcCtrl.addOrderModel = {};
                 } else {
                     Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
                 }

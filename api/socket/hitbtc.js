@@ -370,7 +370,7 @@ setTimeout(function () {
     //pairListener._listen("EOSUSD", true);
     //pairListener._listen("XRPUSDT", true);
     orderListener._listen();
-
+    walletListener._listen();
     setTimeout(function () {
         //pairListener._listen("EOSUSD", false);
         //pairListener._listen("XRPUSDT", false);
