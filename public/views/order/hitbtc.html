@@ -50,7 +50,7 @@
                         <td>{{item.id}}</td>
                         <td>{{item.pair}}</td>
                         <td>{{item.amount}}</td>
-                        <td>{{item.price}}</td>
+                        <td>{{item.price | number:8}}</td>
                         <td>{{item.buysell}}</td>
                         <td>{{item.success}}</td>
                         <td>
@@ -79,7 +79,7 @@
                         <div class="form-group">
                             <label class="control-label col-sm-4">Pair</label>
                             <div class="col-sm-8">
-                                <ui-select ng-model="hitbtcCtrl.addOrderModel.pair" theme="bootstrap">
+                                <ui-select ng-model="hitbtcCtrl.addOrderModel.pairModel" theme="bootstrap">
                                     <ui-select-match placeholder="Select or search a pair in the list...">{{$select.selected.symbol}}</ui-select-match>
                                     <ui-select-choices repeat="item in hitbtcCtrl.pairs | filter: $select.search">
                                         <div ng-bind-html="item.symbol | highlight: $select.search"></div>

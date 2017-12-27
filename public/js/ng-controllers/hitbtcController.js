@@ -14,9 +14,9 @@
         hitbtcCtrl.chains = [];
         hitbtcCtrl.orders = [];
 
-        $scope.$watch('hitbtcCtrl.addOrderModel.pair', function (newValue, oldValue) {
-            if (hitbtcCtrl.addOrderModel.pair != null) {
-                hitbtcCtrl.addOrderModel.price = hitbtcCtrl.addOrderModel.pair.last;
+        $scope.$watch('hitbtcCtrl.addOrderModel.pairModel', function (newValue, oldValue) {
+            if (hitbtcCtrl.addOrderModel.pairModel != null) {
+                hitbtcCtrl.addOrderModel.price = hitbtcCtrl.addOrderModel.pairModel.last;
             }
         });
 
@@ -173,8 +173,7 @@
 
         hitbtcCtrl.addOrder = function () {
             hitbtcCtrl.updateProcess = true;
-            hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pair.symbol;
-            console.log(hitbtcCtrl.orders.length + 1);
+            hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pairModel.symbol;           
             hitbtcCtrl.addOrderModel.order_ = hitbtcCtrl.orders.length + 1;
             $http({
                 method: 'POST',
@@ -185,7 +184,8 @@
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
                     Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
-                    hitbtcCtrl.addOrderModel.id = resp.data;
+                    hitbtcCtrl.addOrderModel.id = resp.data;//newly added order's id
+                    hitbtcCtrl.addOrderModel.success = 0;// new order has not accomplished yet.
                     hitbtcCtrl.orders.push(hitbtcCtrl.addOrderModel);
                     hitbtcCtrl.addOrderModel = {};
                 } else {
