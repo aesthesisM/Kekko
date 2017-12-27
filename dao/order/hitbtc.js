@@ -63,7 +63,7 @@ module.exports = {
                 }
             })
     },
-    hitbtc_db_addOrder: function (orderObj, chainId, callback) {
+    hitbtc_db_addOrder: function (orderObj, chain_id_fk, callback) {
 
         /*
         check db if chain is active then dont allow to add order that chain
@@ -80,10 +80,9 @@ module.exports = {
             ], function (err) {
 
             });
-            */
-
-        db.executeSQL("INSERT INTO kekko.order (pair,buysell,amount,price,total_price,order_,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price,) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            [orderObj.pair, orderObj.buysell, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.total_price), parseInt(orderObj.order_), new Date(orderObj.order_created_time), parseInt(chain_id_fk), parseInt(orderObj.active), parseInt(orderObj.stop_loss), parseFloat(orderObj.stop_loss_price)],
+            */             
+        db.executeSQL("INSERT INTO kekko.order (pair,buysell,amount,price,total_price,order_,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price) VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP,?,?,?,?)",
+            [orderObj.pair, orderObj.buysell, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.amount)*parseFloat(orderObj.price), parseInt(orderObj.order_), parseInt(chain_id_fk), 1, 0, 0],
             function (data, err) {
                 if (err) {
                     console.error(err);
