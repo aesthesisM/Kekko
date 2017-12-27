@@ -201,7 +201,8 @@ module.exports = {
         });
     }
 };
-
+/*
+mysql-migrations will handle the job
 var dbInitialized = null;
 async.series(
     [
@@ -235,7 +236,7 @@ async.series(
         }
     }
 );
-
+*/
 
 
 
