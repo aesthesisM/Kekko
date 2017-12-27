@@ -15,11 +15,16 @@
         hitbtcCtrl.orders = [];
 
         $scope.$watch('hitbtcCtrl.addOrderModel.pair', function (newValue, oldValue) {
-            console.log(hitbtcCtrl.addOrder);
             if (hitbtcCtrl.addOrderModel.pair != null) {
                 hitbtcCtrl.addOrderModel.price = hitbtcCtrl.addOrderModel.pair.last;
             }
         });
+
+        $scope.$watch('hitbtcCtrl.addOrderModel.price', function (newValue, oldValue) {
+                hitbtcCtrl.addOrderModel.price = newValue;
+                console.log(hitbtcCtrl.addOrderModel.price);
+        });
+
         hitbtcCtrl.addChain = function () {
             //save api json
             console.log(hitbtcCtrl.addChainModel);
@@ -201,7 +206,6 @@
         hitbtcCtrl.showAddOrderModal = function () {
             hitbtcCtrl.addOrderModel = {};
             $('#modal-addOrder').modal('toggle');
-            console.log($scope);
         };
         hitbtcCtrl.clearChain = function () {
             hitbtcCtrl.addChainModel = {};
