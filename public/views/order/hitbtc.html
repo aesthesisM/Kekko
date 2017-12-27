@@ -37,9 +37,9 @@
                 <thead>
                     <tr>
                         <th>id</th>
-                        <th>from</th>
-                        <th>to</th>
+                        <th>pair</th>
                         <th>amount</th>
+                        <th>price</th>
                         <th>success</th>
                         <th>*</th>
                     </tr>
@@ -49,6 +49,7 @@
                         <td>{{item.id}}</td>
                         <td>{{item.pair}}</td>
                         <td>{{item.amount}}</td>
+                        <td>{{item.price}}</td>
                         <td>{{item.success}}</td>
                         <td>
                             <button type="button" class="btn-danger btn" ng-click="hitbtcCtrl.removeOrder(item)"><i class="fa fa-remove"></i></button>
