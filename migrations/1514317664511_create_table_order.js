@@ -1,5 +1,5 @@
 module.exports = {
-    "up": "CREATE TABLE orders (" +
+    "up": "CREATE TABLE kekko.order (" +
     "`id` int(11) NOT NULL AUTO_INCREMENT," +
     "`pair` varchar(15) NOT NULL," +
     "`buysell` varchar(4) NOT NULL," +

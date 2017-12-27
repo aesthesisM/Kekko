@@ -1,5 +1,5 @@
 module.exports = {
-    "up": "CREATE TABLE `pump_dump` (" +
+    "up": "CREATE TABLE kekko.pump_dump (" +
     "`id` INT NOT NULL AUTO_INCREMENT," +
     "`pair` VARCHAR(10) NOT NULL," +
     "`amount` FLOAT NOT NULL," +

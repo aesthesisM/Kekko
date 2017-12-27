@@ -9,9 +9,10 @@ var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(orderManager);
 var pairListener = new wsPairListener(pairManager);
-//var walletListener = new wsWalletListener(walletManager);
+var walletListener = new wsWalletListener(walletManager);
 var chainOrderSignature = "Kekko.chain#";
 var pumpDumpOrderSignature = "Kekko.pumpDump#";
+
 //Socket Pair Listener
 function wsPairListener(callback) {
     var ws = null;
@@ -141,6 +142,7 @@ wsOrderListener.prototype._close = function () {
     this.ws.close();
 }
 
+//Socket Wallet Listener
 function wsWalletListener(callback) {
     var ws = new WebSocket(hitBTCSocketUrl, null, {
         handshakeTimeout: 5500
@@ -169,6 +171,16 @@ function wsWalletListener(callback) {
 wsWalletListener.prototype._authorize = function (data) {
     this.ws.send(JSON.stringify(data));
 }
+
+wsWalletListener.prototype._listen = function () {
+    var obj = {
+        "method": "getTradingBalance",
+        "params": {},
+        "id": "Kekko BamBam"
+    };
+    this.ws.send(JSON.stringify(obj));
+}
+
 wsWalletListener.prototype._close = function () {
     this.ws.close();
 }
@@ -187,15 +199,6 @@ function HitBTCAuth(APIKey, APISecret) {
 
 };
 
-
-var pairCount = 0;
-function pairManager(err, socketData) {
-    if (err) {
-        console.error(err);
-    } else {
-        console.log((++pairCount) + " - " + socketData);
-    }
-}
 function _has(object, key) {
     return object ? hasOwnProperty.call(object, key) : false;
 }
@@ -210,6 +213,49 @@ function tryParseInt(str) {
     }
     return result;
 }
+
+var pairCount = 0;
+function pairManager(err, socketData) {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log((++pairCount) + " - " + socketData);
+    }
+}
+
+function walletManager(err, socketData) {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log(socketData);
+        /*
+        wallet data response
+        {
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "currency": "BCN",
+      "available": "100.000000000",
+      "reserved": "0"
+    },
+    {
+      "currency": "BTC",
+      "available": "0.013634021",
+      "reserved": "0"
+    },
+    {
+      "currency": "ETH",
+      "available": "0",
+      "reserved": "0.00200000"
+    }
+  ],
+  "id": 123
+}
+
+        */
+    }
+}
+
 
 function orderManager(err, socketData) {
     socketData = JSON.parse(socketData);
@@ -302,7 +348,7 @@ function orderManager(err, socketData) {
             }
 
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain if its a chain order
-            if(socketData.params.clientOrderId.indexOf(chainOrderSignature)>0){//found chain order id and will stop chain and update canceled order
+            if (socketData.params.clientOrderId.indexOf(chainOrderSignature) > 0) {//found chain order id and will stop chain and update canceled order
 
             }
             console.log('cancelled order :' + JSON.stringify(socketData));
@@ -320,7 +366,7 @@ setTimeout(function () {
     //1 authenticate
     orderListener._authorize(hitBTCClient.auth);
     //pairListener._authorize(authObj);
-
+    walletListener._authorize(hitBTCClient.auth);
     //pairListener._listen("EOSUSD", true);
     //pairListener._listen("XRPUSDT", true);
     orderListener._listen();

@@ -1,5 +1,5 @@
 module.exports = {
-    "up": "CREATE TABLE chain (" +
+    "up": "CREATE TABLE kekko.chain (" +
     "`id` int(11) NOT NULL AUTO_INCREMENT," +
     "`name` varchar(45) NOT NULL," +
     "`api_id_fk` int(11) DEFAULT NULL," +

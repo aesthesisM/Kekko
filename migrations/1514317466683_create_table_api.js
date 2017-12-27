@@ -1,5 +1,5 @@
 module.exports = {
-    "up": "CREATE TABLE api (" +
+    "up": "CREATE TABLE kekko.api (" +
     "`id` int(11) NOT NULL AUTO_INCREMENT," +
     "`name` varchar(45) NOT NULL," +
     "`publicKey` varchar(45) DEFAULT NULL," +
