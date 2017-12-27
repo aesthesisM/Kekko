@@ -1,3 +1,7 @@
 .vscode/launch.json
 #node_modules/
 .env
+Kekko.iml
+.idea/
+.npmignore
+
