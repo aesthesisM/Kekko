@@ -9,45 +9,9 @@ var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(orderManager);
 var pairListener = new wsPairListener(pairManager);
-<<<<<<< HEAD
-var walletListener = null;
-
-//Socket Wallet Listener
-function wsWalletListener(callback) {
-    var ws = null;
-    ws = new WebSocket(hitBTCSocketUrl, null, {
-        handshakeTimeout: 5500
-    });
-
-    ws.on('open', function () {
-        console.log('WSWalletListener Websocket opened');
-    });
-    ws.on('close', function () {
-        console.log('WSWalletListener Websocket closed');
-    });
-
-    ws.on('error', function (err) {
-        callback(err);
-        console.error("WSWalletListener error :" + err);
-    });
-
-    ws.on('message', function (data) {
-        callback(null, data);
-    });
-
-    this.ws = ws;
-}
-
-wsWalletListener.prototype._authorize = function (data) {
-    ws.send(JSON.stringify(data));
-}
-
-
-
-=======
+//var walletListener = new wsWalletListener(walletManager);
 var chainOrderSignature = "Kekko.chain#";
 var pumpDumpOrderSignature = "Kekko.pumpDump#";
->>>>>>> 00bc8c18f7dc1d3dc1fd3cd949facbfb920280b0
 //Socket Pair Listener
 function wsPairListener(callback) {
     var ws = null;
@@ -161,7 +125,51 @@ wsOrderListener.prototype._placeOrder = function (orderId, pair, price, amount, 
 
 }
 
+wsOrderListener.prototype._cancelOrder = function (orderSignature, orderId) {
+    var obj = {
+        "method": "cancelOrder",
+        "params": {
+            "clientOrderId": orderSignature + orderId
+        },
+        "id": 123
+    }
+
+    this.ws.send(JSON.stringify(obj));
+}
+
 wsOrderListener.prototype._close = function () {
+    this.ws.close();
+}
+
+function wsWalletListener(callback) {
+    var ws = new WebSocket(hitBTCSocketUrl, null, {
+        handshakeTimeout: 5500
+    });
+
+    ws.on('open', function () {
+        console.log('wsWalletListener Websocket connected');
+    });
+
+    ws.on('close', function () {
+        console.log('wsWalletListener Websocket closed');
+    });
+
+    ws.on('error', function (err) {
+        callback(err);
+        console.error('wsWalletListener error:' + err);
+    });
+
+    ws.on('message', function (data) {
+        callback(null, data);
+    });
+
+    this.ws = ws;
+}
+
+wsWalletListener.prototype._authorize = function (data) {
+    this.ws.send(JSON.stringify(data));
+}
+wsWalletListener.prototype._close = function () {
     this.ws.close();
 }
 
@@ -293,7 +301,10 @@ function orderManager(err, socketData) {
 
             }
 
-        } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain
+        } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain if its a chain order
+            if(socketData.params.clientOrderId.indexOf(chainOrderSignature)>0){//found chain order id and will stop chain and update canceled order
+
+            }
             console.log('cancelled order :' + JSON.stringify(socketData));
         } else if (socketData.params.status == 'new') { // no need to listen this event. just in case 
             console.log('newOrder :' + JSON.stringify(socketData));
