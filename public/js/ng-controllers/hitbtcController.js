@@ -33,6 +33,7 @@
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
                     Page.showMessage("success", "Başarılı", "Başarıyla kaydedildi.");
+                    hitbtcCtrl.addChainModel.id = resp.data;
                     hitbtcCtrl.chains.push(hitbtcCtrl.addChainModel);
                     hitbtcCtrl.addChainModel = {};
                 } else {
