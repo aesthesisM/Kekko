@@ -1,18 +1,48 @@
 {
   "scripts": {
+    "prestart": "node migration.js up",
     "start": "node bin/server.js"
   },
   "dependencies": {
     "async": "^2.6.0",
     "body-parser": "^1.18.2",
+    "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
     "express-validator": "^4.3.0",
     "morgan": "^1.9.0",
     "mysql": "^2.15.0",
+    "mysql-migrations": "^1.0.4",
     "redis": "^2.8.0",
     "socket.io": "^2.0.4",
     "ws": "^3.3.2"
-  }
+  },
+  "name": "kekko",
+  "description": "Kekko bambam",
+  "version": "1.0.0",
+  "main": "app.js",
+  "bin": {
+    "kekko": "server.js"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aesthesisM/Kekko.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "pump",
+    "dump",
+    "analyse"
+  ],
+  "author": "aesthesisM",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aesthesisM/Kekko/issues"
+  },
+  "homepage": "https://github.com/aesthesisM/Kekko#readme"
 }
