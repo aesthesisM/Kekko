@@ -1,4 +1,4 @@
-﻿var kekkoApp = angular.module('kekkoApp', ['ngRoute']);
+﻿var kekkoApp = angular.module('kekkoApp', ['ngSanitize', 'ngRoute', 'ui.select']);
 kekkoApp.factory('Page', function () {
     var title = 'Dashboard';
     return {
@@ -36,7 +36,7 @@ kekkoApp.config(function ($routeProvider) {
         })
         .when('/order/hitbtc', {
             controller: 'HitBtcController as hitbtcCtrl',
-            templateUrl: 'order/HitBtc.html'
+            templateUrl: 'order/hitbtc.html'
             //resolve: function () { return null; }
         })
         .when('/order/poloniex', {
