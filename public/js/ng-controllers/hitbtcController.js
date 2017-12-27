@@ -12,6 +12,7 @@
         hitbtcCtrl.addOrderModel.pair = null;
         hitbtcCtrl.pairs = [];
         hitbtcCtrl.chains = [];
+        hitbtcCtrl.orders = [];
 
         $scope.$watch('hitbtcCtrl.addOrderModel.pair', function (newValue, oldValue) {
             console.log(hitbtcCtrl.addOrder);
@@ -164,33 +165,11 @@
             });
         };
 
-        hitbtcCtrl.getOrders = function () {
-            //save api json
-            hitbtcCtrl.updateProcess = true;
-            $http({
-                method: 'POST',
-                url: '/hitbtc/getOrders',//??
-                data: null
-            }).then(function successCallback(response) {
-                console.log(response);
-                var resp = response.data.respObj;
-                if (resp.result == 1) {
-                    hitbtcCtrl.pairs = resp.data;
-                    Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
-                } else {
-                    Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
-                }
-                hitbtcCtrl.updateProcess = false;
-            }, function errorCallback(response) {
-                Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
-                console.log(response);
-                hitbtcCtrl.updateProcess = false;
-            });
-        };
-
         hitbtcCtrl.addOrder = function () {
             hitbtcCtrl.updateProcess = true;
             hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pair.symbol;
+            console.log(hitbtcCtrl.orders.length + 1);
+            hitbtcCtrl.addOrderModel.order_ = hitbtcCtrl.orders.length + 1;
             $http({
                 method: 'POST',
                 url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/addOrder',
