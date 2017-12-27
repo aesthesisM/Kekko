@@ -223,36 +223,39 @@ function pairManager(err, socketData) {
     }
 }
 
+var currentWallet = null;
+
+module.exports.getWalletInfo = function () {
+    return currentWallet;
+}
+
 function walletManager(err, socketData) {
     if (err) {
         console.error(err);
     } else {
         console.log(socketData);
-        /*
-        wallet data response
-        {
-  "jsonrpc": "2.0",
-  "result": [
-    {
-      "currency": "BCN",
-      "available": "100.000000000",
-      "reserved": "0"
-    },
-    {
-      "currency": "BTC",
-      "available": "0.013634021",
-      "reserved": "0"
-    },
-    {
-      "currency": "ETH",
-      "available": "0",
-      "reserved": "0.00200000"
-    }
-  ],
-  "id": 123
+        if (_has(socketData, 'result')) {
+            /*
+wallet data response
+{
+"jsonrpc": "2.0",
+"result": [
+{
+"currency": "BCN",
+"available": "100.000000000",
+"reserved": "0"
+},
+{
+"currency": "BTC",
+"available": "0.013634021",
+"reserved": "0"
 }
-
-        */
+],
+"id": 123
+}
+*/
+            currentWallet = socketData.result;
+        }
     }
 }
 
