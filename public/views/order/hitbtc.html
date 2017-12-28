@@ -30,10 +30,10 @@
                                 <button type="button" class="btn btn-success btn-sm" title="Orders" ng-click="hitbtcCtrl.getChainOrders(item)">
                                     <i class="fa fa-list-ul"></i>
                                 </button>
-                                <button type="button" ng-show="item.status==1" class="btn btn-success btn-sm" title="Start" ng-click="hitbtcCtrl.startStopChain(item,1)">
+                                <button type="button" ng-show="item.status==1" class="btn btn-success btn-sm" title="Start" ng-click="hitbtcCtrl.startChain(item)">
                                     <i class="fa fa-play"></i>
                                 </button>
-                                <button type="button" ng-show="item.status==2" class="btn btn-warning btn-sm" title="Stop" ng-click="hitbtcCtrl.startStopChain(item,0)">
+                                <button type="button" ng-show="item.status==2" class="btn btn-warning btn-sm" title="Stop" ng-click="hitbtcCtrl.stopChain(item)">
                                     <i class="fa fa-stop"></i>
                                 </button>
                             </div>

@@ -29,7 +29,7 @@
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
-                    Page.showMessage("success", "Başarılı", "Başarıyla kaydedildi.");
+                    Page.showMessage("success", "Success", "Başarıyla kaydedildi.");
                     hitbtcCtrl.addChainModel.id = resp.data;
                     hitbtcCtrl.chains.push(hitbtcCtrl.addChainModel);
                     hitbtcCtrl.addChainModel = {};
@@ -45,27 +45,37 @@
         };
 
         hitbtcCtrl.removeChain = function (item) {
-            hitbtcCtrl.updateProcess = true;
-            //for removing active must be 0
-            item.active = 0;
-            $http({
-                method: 'POST',
-                url: '/hitbtc/chains/update',//??
-                data: item
-            }).then(function successCallback(response) {
-                var resp = response.data.respObj;
-                if (resp.result == 1) {
-                    Page.showMessage("success", "Başarılı", item.name + " başarıyla kaydedildi.");
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.value) {
                     hitbtcCtrl.updateProcess = true;
-                    var index = hitbtcCtrl.chains.indexOf(item);
-                    hitbtcCtrl.chains.splice(index, 1);
-                } else {
-                    Page.showMessage("error", "Başarısız", item.name + " kaydedilirken hata oluştu. " + resp.data.message);
-                    hitbtcCtrl.updateProcess = false;
+                    //for removing active must be 0
+                    item.active = 0;
+                    $http({
+                        method: 'POST',
+                        url: '/hitbtc/chains/update',//??
+                        data: item
+                    }).then(function successCallback(response) {
+                        var resp = response.data.respObj;
+                        if (resp.result == 1) {
+                            Page.showMessage("success", "Success", item.name + " başarıyla kaydedildi.");
+                            hitbtcCtrl.updateProcess = true;
+                            var index = hitbtcCtrl.chains.indexOf(item);
+                            hitbtcCtrl.chains.splice(index, 1);
+                        } else {
+                            Page.showMessage("error", "Başarısız", item.name + " kaydedilirken hata oluştu. " + resp.data.message);
+                            hitbtcCtrl.updateProcess = false;
+                        }
+                    }, function errorCallback(response) {
+                        Page.showMessage("error", "Başarısız", item.name + " kaydedilirken hata oluştu.");
+                        hitbtcCtrl.updateProcess = false;
+                    });
                 }
-            }, function errorCallback(response) {
-                Page.showMessage("error", "Başarısız", item.name + " kaydedilirken hata oluştu.");
-                hitbtcCtrl.updateProcess = false;
             });
         };
         hitbtcCtrl.getChains = function () {
@@ -76,7 +86,7 @@
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
-                    Page.showMessage("success", "Başarılı", "");
+                    Page.showMessage("success", "Success", "");
                     hitbtcCtrl.chains = resp.data;
                 } else {
                     Page.showMessage("error", "Başarısız", "" + resp.data.message);
@@ -99,7 +109,7 @@
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
-                    Page.showMessage("success", "Başarılı", "");
+                    Page.showMessage("success", "Success", "");
                     hitbtcCtrl.orders = resp.data;
                 } else {
                     Page.showMessage("error", "Başarısız", "" + resp.data.message);
@@ -120,7 +130,7 @@
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
                     hitbtcCtrl.pairs = resp.data;
-                    //Page.showMessage("success", "Başarılı", item.name + " başarıyla kaydedildi.");
+                    //Page.showMessage("success", "Success", item.name + " başarıyla kaydedildi.");
                 } else {
                     Page.showMessage("error", "Fail", "An error occured while getting pairs from hitbtc" + resp.data.message);
                 }
@@ -132,25 +142,35 @@
         };
         hitbtcCtrl.getpairs();
         hitbtcCtrl.removeOrder = function (item) {
-            hitbtcCtrl.updateProcess = true;
-            item.active=0;
-            $http({
-                method: 'POST',
-                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/updateOrder',
-                data: item
-            }).then(function successCallback(response) {
-                var resp = response.data.respObj;
-                if (resp.result == 1) {                    
-                    Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
-                    var index = hitbtcCtrl.orders.indexOf(item);
-                    hitbtcCtrl.orders.splice(index, 1);
-                } else {
-                    Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.value) {
+                    hitbtcCtrl.updateProcess = true;
+                    item.active = 0;
+                    $http({
+                        method: 'POST',
+                        url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/updateOrder',
+                        data: item
+                    }).then(function successCallback(response) {
+                        var resp = response.data.respObj;
+                        if (resp.result == 1) {
+                            Page.showMessage("success", "Success", " başarıyla kaydedildi.");
+                            var index = hitbtcCtrl.orders.indexOf(item);
+                            hitbtcCtrl.orders.splice(index, 1);
+                        } else {
+                            Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
+                        }
+                        hitbtcCtrl.updateProcess = false;
+                    }, function errorCallback(response) {
+                        Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
+                        hitbtcCtrl.updateProcess = false;
+                    });
                 }
-                hitbtcCtrl.updateProcess = false;
-            }, function errorCallback(response) {
-                Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
-                hitbtcCtrl.updateProcess = false;
             });
         };
 
@@ -165,7 +185,7 @@
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
-                    Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
+                    Page.showMessage("success", "Success", " başarıyla kaydedildi.");
                     hitbtcCtrl.addOrderModel.id = resp.data;//newly added order's id
                     hitbtcCtrl.addOrderModel.success = 0;// new order has not accomplished yet.
                     hitbtcCtrl.orders.push(hitbtcCtrl.addOrderModel);
@@ -179,9 +199,10 @@
                 Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
                 hitbtcCtrl.updateProcess = false;
             });
-        };        
+        };
 
-        hitbtcCtrl.updateOrder = function () {
+        hitbtcCtrl.updateOrder = function (item) {
+            hitbtcCtrl.addOrderModel = item;
             $('#modal-addOrder').modal('toggle');
         };
 
@@ -193,27 +214,61 @@
             hitbtcCtrl.addChainModel = {};
             $('#modal-addChain').modal('toggle');
         };
-        hitbtcCtrl.clearChain = function () {
-            hitbtcCtrl.addChainModel = {};
-        };
 
-        hitbtcCtrl.startStopChain = function (item,status) {
-
-            $http({
-                method: 'POST',
-                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/start',
-                data: hitbtcCtrl.addOrderModel
-            }).then(function successCallback(response) {
-                var resp = response.data.respObj;
-                if (resp.result == 1) {
-                    Page.showMessage("success", "Success", "Chain is started successfully");
-                } else {
-                    Page.showMessage("error", "Error", "An error has occured. " + resp.data.message);
+        hitbtcCtrl.startChain = function (item) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, start it!'
+            }).then((result) => {
+                if (result.value) {
+                    $http({
+                        method: 'GET',
+                        url: '/hitbtc/chains/' + item.id + '/start'
+                    }).then(function successCallback(response) {
+                        var resp = response.data.respObj;
+                        if (resp.result == 1) {
+                            Page.showMessage("success", "Success", "Chain is started successfully");
+                            item.status = 2;
+                        } else {
+                            Page.showMessage("error", "Error", "An error has occured. " + resp.data.message);
+                        }
+                        hitbtcCtrl.updateProcess = false;
+                    }, function errorCallback(response) {
+                        Page.showMessage("error", "Failed", "");
+                        hitbtcCtrl.updateProcess = false;
+                    });
                 }
-                hitbtcCtrl.updateProcess = false;
-            }, function errorCallback(response) {
-                Page.showMessage("error", "Failed", "");
-                hitbtcCtrl.updateProcess = false;
+            });
+        };
+        hitbtcCtrl.stopChain = function (item) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, stop it!'
+            }).then((result) => {
+                if (result.value) {
+                    $http({
+                        method: 'GET',
+                        url: '/hitbtc/chains/' + item.id + '/stop'
+                    }).then(function successCallback(response) {
+                        var resp = response.data.respObj;
+                        if (resp.result == 1) {
+                            Page.showMessage("success", "Success", "Chain is stopped successfully");
+                            item.status = 0;
+                        } else {
+                            Page.showMessage("error", "Error", "An error has occured. " + resp.data.message);
+                        }
+                        hitbtcCtrl.updateProcess = false;
+                    }, function errorCallback(response) {
+                        Page.showMessage("error", "Failed", "");
+                        hitbtcCtrl.updateProcess = false;
+                    });
+                }
             });
         };
 
