@@ -20,10 +20,6 @@
             }
         });
 
-        $scope.$watch('hitbtcCtrl.addOrderModel.price', function (newValue, oldValue) {
-            hitbtcCtrl.addOrderModel.price = newValue;
-        });
-
         hitbtcCtrl.addChain = function () {
             hitbtcCtrl.updateProcess = true;
             $http({
@@ -60,6 +56,8 @@
                 if (resp.result == 1) {
                     Page.showMessage("success", "Başarılı", item.name + " başarıyla kaydedildi.");
                     hitbtcCtrl.updateProcess = true;
+                    var index = hitbtcCtrl.chains.indexOf(item);
+                    hitbtcCtrl.chains.splice(index, 1);
                 } else {
                     Page.showMessage("error", "Başarısız", item.name + " kaydedilirken hata oluştu. " + resp.data.message);
                     hitbtcCtrl.updateProcess = false;
@@ -123,26 +121,28 @@
                     hitbtcCtrl.pairs = resp.data;
                     //Page.showMessage("success", "Başarılı", item.name + " başarıyla kaydedildi.");
                 } else {
-                    Page.showMessage("error", "Başarısız", "Kaydedilirken hata oluştu. " + resp.data.message);
+                    Page.showMessage("error", "Fail", "An error occured while getting pairs from hitbtc" + resp.data.message);
                 }
                 hitbtcCtrl.updateProcess = false;
             }, function errorCallback(response) {
-                Page.showMessage("error", "Başarısız", "Kaydedilirken hata oluştu.");
+                Page.showMessage("error", "Fail", "Connection erro");
                 hitbtcCtrl.updateProcess = false;
             });
         };
         hitbtcCtrl.getpairs();
-        hitbtcCtrl.removeOrder = function () {
+        hitbtcCtrl.removeOrder = function (item) {
             hitbtcCtrl.updateProcess = true;
+            item.active=0;
             $http({
                 method: 'POST',
-                url: '/hitbtc/removeOrder',//??
-                data: null
+                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/updateOrder',
+                data: item
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
-                if (resp.result == 1) {
-                    hitbtcCtrl.pairs = resp.data;
+                if (resp.result == 1) {                    
                     Page.showMessage("success", "Başarılı", " başarıyla kaydedildi.");
+                    var index = hitbtcCtrl.orders.indexOf(item);
+                    hitbtcCtrl.orders.splice(index, 1);
                 } else {
                     Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
                 }
@@ -177,7 +177,7 @@
                 Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
                 hitbtcCtrl.updateProcess = false;
             });
-        };
+        };        
 
         hitbtcCtrl.updateOrder = function () {
             $('#modal-addOrder').modal('toggle');
@@ -187,8 +187,32 @@
             hitbtcCtrl.addOrderModel = {};
             $('#modal-addOrder').modal('toggle');
         };
+        hitbtcCtrl.showAddChainModal = function () {
+            hitbtcCtrl.addChainModel = {};
+            $('#modal-addChain').modal('toggle');
+        };
         hitbtcCtrl.clearChain = function () {
             hitbtcCtrl.addChainModel = {};
-        }
+        };
+
+        hitbtcCtrl.startStopChain = function (item,status) {
+
+            $http({
+                method: 'POST',
+                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/start',
+                data: hitbtcCtrl.addOrderModel
+            }).then(function successCallback(response) {
+                var resp = response.data.respObj;
+                if (resp.result == 1) {
+                    Page.showMessage("success", "Success", "Chain is started successfully");
+                } else {
+                    Page.showMessage("error", "Error", "An error has occured. " + resp.data.message);
+                }
+                hitbtcCtrl.updateProcess = false;
+            }, function errorCallback(response) {
+                Page.showMessage("error", "Failed", "");
+                hitbtcCtrl.updateProcess = false;
+            });
+        };
 
     });
