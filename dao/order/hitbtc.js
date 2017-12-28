@@ -120,9 +120,18 @@ module.exports = {
             })
     },
     hitbtc_db_chain_start_stop: function (chainId, startStop, callback) {
-
+        //status 0 = stopped, 1 = waiting, 2 = running, 3 completed
+        db.executeSQL("UPDATE kekko.chain SET status = ? WHERE id = ?", [startStop, chainId],
+            function (data, err) {
+                if (err) {
+                    console.error(err);
+                    callback(null, err);
+                } else {
+                    callback(data);
+                }
+            });
     }
-    
+
 }
 
 exports.apiName = 'hitbtc';
