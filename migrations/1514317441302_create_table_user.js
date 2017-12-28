@@ -5,5 +5,5 @@ module.exports = {
     "`password` VARCHAR(45) NOT NULL," +
     "PRIMARY KEY (`id`))" +
     "ENGINE=InnoDB DEFAULT CHARSET=utf8",
-    "down": "DROP TABLE user"
+    "down": "DROP TABLE kekko.user"
 }

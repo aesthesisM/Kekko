@@ -1,5 +1,5 @@
 module.exports = {
-    "up": "CREATE TABLE kekko.pump_dump (" +
+    "up": "CREATE TABLE kekko.dump (" +
     "`id` INT NOT NULL AUTO_INCREMENT," +
     "`pair` VARCHAR(10) NOT NULL," +
     "`amount` FLOAT NOT NULL," +
@@ -11,5 +11,5 @@ module.exports = {
     "`status` SMALLINT(2) NOT NULL," +
     "PRIMARY KEY (`id`))" +
     "ENGINE=InnoDB DEFAULT CHARSET=utf8",
-    "down": "DROP TABLE pump_dump"
+    "down": "DROP TABLE kekko.dump"
 }
