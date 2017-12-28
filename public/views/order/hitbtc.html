@@ -1,134 +1,204 @@
 <div class="row">
     <div class="col-md-6">
-        <div class="form-group">
-                <input type="text" class="form-control" ng-model="hitbtcCtrl.addChainModel.name" />
-        </div>
-        <div class="form-group text-right">
-            <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addChain()">Save</button>
-            <button type="button" class="btn btn-danger" ng-click="hitbtcCtrl.clearChain()">Clear</button>
-        </div>
         <div class="col-sm-12">
-            <div class="form-group">
-                <div class="text-right"><button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChains()">Get Chains</button></div>
-            </div>
-            <div class="box box-solid" ng-repeat="item in hitbtcCtrl.chains">
-                <div class="box-header ui-sortable-handle" style="cursor: move;">
-                    <i class="fa fa-envelope"></i>
-                    <h3 class="box-title">{{item.name}}</h3>
-                    <div class="pull-right box-tools">
-                        <button type="button" class="btn btn-danger btn-sm" data-original-title="Remove" ng-click="hitbtcCtrl.removeChain(item)">
-                            <i class="fa fa-times"></i>
-                        </button>
-                        <button type="button" class="btn btn-success btn-sm" data-original-title="Orders" ng-click="hitbtcCtrl.getChainOrders(item)">
-                            <i class="fa fa-hand-o-right"></i>
-                        </button>
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Chains</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChains()">Get Chains</button>
+                        <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.showAddChainModal()">Create New Chain</button>
                     </div>
+                </div>
+                <div class="box-body">
+                    <!--Stopped 0, Waiting 1, Started 2, Completed 3-->
+                    <ul class="todo-list ui-sortable">
+                        <li ng-repeat="item in hitbtcCtrl.chains" ng-class="[{3:'success', 2:'warning', 1:'solid', 0:danger}[item.status]]">
+                            <!-- drag handle -->
+                            <span class="handle ui-sortable-handle">
+                                <i class="fa fa-ellipsis-v"></i>
+                                <i class="fa fa-ellipsis-v"></i>
+                            </span>
+                            <!-- icon -->
+                            <i class="fa" ng-class="{'fa-chain-broken':item.status==0, 'fa-chain':item.status != 0}"></i>
+                            <!-- todo text -->
+                            <span class="text">{{item.name}}</span>
+                            <!-- General tools such as edit or delete-->
+                            <div class="tools">
+                                <button type="button" ng-show="item.status!=2 || item.status != 3" class="btn btn-danger btn-sm" title="Remove" ng-click="hitbtcCtrl.removeChain(item)">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm" title="Orders" ng-click="hitbtcCtrl.getChainOrders(item)">
+                                    <i class="fa fa-list-ul"></i>
+                                </button>
+                                <button type="button" ng-show="item.status==1" class="btn btn-success btn-sm" title="Start" ng-click="hitbtcCtrl.startStopChain(item,1)">
+                                    <i class="fa fa-play"></i>
+                                </button>
+                                <button type="button" ng-show="item.status==2" class="btn btn-warning btn-sm" title="Stop" ng-click="hitbtcCtrl.startStopChain(item,0)">
+                                    <i class="fa fa-stop"></i>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-6" ng-show="hitbtcCtrl.viewOrder">
-        <div class="col-md-12 text-right">
-            <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChainOrders()">Refresh Orders</button>
-            <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.showAddOrderModal()">Add Order</button>
-        </div>
         <div class="col-md-12">
-            <table class="table table-responsive table-bordered">
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>pair</th>
-                        <th>amount</th>
-                        <th>price</th>
-                        <th>buysell</th>
-                        <th>success</th>
-                        <th>*</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="item in hitbtcCtrl.orders">
-                        <td>{{item.id}}</td>
-                        <td>{{item.pair}}</td>
-                        <td>{{item.amount}}</td>
-                        <td>{{item.price | number:8}}</td>
-                        <td>{{item.buysell}}</td>
-                        <td>{{item.success}}</td>
-                        <td>
-                            <button type="button" class="btn-danger btn" ng-click="hitbtcCtrl.removeOrder(item)"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn-primary btn" ng-click="hitbtcCtrl.updateOrder(item)"><i class="fa fa-edit"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Orders in {{hitbtcCtrl.currentChain.name}} chain</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-info" ng-click="hitbtcCtrl.getChainOrders()">Refresh Orders</button>
+                        <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.showAddOrderModal()">Add Order</button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>pair</th>
+                                <th>amount</th>
+                                <th>price</th>
+                                <th>buysell</th>
+                                <th>success</th>
+                                <th>*</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in hitbtcCtrl.orders" ng-class="{'has-success':item.success == 1}">
+                                <td>{{item.id}}</td>
+                                <td>{{item.pair}}</td>
+                                <td>{{item.amount}}</td>
+                                <td>{{item.price | number:8}}</td>
+                                <td>{{item.buysell}}</td>
+                                <td>
+                                    <span class="badge" ng-class="{'bg-yellow':item.success==0, 'bg-green':item.success == 1}">
+                                        <i class="fa fa-2x" ng-class="{'fa-clock-o':item.success==0, 'fa-hand-peace-o':item.success == 1}"></i>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn-danger btn btn-sm" ng-show="item.success!=1" ng-click="hitbtcCtrl.removeOrder(item)">
+                                        <i class="fa fa-remove"></i>
+                                    </button>
+                                    <button type="button" class="btn-primary btn btn-sm" ng-show="item.success!=1" ng-click="hitbtcCtrl.updateOrder(item)">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="modal fade" id="modal-addOrder">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="fa fa-fw fa-crosshairs"></i></span>
-                </button>
-                <h4 class="modal-title">Save order</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">Pair</label>
-                            <div class="col-sm-8">
-                                <ui-select ng-model="hitbtcCtrl.addOrderModel.pairModel" theme="bootstrap">
-                                    <ui-select-match placeholder="Select or search a pair in the list...">{{$select.selected.symbol}}</ui-select-match>
-                                    <ui-select-choices repeat="item in hitbtcCtrl.pairs | filter: $select.search">
-                                        <div ng-bind-html="item.symbol | highlight: $select.search"></div>
-                                        <small ng-bind-html="item.last"></small>
-                                    </ui-select-choices>
-                                </ui-select>
+    <div class="modal fade" id="modal-addOrder">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">
+                            <i class="fa fa-remove"></i>
+                        </span>
+                    </button>
+                    <h4 class="modal-title">Save order</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">Pair</label>
+                                <div class="col-sm-8">
+                                    <ui-select ng-model="hitbtcCtrl.addOrderModel.pairModel" theme="bootstrap">
+                                        <ui-select-match placeholder="Select or search a pair in the list...">{{$select.selected.symbol}}</ui-select-match>
+                                        <ui-select-choices repeat="item in hitbtcCtrl.pairs | filter: $select.search">
+                                            <div ng-bind-html="item.symbol | highlight: $select.search"></div>
+                                            <small ng-bind-html="item.last"></small>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">Amount</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.amount" placeholder="Amount" />
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">Amount</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.amount" placeholder="Amount" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">Price</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.price" placeholder="Price" />
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">Price</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" ng-model="hitbtcCtrl.addOrderModel.price" placeholder="Price" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">Type</label>
-                            <div class="col-sm-8">
-                                <select class="form-control" ng-model="hitbtcCtrl.addOrderModel.buysell">
-                                    <option value="buy">Buy</option>
-                                    <option value="sell">Sell</option>
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">Type</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" ng-model="hitbtcCtrl.addOrderModel.buysell">
+                                        <option value="buy">Buy</option>
+                                        <option value="sell">Sell</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-4">Order</label>
-                            <div class="col-sm-8">
-                                <label>{{hitbtcCtrl.orders.length}}</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-12 text-right">
-                                <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()"><i class="fa fa-save"></i> &nbsp; Save</button>
+                            <div class="form-group">
+                                <div class="col-sm-6">
+                                    <label class="control-label col-sm-4">Order</label>
+                                    <div class="col-sm-8">
+                                        <label class="text-left">{{hitbtcCtrl.orders.length}}</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label col-sm-4">Total P.</label>
+                                    <div class="col-sm-8 text-left">
+                                        <label class="form-group">{{hitbtcCtrl.addOrderModel.price * hitbtcCtrl.addOrderModel.amount}}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Discard/Close</button>
+                    <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()">
+                        <i class="fa fa-save"></i> &nbsp;Add Order</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline" ng-click="hitbtcCtrl.addOrder()">Save changes</button>
-            </div>
+            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-content -->
+        <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
-</div>
+    <div class="modal fade" id="modal-addChain">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">
+                            <i class="fa fa-remove"></i>
+                        </span>
+                    </button>
+                    <h4 class="modal-title">Save Chain</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">Chain Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" ng-model="hitbtcCtrl.addChainModel.name" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Discard/Close</button>
+                    <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addChain()">
+                        <i class="fa fa-save"></i> &nbsp;Add Chain</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
