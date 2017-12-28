@@ -3,7 +3,7 @@ module.exports = {
     "`id` INT NOT NULL AUTO_INCREMENT," +
     "`pair` VARCHAR(10) NOT NULL," +
     "`amount` FLOAT NOT NULL," +
-    "`buysell` VARCHAR(4) NOT NULL," +
+    "`buysell` VARCHAR(4) DEFAULT 'buy'," +
     "`buy_lower_percent` INT NOT NULL," +
     "`sell_higher_percent` INT NOT NULL," +
     "`check_price` FLOAT NOT NULL," +
