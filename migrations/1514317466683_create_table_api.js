@@ -6,5 +6,5 @@ module.exports = {
     "`secretKey` varchar(45) DEFAULT NULL," +
     "PRIMARY KEY (`id`)" +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
-    "down": ""
+    "down": "DROP TABLE kekko.api"
 }

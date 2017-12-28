@@ -8,28 +8,28 @@ var orderDao = require('../../dao/order/hitbtc');
 var hitBTCClient;
 var hitBTCSocketUrl = "wss://api.hitbtc.com/api/2/ws";
 var orderListener = new wsOrderListener(orderManager);
-var pairListener = new wsPairListener(pairManager);
+var dumpListener = new wsDumpListener(dumpManager);
 var walletListener = new wsWalletListener(walletManager);
 var chainOrderSignature = "Kekko.chain#";
 var pumpDumpOrderSignature = "Kekko.pumpDump#";
 
-//Socket Pair Listener
-function wsPairListener(callback) {
+//Socket dump Listener
+function wsDumpListener(callback) {
     var ws = null;
     ws = new WebSocket(hitBTCSocketUrl, null, {
         handshakeTimeout: 5500
     });
 
     ws.on('open', function () {
-        console.log('WSPairListener Websocket opened');
+        console.log('wsDumpListener Websocket opened');
     });
     ws.on('close', function () {
-        console.log('WSPairListener Websocket closed');
+        console.log('wsDumpListener Websocket closed');
     });
 
     ws.on('error', function (err) {
         callback(err);
-        console.error("wsPairListener error :" + err);
+        console.error("wsDumpListener error :" + err);
     });
 
     ws.on('message', function (data) {
@@ -40,7 +40,7 @@ function wsPairListener(callback) {
 
 }
 
-wsPairListener.prototype._listen = function (pair, listening) {
+wsDumpListener.prototype._listen = function (pair, listening) {
 
     var obj = {
         "method": "subscribeTicker",
@@ -59,11 +59,7 @@ wsPairListener.prototype._listen = function (pair, listening) {
 
 }
 
-wsPairListener.prototype._authorize = function (data) {
-    this.ws.send(JSON.stringify(data));
-}
-
-wsPairListener.prototype._close = function () {
+wsDumpListener.prototype._close = function () {
     this.ws.close();
 }
 
@@ -214,12 +210,35 @@ function tryParseInt(str) {
     return result;
 }
 
-var pairCount = 0;
-function pairManager(err, socketData) {
+var dumpPairs = {
+
+}
+//status 0 = canceled , 1 = waiting, 2 running, 3 completed
+function dumpManager(err, socketData) {
+    console.log(socketData);
+    var rightNow = new Date().getTime();
+    var lastTime = null;
     if (err) {
         console.error(err);
     } else {
-        console.log((++pairCount) + " - " + socketData);
+        if (lastTime == null || rightNow + 20000 > lastTime) { // check prices every 20 second
+
+            if (_has(socketData, 'method')) { //which means pair data is streaming
+                if (_has(dumpPairs, socketData.params.symbol)) {
+                    if (dumpPairs[socketData.params.symbol].buyHappened == true) { //which is a buy order happened and this dump has been catched
+                        //now place a new order depending on this. last price  but first check 
+                    } else if (dumpPairs[socketData.params.symbol].ordered == true) {//check current price. if its below given percents then cancel order 
+
+                    } else if (dumpPairs[socketData.params.symbol].ordered == false) {//check current price and put order with given percentages
+
+                    }
+                } 
+            }
+            lastTime = rightNow + 20000; //update lasttime
+
+            console.log(JSON.stringify(socketData));
+        }
+
     }
 }
 
@@ -365,19 +384,19 @@ function orderManager(err, socketData) {
 
 setTimeout(function () {
 
-    hitBTCClient = new HitBTCAuth('ca50230befd43870f2510003414e4e67', '');
+    hitBTCClient = new HitBTCAuth('', '');
     //1 authenticate
-    orderListener._authorize(hitBTCClient.auth);
-    //pairListener._authorize(authObj);
-    walletListener._authorize(hitBTCClient.auth);
-    //pairListener._listen("EOSUSD", true);
-    //pairListener._listen("XRPUSDT", true);
-    orderListener._listen();
-    walletListener._listen();
+    //orderListener._authorize(hitBTCClient.auth);
+    //walletListener._authorize(hitBTCClient.auth);
+    //dumpListener._listen("EOSUSD", true);
+    //dumpListener._listen("XRPUSDT", true);
+    //orderListener._listen();
+    //walletListener._listen();
+    dumpListener._listen("ETHUSD", true);
     setTimeout(function () {
-        //pairListener._listen("EOSUSD", false);
-        //pairListener._listen("XRPUSDT", false);
-        //pairListener._close();
+        //dumpListener._listen("EOSUSD", false);
+        //dumpListener._listen("XRPUSDT", false);
+        //dumpListener._close();
         //orderListener._close();
     }, 5000);
 }, 6000);

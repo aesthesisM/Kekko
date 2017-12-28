@@ -9,5 +9,5 @@ module.exports = {
     "KEY `api_fk__idx` (`api_id_fk`)," +
     "CONSTRAINT `api_fk_` FOREIGN KEY (`api_id_fk`) REFERENCES `api` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
     "ENGINE=InnoDB DEFAULT CHARSET=utf8",
-    "down": "DROP TABLE chain"
+    "down": "DROP TABLE kekko.chain"
 }

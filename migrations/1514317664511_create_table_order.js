@@ -21,5 +21,5 @@ module.exports = {
     "CONSTRAINT `chain_fk` FOREIGN KEY (`chain_id_fk`) REFERENCES `chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION," +
     "CONSTRAINT `pumdump_fk` FOREIGN KEY (`pump_dump_id_fk`) REFERENCES `pump_dump` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
     "ENGINE=InnoDB DEFAULT CHARSET=utf8",
-    "down": "DROP TABLE order"
+    "down": "DROP TABLE kekko.order"
 }

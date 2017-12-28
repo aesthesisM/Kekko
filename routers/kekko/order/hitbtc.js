@@ -117,6 +117,71 @@ router.post('/chains/:chainId/updateOrder', function (req, res, next) {
     });
 
 });
+//status 0 canceled, 1 waiting, 2 running, 3 completed
+router.get('/chains/:chainId/start', function (req, res, next) {
+    async.series(
+        [
+            function (callback) {
+                hitOrderManager.hitbtc_db_chain_start_stop(req.params.chainId, 2, function (data, err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        callback();
+                    }
+                })
+            },
+            function (callback) {
+
+            }
+        ],
+        function (err) {
+            if (err) {
+                responseObject.data = null;
+                responseObject.message = 'Failed at starting chain in hitbtc with chain id:' + req.params.chainId;
+                responseObject.result = -1;
+                res.send({ respObj: responseObject });
+            } else {
+                responseObject.data = null;
+                responseObject.message = 'Chain started successfully!';
+                responseObject.result = 1;
+                res.send({ respObj: responseObject });
+            }
+        }
+    )
+
+});
+//status 0 canceled, 1 waiting, 2 running, 3 completed
+router.get('/chains/:chainId/stop', function (req, res, next) {
+    async.series(
+        [
+            function (callback) {
+                hitOrderManager.hitbtc_db_chain_start_stop(req.params.chainId, 0, function (data, err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        callback();
+                    }
+                })
+            },
+            function (callback) {
+
+            }
+        ],
+        function (err) {
+            if (err) {
+                responseObject.data = null;
+                responseObject.message = 'Failed at starting chain in hitbtc with chain id:' + req.params.chainId;
+                responseObject.result = -1;
+                res.send({ respObj: responseObject });
+            } else {
+                responseObject.data = null;
+                responseObject.message = 'Chain stopped successfully!';
+                responseObject.result = 1;
+                res.send({ respObj: responseObject });
+            }
+        }
+    )
+});
 
 //localhost:50000/hitbtc/tickers
 router.get('/tickers', function (req, res, next) {

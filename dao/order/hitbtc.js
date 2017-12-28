@@ -30,7 +30,7 @@ module.exports = {
 
     //active = deleted
     //status = 0 waiting, 1 running , 2 success
-    
+
     hitbtc_db_updateChain: function (chainObj, callback) {
         db.executeSQL("UPDATE kekko.chain set active=?,status=?,name=? WHERE id=?", [parseInt(chainObj.active), parseInt(chainObj.status), chainObj.name, parseInt(chainObj.id)], function (data, err) {
             if (err) {
@@ -64,25 +64,8 @@ module.exports = {
             })
     },
     hitbtc_db_addOrder: function (orderObj, chain_id_fk, callback) {
-
-        /*
-        check db if chain is active then dont allow to add order that chain
-        */
-        /*
-        async.series(
-            [
-                function (callbackInner) {
-                    db.executeSQL("SELECT * FROM kekko.chain WHERE id = ? and active=0")
-                },
-                function (callbackInner) {
-
-                }
-            ], function (err) {
-
-            });
-            */             
         db.executeSQL("INSERT INTO kekko.order (pair,buysell,amount,price,total_price,order_,order_created_time,chain_id_fk,active,stop_loss,stop_loss_price) VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP,?,?,?,?)",
-            [orderObj.pair, orderObj.buysell, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.amount)*parseFloat(orderObj.price), parseInt(orderObj.order_), parseInt(chain_id_fk), 1, 0, 0],
+            [orderObj.pair, orderObj.buysell, parseFloat(orderObj.amount), parseFloat(orderObj.price), parseFloat(orderObj.amount) * parseFloat(orderObj.price), parseInt(orderObj.order_), parseInt(chain_id_fk), 1, 0, 0],
             function (data, err) {
                 if (err) {
                     console.error(err);
@@ -93,7 +76,7 @@ module.exports = {
             });
 
 
-            
+
     },
     hitbtc_db_getOrder: function (orderId, callback) {
         db.executeSQL("SELECT * FROM kekko.order WHERE id = ?",
@@ -135,8 +118,21 @@ module.exports = {
                     callback(data);
                 }
             })
+    },
+    hitbtc_db_chain_start_stop: function (chainId, startStop, callback) {
+        //status 0 = stopped, 1 = waiting, 2 = running, 3 completed
+        db.executeSQL("UPDATE kekko.chain SET status = ? WHERE id = ?", [startStop, chainId],
+            function (data, err) {
+                if (err) {
+                    console.error(err);
+                    callback(null, err);
+                } else {
+                    callback(data);
+                }
+            });
     }
-};
+
+}
 
 exports.apiName = 'hitbtc';
 
