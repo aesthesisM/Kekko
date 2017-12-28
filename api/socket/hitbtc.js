@@ -442,7 +442,7 @@ function orderManager(err, socketData) {
 }
 
 setTimeout(function () {
-
+    //
     hitBTCClient = new HitBTCAuth('','');
     //1 authenticate
     orderListener._authorize(hitBTCClient.auth);
