@@ -33,6 +33,7 @@
                     hitbtcCtrl.addChainModel.id = resp.data;
                     hitbtcCtrl.chains.push(hitbtcCtrl.addChainModel);
                     hitbtcCtrl.addChainModel = {};
+                    hitbtcCtrl.showAddChainModal();
                 } else {
                     Page.showMessage("error", "Başarısız", "Kaydedilirken hata oluştu. " + resp.data.message);
                 }
@@ -125,7 +126,7 @@
                 }
                 hitbtcCtrl.updateProcess = false;
             }, function errorCallback(response) {
-                Page.showMessage("error", "Fail", "Connection erro");
+                Page.showMessage("error", "Fail", "Connection error");
                 hitbtcCtrl.updateProcess = false;
             });
         };
@@ -169,6 +170,7 @@
                     hitbtcCtrl.addOrderModel.success = 0;// new order has not accomplished yet.
                     hitbtcCtrl.orders.push(hitbtcCtrl.addOrderModel);
                     hitbtcCtrl.addOrderModel = {};
+                    hitbtcCtrl.showAddOrderModal();
                 } else {
                     Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
                 }
@@ -215,4 +217,5 @@
             });
         };
 
+        hitbtcCtrl.getChains();
     });
