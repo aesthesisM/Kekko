@@ -14,12 +14,12 @@ module.exports = {
     "`active` tinyint(1) NOT NULL DEFAULT 1," +
     "`stop_loss` tinyint(1) DEFAULT NULL," +
     "`stop_loss_price` float DEFAULT NULL," +
-    "`pump_dump_id_fk` int(11) DEFAULT NULL," +
+    "`dump_id_fk` int(11) DEFAULT NULL," +
     "PRIMARY KEY (`id`)," +
     "KEY `order_chain_fk_idx` (`chain_id_fk`)," +
-    "KEY `pumdump_fk_idx` (`pump_dump_id_fk`)," +
+    "KEY `dump_fk_idx` (`dump_id_fk`)," +
     "CONSTRAINT `chain_fk` FOREIGN KEY (`chain_id_fk`) REFERENCES `chain` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION," +
-    "CONSTRAINT `pumdump_fk` FOREIGN KEY (`pump_dump_id_fk`) REFERENCES `pump_dump` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
+    "CONSTRAINT `dump_fk` FOREIGN KEY (`dump_id_fk`) REFERENCES `dump` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)" +
     "ENGINE=InnoDB DEFAULT CHARSET=utf8",
     "down": "DROP TABLE kekko.order"
 }

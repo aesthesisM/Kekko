@@ -11,7 +11,7 @@ var orderListener = new wsOrderListener(orderManager);
 var dumpListener = new wsDumpListener(dumpManager);
 var walletListener = new wsWalletListener(walletManager);
 var chainOrderSignature = "Kekko.chain#";
-var pumpDumpOrderSignature = "Kekko.pumpDump#";
+var dumpOrderSignature = "Kekko.dump#";
 
 //Socket dump Listener
 function wsDumpListener(callback) {
@@ -61,6 +61,10 @@ wsDumpListener.prototype._listen = function (pair, listening) {
 
 wsDumpListener.prototype._close = function () {
     this.ws.close();
+}
+
+wsDumpListener.prototype._authorize = function (data) {
+    this.ws.send(JSON.stringify(data));
 }
 
 
@@ -211,7 +215,12 @@ function tryParseInt(str) {
 }
 
 var dumpPairs = {
-
+    /*
+    "ETHUSD":{
+        buyHappened: false,
+        sellHappened:false,
+        ordered:false
+    }*/
 }
 //status 0 = canceled , 1 = waiting, 2 running, 3 completed
 function dumpManager(err, socketData) {
@@ -221,23 +230,28 @@ function dumpManager(err, socketData) {
     if (err) {
         console.error(err);
     } else {
-        if (lastTime == null || rightNow + 20000 > lastTime) { // check prices every 20 second
 
-            if (_has(socketData, 'method')) { //which means pair data is streaming
-                if (_has(dumpPairs, socketData.params.symbol)) {
-                    if (dumpPairs[socketData.params.symbol].buyHappened == true) { //which is a buy order happened and this dump has been catched
-                        //now place a new order depending on this. last price  but first check 
-                    } else if (dumpPairs[socketData.params.symbol].ordered == true) {//check current price. if its below given percents then cancel order 
+        if (_has(socketData, 'method') && socketData.method == 'ticker') { //which means pair data is streaming
+            if (_has(dumpPairs, socketData.params.symbol)) {
+                if (dumpPairs[socketData.params.symbol].buyHappened == true && dumpPairs[socketData.params.symbol].sellHappened == false) {
+                    //which is a buy order happened and this dump has been catched
+                    //now place a new order depending on this. last price  but first check percentages
 
-                    } else if (dumpPairs[socketData.params.symbol].ordered == false) {//check current price and put order with given percentages
+                } else if (dumpPairs[socketData.params.symbol].ordered == true && dumpPairs[socketData.params.symbol].buyHappened == false) {
+                    //check current price. if its below given percents then cancel order 
+                    if (lastTime == null || rightNow + 20000 > lastTime) { // check prices every 10 second
+                        lastTime = rightNow + 10000; /*  *///update lasttime
 
                     }
-                } 
-            }
-            lastTime = rightNow + 20000; //update lasttime
+                } else if (dumpPairs[socketData.params.symbol].ordered == false) {//check current price and put order with given percentages
 
-            console.log(JSON.stringify(socketData));
+                }
+            }
         }
+
+
+        console.log(JSON.stringify(socketData));
+
 
     }
 }
@@ -353,18 +367,63 @@ function orderManager(err, socketData) {
                 } else {
                     console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
-            } else if (socketData.params.clientOrderId.indexOf(pumpDumpOrderSignature) > 0) { //pump_dump_listener works here for completed orders
+            } else if (socketData.params.clientOrderId.indexOf(dumpOrderSignature) > 0) { //pump_dump_listener works here for completed orders
                 //pump_dump order has been completed with success lets update it and give another order by giving conditions
                 orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1));
+
+                dumpPairs[socketData.params.symbol].ordered = false;
+                dumpPairs[socketData.params.symbol].buyHappened = true;
+                dumpPairs[socketData.params.symbol].sellHappened = false;
+
+                if (socketData.params.side == 'buy') {
+                    dumpPairs[socketData.params.symbol].buyHappened = true;
+                    dumpPairs[socketData.params.symbol].sellHappened = false;
+                } else if (socketData.params.side == 'sell') {
+                    dumpPairs[socketData.params.symbol].buyHappened = false;
+                    dumpPairs[socketData.params.symbol].sellHappened = true;
+                }
+
                 var completedOrder = null;
                 async.series(
                     [
+                        function (callback) {
+                            orderDao.hitbtc_db_getOrder(orderId, function (data, err) {
+                                if (err) {
+                                    completedOrder = null;
+                                } else {
+                                    completedOrder = data;
+                                }
+                            });
+                        },
+                        function (callback) {
+                            orderDao.hitbtc_db_completeOrder(orderId, 1, function (data, err) {
+                                if (errr) {
+                                    callback(err);
+                                } else {
+                                    completedOrder = data;
+                                    callback();
+                                }
+                            });
+                        },
                         function (callback) {
 
                         }
                     ],
                     function (err) {
+                        if (err) {
 
+                        } else {
+                            if (completedOrder != null) {
+                                if (compltederOrder.buysell == 'buy') {
+                                    // buy completed
+                                    //put a sell order
+
+                                } else if (completedOrder.buysell == 'sell') {
+                                    //sell completed
+                                    //put a buy order
+                                }
+                            }
+                        }
                     });
 
             }
@@ -384,15 +443,15 @@ function orderManager(err, socketData) {
 
 setTimeout(function () {
 
-    hitBTCClient = new HitBTCAuth('', '');
+    hitBTCClient = new HitBTCAuth('','');
     //1 authenticate
-    //orderListener._authorize(hitBTCClient.auth);
+    orderListener._authorize(hitBTCClient.auth);
     //walletListener._authorize(hitBTCClient.auth);
-    //dumpListener._listen("EOSUSD", true);
+    dumpListener._authorize(hitBTCClient.auth);
+    dumpListener._listen("EOSUSD", true);
     //dumpListener._listen("XRPUSDT", true);
-    //orderListener._listen();
+    orderListener._listen();
     //walletListener._listen();
-    dumpListener._listen("ETHUSD", true);
     setTimeout(function () {
         //dumpListener._listen("EOSUSD", false);
         //dumpListener._listen("XRPUSDT", false);
