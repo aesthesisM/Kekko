@@ -70,7 +70,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="item in hitbtcCtrl.orders" ng-class="{'has-success':item.success == 1}">
-                                <td>{{item.id}}</td>
+                                <td>{{$index + 1}}</td>
                                 <td>{{item.pair}}</td>
                                 <td>{{item.amount}}</td>
                                 <td>{{item.price | number:8}}</td>
@@ -84,7 +84,7 @@
                                     <button type="button" class="btn-danger btn btn-sm" ng-show="item.success!=1" ng-click="hitbtcCtrl.removeOrder(item)">
                                         <i class="fa fa-remove"></i>
                                     </button>
-                                    <button type="button" class="btn-primary btn btn-sm" ng-show="item.success!=1" ng-click="hitbtcCtrl.updateOrder(item)">
+                                    <button type="button" class="btn-primary btn btn-sm" ng-show="item.success!=1" ng-click="hitbtcCtrl.showUpdateOrderModal(item)">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                 </td>
@@ -161,8 +161,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Discard/Close</button>
-                    <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()">
+                    <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.addOrder()" ng-show="!hitbtcCtrl.addOrderModel.id">
                         <i class="fa fa-save"></i> &nbsp;Add Order</button>
+                    <button type="button" class="btn btn-success" ng-click="hitbtcCtrl.updateOrder()" ng-show="hitbtcCtrl.addOrderModel.id">
+                        <i class="fa fa-save"></i> &nbsp;Update Order</button>
                 </div>
             </div>
             <!-- /.modal-content -->

@@ -15,7 +15,7 @@
         hitbtcCtrl.orders = [];
 
         $scope.$watch('hitbtcCtrl.addOrderModel.pairModel', function (newValue, oldValue) {
-            if (hitbtcCtrl.addOrderModel.pairModel != null) {
+            if (hitbtcCtrl.addOrderModel.pairModel != null && hitbtcCtrl.addOrderModel.pairModel.last != null) {
                 hitbtcCtrl.addOrderModel.price = hitbtcCtrl.addOrderModel.pairModel.last;
             }
         });
@@ -177,7 +177,9 @@
         hitbtcCtrl.addOrder = function () {
             hitbtcCtrl.updateProcess = true;
             hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pairModel.symbol;
-            hitbtcCtrl.addOrderModel.order_ = hitbtcCtrl.orders.length + 1;
+            if (hitbtcCtrl.addOrderModel.id == undefined || hitbtcCtrl.addOrderModel.id == null) {
+                hitbtcCtrl.addOrderModel.order_ = hitbtcCtrl.orders.length + 1;
+            }
             $http({
                 method: 'POST',
                 url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/addOrder',
@@ -185,7 +187,7 @@
             }).then(function successCallback(response) {
                 var resp = response.data.respObj;
                 if (resp.result == 1) {
-                    Page.showMessage("success", "Success", " başarıyla kaydedildi.");
+                    Page.showMessage("success", "Success", "Adding order is successful.");
                     hitbtcCtrl.addOrderModel.id = resp.data;//newly added order's id
                     hitbtcCtrl.addOrderModel.success = 0;// new order has not accomplished yet.
                     hitbtcCtrl.orders.push(hitbtcCtrl.addOrderModel);
@@ -201,8 +203,34 @@
             });
         };
 
-        hitbtcCtrl.updateOrder = function (item) {
+        hitbtcCtrl.updateOrder = function () {
+            hitbtcCtrl.updateProcess = true;
+            hitbtcCtrl.addOrderModel.pair = hitbtcCtrl.addOrderModel.pairModel.symbol;
+            $http({
+                method: 'POST',
+                url: '/hitbtc/chains/' + hitbtcCtrl.currentChain.id + '/updateOrder',
+                data: hitbtcCtrl.addOrderModel
+            }).then(function successCallback(response) {
+                var resp = response.data.respObj;
+                if (resp.result == 1) {
+                    Page.showMessage("success", "Success", "Updating order is successful.");
+                    hitbtcCtrl.addOrderModel = {};
+                    hitbtcCtrl.showAddOrderModal();
+                } else {
+                    Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu. " + resp.data.message);
+                }
+                hitbtcCtrl.updateProcess = false;
+            }, function errorCallback(response) {
+                Page.showMessage("error", "Başarısız", " kaydedilirken hata oluştu.");
+                hitbtcCtrl.updateProcess = false;
+            });
+        };
+
+
+        hitbtcCtrl.showUpdateOrderModal = function (item) {
+            console.log(item);
             hitbtcCtrl.addOrderModel = item;
+            hitbtcCtrl.addOrderModel.pairModel = { symbol: item.pair };
             $('#modal-addOrder').modal('toggle');
         };
 
