@@ -102,6 +102,17 @@ module.exports = {
                 }
             });
     },
+    hitbtc_db_cancelOrder: function (id, callback) {
+        db.executeSQL("UPDATE kekko.order SET active=0 WHERE id =?", [id],
+            function (data, err) {
+                if (err) {
+                    console.error(err);
+                    callback(null, err);
+                } else {
+                    calback(data);
+                }
+            });
+    },
     hitbtc_db_completeOrder: function (orderId, result, callback) {
         var order_success_time = null;
         if (result > 0) {

@@ -113,7 +113,7 @@ wsOrderListener.prototype._placeOrder = function (orderId, pair, price, amount, 
     var obj = {
         "method": "newOrder",
         "params": {
-            "clientOrderId": orderSignature + orderId,
+            "clientOrderId": orderSignature + orderId + "$" + (new Date().getTime()),
             "symbol": pair,
             "side": buysell,
             "price": price,
@@ -239,8 +239,10 @@ function dumpManager(err, socketData) {
 
                 } else if (dumpPairs[socketData.params.symbol].ordered == true && dumpPairs[socketData.params.symbol].buyHappened == false) {
                     //check current price. if its below given percents then cancel order 
-                    if (lastTime == null || rightNow + 20000 > lastTime) { // check prices every 10 second
+                    if (lastTime == null || rightNow + 10000 > lastTime) { // check prices every 10 second
                         lastTime = rightNow + 10000; /*  *///update lasttime
+
+
 
                     }
                 } else if (dumpPairs[socketData.params.symbol].ordered == false) {//check current price and put order with given percentages
@@ -312,7 +314,7 @@ function orderManager(err, socketData) {
             var nextOrder = null;
             var success = false;
             if (socketData.params.clientOrderId.indexOf(chainOrderSignature) > 0) { //kekko chain order listener
-                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1));
+                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1, socketData.params.clientOrderId.indexOf("$")));
                 async.series(
                     [
                         function (callback) {
@@ -367,12 +369,12 @@ function orderManager(err, socketData) {
                 } else {
                     console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
-            } else if (socketData.params.clientOrderId.indexOf(dumpOrderSignature) > 0) { //pump_dump_listener works here for completed orders
+            } else if (socketData.params.clientOrderId.indexOf(dumpOrderSignature) > 0) { //dump_listener works here for completed orders
                 //pump_dump order has been completed with success lets update it and give another order by giving conditions
-                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1));
+                orderId = tryParseInt(socketData.params.clientOrderId.substring(socketData.params.clientOrderId.indexOf("#") + 1, socketData.params.clientOrderId.indexOf("$")));
 
                 dumpPairs[socketData.params.symbol].ordered = false;
-                dumpPairs[socketData.params.symbol].buyHappened = true;
+                dumpPairs[socketData.params.symbol].buyHappened = false;
                 dumpPairs[socketData.params.symbol].sellHappened = false;
 
                 if (socketData.params.side == 'buy') {
@@ -431,6 +433,8 @@ function orderManager(err, socketData) {
         } else if (socketData.params.status == 'canceled' || socketData.params.status == 'expired') { // if any order is expired or cancelled then stop the whole chain if its a chain order
             if (socketData.params.clientOrderId.indexOf(chainOrderSignature) > 0) {//found chain order id and will stop chain and update canceled order
 
+            } else if (socketData.params.clientOrderId.indexOf(dumpOrderSignature) > 0) {
+
             }
             console.log('cancelled order :' + JSON.stringify(socketData));
         } else if (socketData.params.status == 'new') { // no need to listen this event. just in case 
@@ -443,12 +447,12 @@ function orderManager(err, socketData) {
 
 setTimeout(function () {
     //
-    hitBTCClient = new HitBTCAuth('','');
+    hitBTCClient = new HitBTCAuth('', '');
     //1 authenticate
     orderListener._authorize(hitBTCClient.auth);
     //walletListener._authorize(hitBTCClient.auth);
-    dumpListener._authorize(hitBTCClient.auth);
-    dumpListener._listen("EOSUSD", true);
+    //dumpListener._authorize(hitBTCClient.auth);
+    //dumpListener._listen("EOSUSD", true);
     //dumpListener._listen("XRPUSDT", true);
     orderListener._listen();
     //walletListener._listen();

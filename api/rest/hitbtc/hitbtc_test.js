@@ -1,6 +1,8 @@
 var HitBTC = require('./hitbtc');
 var client = new HitBTC('', '', 'live');
 
+
+
 /*
 
 */

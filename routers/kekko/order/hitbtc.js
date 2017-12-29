@@ -162,9 +162,6 @@ router.get('/chains/:chainId/stop', function (req, res, next) {
                         callback();
                     }
                 })
-            },
-            function (callback) {
-
             }
         ],
         function (err) {
@@ -174,6 +171,7 @@ router.get('/chains/:chainId/stop', function (req, res, next) {
                 responseObject.result = -1;
                 res.send({ respObj: responseObject });
             } else {
+                
                 responseObject.data = null;
                 responseObject.message = 'Chain stopped successfully!';
                 responseObject.result = 1;
