@@ -50,7 +50,7 @@ BittrexClient.prototype._get = function (destination, params, callback) {
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(30000);
+        socket.setTimeout(5000); //5 sec
         socket.on('timeout', function () {
             req.abort();
         });
