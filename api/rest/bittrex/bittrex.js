@@ -39,9 +39,14 @@ BittrexClient.prototype._get = function (destination, params, callback) {
             try {
                 var json = JSON.parse(buffer);
             } catch (err) {
-                return callback(err);
+                return callback(null, err);
             }
-            callback(json);
+            if (Object.keys(params).length > 0 && params.marketName != undefined) {
+                callback(json, null, params.marketName);
+            } else {
+                callback(json);
+            }
+
         });
     });
 

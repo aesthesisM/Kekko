@@ -9,11 +9,11 @@ var quickTermCount = 18;
 var bittrexClient = new Bittrex("bambam");
 
 
-function calculateMovingAvarage(data) { //calculate depending on C which means close price
-    if(data==undefined){
+function calculateMovingAvarage(data, pair) { //calculate depending on C which means close price
+    if (data == undefined) {
         console.log("socket null data");
         return;
-    } 
+    }
     var longTermAvarage = 0, midTermAvarage = 0, shortTermAvarage = 0, quickTermAvarage = 0, length = data.length - longTermCount - 1;
     for (var i = 0; i <= longTermCount; i++) {
         if (longTermCount - i < quickTermCount) {
@@ -35,56 +35,60 @@ function calculateMovingAvarage(data) { //calculate depending on C which means c
 
     var maxDifference = ((longTermAvarage - quickTermAvarage) / longTermAvarage) * 100;
     if (longTermAvarage > midTermAvarage && midTermAvarage > shortTermAvarage && shortTermAvarage > quickTermAvarage) {
-        console.log("longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | quicTerm :" + quickTermAvarage + " | maxDifference :" + maxDifference);
+        console.log("pair : " + pair + " | longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | quicTerm :" + quickTermAvarage + " | maxDifference :" + maxDifference);
     }
 }
 /*
 bittrexClient._getHistoricalData({ marketName: "BTC-RDD", tickInterval: "thirtyMin", _: new Date().getTime() },
-                        function (data, err) {
+                        function (data, err,pair) {
                             if (err) {
                                 console.error(err)
                             } else {
-                                //console.log("Working with :" + data.pair);
-                                calculateMovingAvarage(data.result);
+                                calculateMovingAvarage(data.result,pair);
                             }
                         }
                     );
                     */
 var pairs = [];
-var j = 0;
-bittrexClient._getPairs(
-    function (data, err) {
-        if (err) {
-            console.error(err);
-        } else if (Object.keys(data.result).length > 0) {
-            var historyObj = {};
-            for (var i = 0; i < data.result.length; i++) {
+var j;
 
-                if ((data.result[i]["MarketName"]).startsWith("BTC")) {
-                    pairs.push(data.result[i]["MarketName"]);
+setInterval(
+    function () {
+        j = 0;
+        if (pairs == null) {
+            bittrexClient._getPairs(
+                function (data, err) {
+                    if (err) {
+                        console.error(err);
+                    } else if (Object.keys(data.result).length > 0) {
+                        var historyObj = {};
+                        for (var i = 0; i < data.result.length; i++) {
+
+                            if ((data.result[i]["MarketName"]).startsWith("BTC")) {
+                                pairs.push(data.result[i]["MarketName"]);
+                            }
+                        }
+                        bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
+                    }
                 }
-            }
-            console.log("working with :"+pairs[0]);
-            bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() },recursive
             );
-
+        } else {
+            bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
         }
-    }
-);
+    }, 1800000);//30 min
 
-var recursive = function (data, err) {
+var recursive = function (data, err, pair) {
     if (err) {
         console.error(err);
-        console.log("working with :"+pairs[j]);
-        bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() },recursive);
+        bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
     } else {
-        calculateMovingAvarage(data.result);
-        if (j < pairs.length-1) {
+        calculateMovingAvarage(data.result, pair);
+        if (j < pairs.length - 1) {
             j++;
-            console.log("working with :"+pairs[j]);
-            bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() },recursive);
-        }else{
-            console.log("finished");
+            bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
+        } else {
+            console.log("finished for now ;)");
+            j = 0;
         }
     }
 }
