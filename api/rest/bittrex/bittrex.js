@@ -72,6 +72,10 @@ BittrexClient.prototype._getPairs = function (callback) {
     this._get("/api/v1.1/public/getmarkets", null, callback);
 }
 
+BittrexClient.prototype._getPair = function(params,callback){
+    this._get("/api/v1.1/public/getticker",params,callback);
+}
+
 BittrexClient.prototype._getHistoricalData = function (params, callback) {
     this._get("/Api/v2.0/pub/market/GetTicks", params, callback);
 }
