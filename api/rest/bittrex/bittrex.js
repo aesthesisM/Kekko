@@ -7,11 +7,9 @@
 var https = require('https');
 var queryString = require('querystring');
 
-
-function BittrexClient(bambam) {
+function BittrexClient() {
 
 }
-
 
 BittrexClient.prototype._get = function (destination, params, callback) {
     var options = {
@@ -59,7 +57,7 @@ BittrexClient.prototype._get = function (destination, params, callback) {
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(5000); //5 sec
+        socket.setTimeout(10000); //10 sec
         socket.on('timeout', function () {
             req.abort();
         });

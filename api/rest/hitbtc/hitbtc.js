@@ -27,10 +27,11 @@ HitBTCClient.prototype._get = function (destination, params, account, callback) 
     if (!account.includes('public')) {
         this._authorize(options);
     }
-    else if (Object.keys(params).length) {
+
+    if (Object.keys(params).length) {
         options.path = options.path + '?' + queryString.stringify(params);
     }
-    console.log(options);
+
     var req = https.request(options, function (res) {
         res.setEncoding('utf8');
         var buffer = '';
@@ -73,7 +74,7 @@ HitBTCClient.prototype._post = function (destination, params, callback) {
         }
     };
     this._authorize(options);
-    console.log(options);
+
     if (Object.keys(params).length) {
         options.path = options.path + '?' + queryString.stringify(params);
     }
@@ -120,7 +121,7 @@ HitBTCClient.prototype._delete = function (destination, params, callback) {
     };
 
     this._authorize(options);
-    console.log(options);
+
     var req = https.request(options, function (res) {
         res.setEncoding('utf8');
         var buffer = '';

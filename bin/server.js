@@ -1,12 +1,24 @@
-var http = require('http');
+
 //var debug = require('debug')('Kekko:server');
 var app = require('../app.js');
+var server = require('http').Server(app);
 var port = 50000;
+
 app.set('port', port);
 
-var server = http.createServer(app);
+var socketIO = require('socket.io')(server);
 
 
+socketIO.sockets.on('connection', function (socket) {
+    console.log("a user connected");
+
+    socket.emit('message', 'you are connected the socket');
+
+    socket.on('message', function (data) {
+        console.log("message sended from client is :" + JSON.stringify(data));
+    });
+    
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
