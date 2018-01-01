@@ -47,7 +47,7 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
 
     }
 
-    longTermAvarage /= MA_quickTermPeriod;
+    longTermAvarage /= MA_longTermPeriod;
     midTermAvarage /= MA_midTermPeriod;
     shortTermAvarage /= MA_shortTermPeriod;
     quickTermAvarage /= MA_quickTermPeriod;
@@ -167,6 +167,7 @@ function recursive(data, err, pair) {
 }
 
 //setInterval(checkSignals, 30000); //30 sec
+//evaluate if the value has been surpassed one or more trend lines
 function checkSignals() {
     if (signals.length > 0) {
         for (var i = 0; i < signals.length; i++) {
