@@ -1,8 +1,6 @@
 /**
  * Created by khobsyzl28 on 11/26/2017.
  */
-// bittrex EMA analys formula will be here
-//https://bittrex.com/api/v1.1/public/getmarkets  for gettin pairs (data.result[i].MarketName) 
 
 var https = require('https');
 var queryString = require('querystring');
@@ -72,8 +70,8 @@ BittrexClient.prototype._getPairs = function (callback) {
     this._get("/api/v1.1/public/getmarkets", null, callback);
 }
 
-BittrexClient.prototype._getPair = function(params,callback){
-    this._get("/api/v1.1/public/getticker",params,callback);
+BittrexClient.prototype._getPair = function (params, callback) {
+    this._get("/api/v1.1/public/getticker", params, callback);
 }
 
 BittrexClient.prototype._getHistoricalData = function (params, callback) {

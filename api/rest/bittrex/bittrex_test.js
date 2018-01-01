@@ -39,6 +39,7 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
         }
 
     }
+
     longTermAvarage /= longTermCount;
     midTermAvarage /= midTermCount;
     shortTermAvarage /= shortTermCount;
@@ -49,13 +50,12 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
     if (longTermAvarage > midTermAvarage && midTermAvarage > shortTermAvarage && shortTermAvarage > quickTermAvarage) {
-
         if (long_mid_difference > 9 && mid_short_difference > 9 && short_quick_difference > 9) { //last part of dump
             console.log("Perpect Match!!! Last part of dump!");
-            console.log("pair : " + pair + " | longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | \nquicTerm :" + quickTermAvarage + " | max : " + max + " | min : " + min + " | enterancePrice :" + data[data.length - 1].C);
+            console.log("pair : " + pair + " | longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | \nquicTerm :" + quickTermAvarage + " | max : " + max + " | min : " + min + " | enterancePrice :" + data[data.length - 1].L);
         } else if (long_mid_difference < 4, mid_short_difference < 4, short_quick_difference < 4) { //normal cycle of coin
             console.log("Perfect Match!!! Normal cycle of price")
-            console.log("pair : " + pair + " | longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | \nquicTerm :" + quickTermAvarage + " | max : " + max + " | min : " + min + " | enterancePrice :" + data[data.length - 1].C);
+            console.log("pair : " + pair + " | longTerm :" + longTermAvarage + " | midTerm :" + midTermAvarage + " | shortTerm :" + shortTermAvarage + " | \nquicTerm :" + quickTermAvarage + " | max : " + max + " | min : " + min + " | enterancePrice :" + data[data.length - 1].L);
         }
     }
 
@@ -64,27 +64,18 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
 function checkCCI(data, pair) {
 
 }
-//check CCI here
 
-//then desice if its worth to signal ;)
 
-/*
-bittrexClient._getHistoricalData({ marketName: "BTC-UKG", tickInterval: "thirtyMin", _: new Date().getTime() },
-                        function (data, err,pair) {
-                            if (err) {
-                                console.error(err)
-                            } else {
-                                checkIfThereIsSignal(data.result,pair);
-                            }
-                        }
-                    );
-                    */
+function runIndicators(data, pair) {
+    checkMA(data, pair);
+    //checkCCI(data, pair);
+}
+
 var pairs = [];
 var signals = [];
-var j;
+var j = 0;
 
 //setInterval(function () {
-j = 0;
 if (pairs.length == 0) {
     bittrexClient._getPairs(
         function (data, err) {
@@ -110,13 +101,30 @@ function recursive(data, err, pair) {
         console.error(err);
         bittrexClient._getHistoricalData({ marketName: pair, tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
     } else {
-        checkMA(data.result, pair);
+        runIndicators(data.result, pair);
         if (j < pairs.length - 1) {
             j++;
             bittrexClient._getHistoricalData({ marketName: pairs[j], tickInterval: "thirtyMin", _: new Date().getTime() }, recursive);
         } else {
             console.log("finished for now ;)");
             j = 0;
+        }
+    }
+}
+
+//setInterval(checkSignals, 60000); //1 min
+function checkSignals() {
+    if (signals.length > 0) {
+        for (var i = 0; i < signals.length; i++) {
+
+            bittrexClient._getPair({ market: signals[i].pair }, function (data, err) {
+                if (err) {
+
+                } else {
+
+                }
+            });
+
         }
     }
 }
