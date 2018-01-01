@@ -27,13 +27,15 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
     var max = 0, min = 1;
     //first checking MA
     for (var i = 0; i < MA_longTermPeriod; i++) {
-        if (MA_longTermPeriod - i < MA_quickTermPeriod) {
+        if (MA_longTermPeriod - i <= MA_quickTermPeriod) {
             quickTermAvarage += data[length + i].C;
+
         }
-        if (MA_longTermPeriod - i < MA_shortTermPeriod) {
+        if (MA_longTermPeriod - i <= MA_shortTermPeriod) {
             shortTermAvarage += data[length + i].C;
+
         }
-        if (MA_longTermPeriod - i < MA_midTermPeriod) {
+        if (MA_longTermPeriod - i <= MA_midTermPeriod) {
             midTermAvarage += data[length + i].C;
         }
 
@@ -56,8 +58,8 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
     mid_short_difference = ((midTermAvarage - shortTermAvarage) / shortTermAvarage) * 100;
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
-    if (longTermAvarage > midTermAvarage && midTermAvarage > shortTermAvarage && shortTermAvarage > quickTermAvarage) {
-        if (long_mid_difference > 9 && mid_short_difference > 9 && short_quick_difference > 9) { //last part of dump
+    if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
+        if ((long_mid_difference > 9) && (mid_short_difference > 9) && (short_quick_difference > 9)) { //last part of dump
             var signalObj = {
                 "pair": pair,
                 "type": "LPOD (last part of dump)",
@@ -68,10 +70,12 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
                 "longTermMin": min,
                 "longTermMax": max,
                 "CCI": 0,
-                "action": 0
+                "action": 0,
+                "lastTime": data[data.length - 1].T,
+                "lastClosePrice": data[data.length - 1].C
             }
             signals[pair] = signalObj;
-        } else if (long_mid_difference < 4, mid_short_difference < 4, short_quick_difference < 4) { //normal cycle of coin
+        } else if ((long_mid_difference < 4) && (mid_short_difference < 4) && (short_quick_difference < 4)) { //normal cycle of coin
             var signalObj = {
                 "pair": pair,
                 "type": "NCOP (normal cycle of price)",
@@ -82,7 +86,9 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
                 "longTermMin": min,
                 "longTermMax": max,
                 "CCI": 0,
-                "action": 0
+                "action": 0,
+                "lastTime": data[data.length - 1].T,
+                "lastClosePrice": data[data.length - 1].C
             }
             signals[pair] = signalObj;
         }
