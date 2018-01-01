@@ -1,7 +1,4 @@
 var Bittrex = require('./bittrex');
-var async = require('async');
-//hour
-
 //MA
 var MA_longTermPeriod = 200;
 var MA_midTermPeriod = 90;
@@ -11,10 +8,12 @@ var MA_quickTermPeriod = 9;
 //CCI
 var CCI_period = 14;
 var CCI_Constant = 0.015;
-//
+
 var pairs = [];
 var signals = [];
 var runnerPairCount = 0;
+
+var lastRunTime = null;
 
 var bittrexClient = new Bittrex();
 
@@ -71,7 +70,7 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
                 "longTermMax": max,
                 "CCI": 0,
                 "action": 0,
-                "lastTime": data[data.length - 1].T,
+                "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180* 60000).toLocaleString("tr"),
                 "lastClosePrice": data[data.length - 1].C
             }
             signals[pair] = signalObj;
@@ -87,7 +86,7 @@ function checkMA(data, pair) { //calculate depending on C which means close pric
                 "longTermMax": max,
                 "CCI": 0,
                 "action": 0,
-                "lastTime": data[data.length - 1].T,
+                "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180* 60000).toLocaleString("tr"),
                 "lastClosePrice": data[data.length - 1].C
             }
             signals[pair] = signalObj;
@@ -172,8 +171,7 @@ function recursive(data, err, pair) {
     }
 }
 
-//setInterval(checkSignals, 30000); //30 sec
-//evaluate if the value has been surpassed one or more trend lines
+
 function checkSignals() {
     if (signals.length > 0) {
         for (var i = 0; i < signals.length; i++) {
