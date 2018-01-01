@@ -155,9 +155,6 @@ function recursive(data, err, pair) {
             runIndicators(data.result, pair);
         } catch (err) {
             console.error(err);
-            //BTC-UKG Has problem i dont know why but its not related to us
-            //UKG is a new coin and doesnt have enough long data to calculate
-            //so new control has been added for checking datas lengtt if its enough 
         }
         if (runnerPairCount < pairs.length - 1) {
             runnerPairCount++;
