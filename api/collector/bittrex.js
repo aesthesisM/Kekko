@@ -147,30 +147,29 @@ function runner(internval) {
                             pairs.push(data.result[i]["MarketName"]);
                         }
                     }
-                    bittrexClient._getHistoricalData({ marketName: pairs[runnerPairCount], tickInterval: internval, _: new Date().getTime() }, recursive);
+                    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
                 }
             }
         );
     } else {
-        bittrexClient._getHistoricalData({ marketName: pairs[runnerPairCount], tickInterval: internval, _: new Date().getTime() }, recursive);
+        bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
     }
     // }, 1800000);//30 min
-    function recursive(data, err, pair, interval) {
+    function recursive(data, err, pair, interval, index) {
         if (err) {
             console.error(err);
         } else {
             try {
-                console.log("working pair " + pair);
+                console.log("working pair " + pair + " | " + interval);
                 runIndicators(data.result, pair, interval);
             } catch (err) {
                 console.error(err);
             }
-            if (runnerPairCount < pairs.length - 1) {
-                runnerPairCount++;
-                bittrexClient._getHistoricalData({ marketName: pairs[runnerPairCount], tickInterval: interval, _: new Date().getTime() }, recursive);
+            if (index < pairs.length - 1) {
+                index++;
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
             } else {
                 console.log("finished for now ;)");
-                runnerPairCount = 0;
             }
         }
     }
