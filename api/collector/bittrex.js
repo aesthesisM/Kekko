@@ -72,7 +72,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
                 "action": 0,
                 "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
                 "lastClosePrice": data[data.length - 1].C,
-                "interval": internval
+                "interval": interval
             }
             signals[pair] = signalObj;
         } else if ((long_mid_difference < 4) && (mid_short_difference < 4) && (short_quick_difference < 4)) { //normal cycle of coin
@@ -89,7 +89,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
                 "action": 0,
                 "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
                 "lastClosePrice": data[data.length - 1].C,
-                "interval": internval
+                "interval": interval
             }
             signals[pair] = signalObj;
         }
