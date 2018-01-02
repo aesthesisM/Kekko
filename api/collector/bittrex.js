@@ -158,6 +158,7 @@ function runner(internval) {
     function recursive(data, err, pair, interval, index) {
         if (err) {
             console.error(err);
+            bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
         } else {
             try {
                 console.log("working pair " + pair + " | " + interval);
@@ -169,14 +170,16 @@ function runner(internval) {
                 index++;
                 bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
             } else {
-                console.log("finished for now ;)");
+                console.log("finished for now ;) index:" + index);
             }
         }
     }
 }
 var intervalHandlerThirtyMin, intervalHandlerDay;
+var signalCallback = null;
 module.exports = {
-    startRunner: function () {
+    startRunner: function (callback) {
+        signalCallback = callback;
         runner("thirtyMin");
         intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
         runner("day");

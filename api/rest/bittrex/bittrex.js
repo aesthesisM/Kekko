@@ -51,7 +51,11 @@ BittrexClient.prototype._get = function (destination, params, callback) {
     });
 
     req.on('error', function (err) {
-        callback(null, err);
+        if (params != null && params.marketName != undefined && params.tickInterval != undefined && params.index != undefined) {
+            return callback(null, err, params.marketName, params.tickInterval, params.index);
+        } else {
+            return callback(null, err);
+        }
     });
 
     req.on('socket', function (socket) {
