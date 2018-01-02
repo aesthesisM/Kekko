@@ -54,7 +54,7 @@ HitBTCClient.prototype._get = function (destination, params, account, callback) 
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(5000);
+        //socket.setTimeout(5000);
         socket.on('timeout', function () {
             req.abort();
         });
@@ -100,7 +100,7 @@ HitBTCClient.prototype._post = function (destination, params, callback) {
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(5000);
+        //socket.setTimeout(5000);
         socket.on('timeout', function () {
             req.abort();
         });
@@ -143,7 +143,7 @@ HitBTCClient.prototype._delete = function (destination, params, callback) {
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(5000);
+        //socket.setTimeout(5000);
         socket.on('timeout', function () {
             req.abort();
         });
