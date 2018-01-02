@@ -12,9 +12,6 @@ var CCI_Constant = 0.015;
 
 var pairs = [];
 var signals = [];
-var runnerPairCount = 0;
-
-var lastRunTime = null;
 
 var bittrexClient = null;
 
@@ -135,8 +132,9 @@ function runIndicators(data, pair, interval) {
     checkCCI(data, pair);
 }
 
-function runner(internval) {
-    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
+function runner(interval) {
+    console.log("running at " + new Date().toLocaleString() + " | interval :" + interval);
+    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
 }
 
 // }, 1800000);//30 min
@@ -146,7 +144,7 @@ function recursive(data, err, pair, interval, index) {
         bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
     } else {
         try {
-            console.log("working pair " + pair + " | " + interval + " | " + index);
+            console.log("working pair " + pair + " | interval: " + interval + " | index: " + index);
             runIndicators(data.result, pair, interval);
         } catch (err) {
             console.error(err);
@@ -155,7 +153,7 @@ function recursive(data, err, pair, interval, index) {
             index++;
             bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
         } else {
-            console.log("finished for now ;)");
+            console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
         }
     }
 }
