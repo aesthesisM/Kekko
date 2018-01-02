@@ -130,8 +130,8 @@ function runIndicators(data, pair) {
 }
 
 function runner() {
-    if(bittrexClient==null){
-    bittrexClient = new Bittrex();
+    if (bittrexClient == null) {
+        bittrexClient = new Bittrex();
     }
     if (pairs.length == 0) {
         bittrexClient._getPairs(
@@ -173,15 +173,15 @@ function runner() {
         }
     }
 }
-var intervalHandlerThirtyMin,intervalHandlerDay;
+var intervalHandlerThirtyMin, intervalHandlerDay;
 module.exports = {
-    startRunner : function(){
+    startRunner: function () {
         runner("thirtyMin");
-        intervalHandlerThirtyMin = setInterval(runner("thirtyMin"),30*60*1000); //30min
+        intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
         runner("day");
-        intervalHandlerDay = setInterval(runner("day"),24*60*60*1000); //min
+        intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //min
     },
-    stopRunner : function(){
+    stopRunner: function () {
         clearInterval(intervalHandlerThirtyMin);
         clearInterval(intervalHandlerDay);
     }
