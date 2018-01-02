@@ -364,8 +364,10 @@ function orderManager(err, socketData) {
 
                 //check if order successfully placed
                 if (success && nextOrder != null && Object.keys(nextOrder).length > 0) {
-                    //orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell,chainOrderSignature);
+                    orderListener._placeOrder(nextOrder.id, nextOrder.pair, nextOrder.price, nextOrder.amount, nextOrder.buysell, chainOrderSignature);
                     console.log("next Order :" + JSON.stringify(nextOrder) + " has been successfully placed");
+                } else if (success && nextOrder == null) {
+                    
                 } else {
                     console.error("next Order :" + JSON.stringify(nextOrder) + " has not placed. Error occured");
                 }
@@ -447,7 +449,7 @@ function orderManager(err, socketData) {
 
 setTimeout(function () {
     //
-    hitBTCClient = new HitBTCAuth('', '');
+    hitBTCClient = new HitBTCAuth('4ad1a5a5d0f41be0900ce32ee14db56d', '426b3edfdde22027be917eb1901b7e9d');
     //1 authenticate
     orderListener._authorize(hitBTCClient.auth);
     //walletListener._authorize(hitBTCClient.auth);

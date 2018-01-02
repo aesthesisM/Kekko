@@ -35,14 +35,14 @@ BittrexClient.prototype._get = function (destination, params, callback) {
             try {
                 var json = JSON.parse(buffer);
             } catch (err) {
-                if (params != null && params.marketName != undefined) {
-                    return callback(null, err, params.marketName);
+                if (params != null && params.marketName != undefined && params.tickInterval != undefined) {
+                    return callback(null, err, params.marketName, params.tickInterval);
                 } else {
                     return callback(null, err);
                 }
             }
-            if (params != null && params.marketName != undefined) {
-                callback(json, null, params.marketName);
+            if (params != null && params.marketName != undefined && params.tickInterval != undefined) {
+                callback(json, null, params.marketName, params.tickInterval);
             } else {
                 callback(json);
             }
