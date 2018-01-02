@@ -146,7 +146,7 @@ function recursive(data, err, pair, interval, index) {
         bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
     } else {
         try {
-            console.log("working pair " + pair + " | " + interval);
+            console.log("working pair " + pair + " | " + interval + " | " + index);
             runIndicators(data.result, pair, interval);
         } catch (err) {
             console.error(err);
@@ -218,4 +218,4 @@ module.exports = {
     }
 }
 
-module.exports.startRunner();
+//module.exports.startRunner();
