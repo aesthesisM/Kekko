@@ -1,4 +1,4 @@
-var Bittrex = require('./bittrex');
+var Bittrex = require('../rest/bittrex/bittrex');
 //MA
 var MA_longTermPeriod = 200;
 var MA_midTermPeriod = 90;
@@ -15,7 +15,7 @@ var runnerPairCount = 0;
 
 var lastRunTime = null;
 
-var bittrexClient = new Bittrex();
+var bittrexClient = null;
 
 function checkMA(data, pair) { //calculate depending on C which means close price
     if (data.length < MA_longTermPeriod) { //new added coins doesnt have enough data to check
@@ -130,6 +130,9 @@ function runIndicators(data, pair) {
 }
 
 function runner() {
+    if(bittrexClient==null){
+    bittrexClient = new Bittrex();
+    }
     if (pairs.length == 0) {
         bittrexClient._getPairs(
             function (data, err) {
@@ -174,9 +177,12 @@ function runner() {
 var intervalHandler;
 module.exports = {
     startRunner : function(){
+        runner();
         intervalHandler = setInterval(runner,30*60*1000);
     },
     stopRunner : function(){
         clearInterval(intervalHandler);
     }
 }
+
+module.exports.startRunner();
