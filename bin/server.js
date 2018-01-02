@@ -7,8 +7,11 @@ var port = 50000;
 app.set('port', port);
 
 var socketIO = require('socket.io')(server);
+var bittrexCollector = require('../api/collector/bittrex');
 
-
+bittrexCollector.startRunner(function(data){
+    socketIO.emit('signal',data);
+});
 socketIO.sockets.on('connection', function (socket) {
     console.log("a user connected");
 
@@ -16,51 +19,6 @@ socketIO.sockets.on('connection', function (socket) {
 
     socket.on('message', function (data) {
         console.log("message sended from client is :" + JSON.stringify(data));
-    });
-
-    socket.on("getAllAPIs", function (data) {
-
-    });
-
-    socket.on("updateAPI", function (data) {
-
-    });
-
-    socket.on("getPairs", function (data) {
-
-    });
-
-    socket.on("getChains", function (data) {
-
-    });
-
-    socket.on("addChain", function (data) {
-
-    });
-
-    socket.on("updateChain", function (data) {
-
-    });
-
-    socket.on("startChain", function (data) {
-
-    });
-
-    socket.on("stopChain", function (data) {
-
-    });
-
-    socket.on("getChainOrders", function (data) {
-
-        socket.emit("getChainOrdersCallback",data);
-    });
-
-    socket.on("addOrder", function (data) {
-
-    });
-
-    socket.on("updateOrder", function (data) {
-
     });
 
 });

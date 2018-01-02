@@ -679,7 +679,7 @@
             socket.emit('message', { message: 'bambam message emit from client ;)' });
         });
         socket.on('signal', function (data) {
-            alert("new signals came");
+            alert("new signals came" + JSON.stringify(data));
             signalArray.push(data);
         });
 

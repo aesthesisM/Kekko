@@ -1,4 +1,5 @@
 var Bittrex = require('../rest/bittrex/bittrex');
+var async = require('async');
 //MA
 var MA_longTermPeriod = 200;
 var MA_midTermPeriod = 90;
@@ -119,6 +120,9 @@ function checkCCI(data, pair) {
 
     signals[pair]["CCI"] = CCIRate;
     console.log(signals[pair]);
+    if (signalCallback != null) {
+        signalCallback(signals[pair]);
+    }
 }
 
 
@@ -132,58 +136,81 @@ function runIndicators(data, pair, interval) {
 }
 
 function runner(internval) {
-    if (bittrexClient == null) {
-        bittrexClient = new Bittrex();
-    }
-    if (pairs.length == 0) {
-        bittrexClient._getPairs(
-            function (data, err) {
-                if (err) {
-                    console.error(err);
-                } else if (Object.keys(data.result).length > 0) {
-                    for (var i = 0; i < data.result.length; i++) {
+    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
+}
 
-                        if ((data.result[i]["MarketName"]).startsWith("BTC-")) {
-                            pairs.push(data.result[i]["MarketName"]);
-                        }
-                    }
-                    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
-                }
-            }
-        );
+// }, 1800000);//30 min
+function recursive(data, err, pair, interval, index) {
+    if (err) {
+        console.error(err);
+        bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
     } else {
-        bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: internval, _: new Date().getTime(), index: 0 }, recursive);
-    }
-    // }, 1800000);//30 min
-    function recursive(data, err, pair, interval, index) {
-        if (err) {
+        try {
+            console.log("working pair " + pair + " | " + interval);
+            runIndicators(data.result, pair, interval);
+        } catch (err) {
             console.error(err);
+        }
+        if (index < pairs.length - 1) {
+            index++;
             bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
         } else {
-            try {
-                console.log("working pair " + pair + " | " + interval);
-                runIndicators(data.result, pair, interval);
-            } catch (err) {
-                console.error(err);
-            }
-            if (index < pairs.length - 1) {
-                index++;
-                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
-            } else {
-                console.log("finished for now ;) index:" + index);
-            }
+            console.log("finished for now ;)");
         }
     }
 }
+
 var intervalHandlerThirtyMin, intervalHandlerDay;
 var signalCallback = null;
 module.exports = {
-    startRunner: function (callback) {
-        signalCallback = callback;
-        runner("thirtyMin");
-        intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
-        runner("day");
-        intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //min
+    startRunner: function (signal) {
+        signalCallback = signal;
+        bittrexClient = new Bittrex();
+
+        async.series(
+            [
+                function (callback) {
+                    if (pairs.length == 0) {
+                        bittrexClient._getPairs(
+                            function (data, err) {
+                                if (err) {
+                                    console.error(err);
+                                } else if (Object.keys(data.result).length > 0) {
+                                    console.log("pairs");
+                                    for (var i = 0; i < data.result.length; i++) {
+
+                                        if ((data.result[i]["MarketName"]).startsWith("BTC-")) {
+                                            pairs.push(data.result[i]["MarketName"]);
+                                        }
+                                    }
+                                    callback();
+                                }
+                            }
+                        );
+
+                    }
+                },
+                function (callback) {
+                    runner("thirtyMin");
+                    console.log("thirty");
+                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    callback();
+                },
+                function (callback) {
+                    runner("day");
+                    console.log("day");
+                    intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
+                    callback();
+                }
+            ],
+            function (err) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log("started successfully");
+                }
+            })
+
     },
     stopRunner: function () {
         clearInterval(intervalHandlerThirtyMin);
