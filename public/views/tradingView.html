@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title></title>
 </head>
+
 <body>
     <!-- TradingView Widget BEGIN -->
     <div id="tdChart"></div>
@@ -22,24 +24,32 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
         var val = getParameterByName("value");
-        new TradingView.widget({
+        var widget = new TradingView.widget({
             "container_id": "tdChart",
             "width": 980,
             "height": 610,
             "symbol": "HITBTC:" + val,
-            "interval": "3",
-            "timezone": "Etc/UTC",
-            "theme": "Light",
+            "interval": "30",
+            "timezone": "Europe/Istanbul",
+            "theme": "Dark",
             "style": "1",
             "locale": "en",
             "toolbar_bg": "#f1f3f6",
             "enable_publishing": false,
             "hide_side_toolbar": false,
             "allow_symbol_change": true,
-            "details": true,
-            "hideideas": true
+            "details": false,
+            "hideideas": true,
+            "studies": [
+                "MASimple@tv-basicstudies",
+                "MASimple@tv-basicstudies",
+                "MASimple@tv-basicstudies",
+                "MASimple@tv-basicstudies",
+                "CCI@tv-basicstudies"
+            ],
         });
     </script>
     <!-- TradingView Widget END -->
 </body>
+
 </html>
