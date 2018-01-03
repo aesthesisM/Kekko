@@ -8,7 +8,7 @@ app.set('port', port);
 
 var socketIO = require('socket.io')(server);
 var bittrexCollector = require('../api/collector/bittrex');
-
+//var hitbtcListener = require('../api/socket/hitbtc');
 bittrexCollector.startRunner(function(data){
     socketIO.emit('signal',data);
 });
