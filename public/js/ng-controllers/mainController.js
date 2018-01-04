@@ -101,8 +101,7 @@ kekkoApp.controller('MainController', function ($scope, $http, Page) {
             showEasing: "swing",
             hideEasing: "linear",
             showMethod: "fadeIn",
-            hideMethod: "fadeOut",
-            escapeHtml: true
+            hideMethod: "fadeOut"
         };
         var socket = io.connect("http://localhost:50000");
 
@@ -132,7 +131,7 @@ kekkoApp.controller('MainController', function ($scope, $http, Page) {
             socket.emit('message', { message: 'bambam message emit from client ;)' });
         });
         socket.on('signal', function (data) {
-            toastr.info(data.type + " / " + data.lastClosePrice + " / " + data.interval, data.pair);
+            toastr["info"](data.type + " / " + data.lastClosePrice + " / " + data.interval, "<a href='#!/signals' style='color:#ffffff;text-decoration:underline;'>" + data.pair + "</a>");
             console.log(data);
             mainCtrl.signalArray.push(data);
             $scope.$apply();
