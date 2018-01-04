@@ -26,7 +26,7 @@ kekkoApp.config(function ($routeProvider) {
             //resolve: function () { return []; }
         })
         .when('/signals', {
-            templateUrl: 'order/bittrex.html'
+            templateUrl: 'signals.html'
             //resolve: function () { return null; }
         })
         .when('/dashboard/api', {
@@ -53,30 +53,12 @@ kekkoApp.config(function ($routeProvider) {
             redirectTo: '/'
         });
 });
-kekkoApp.controller('MainController', function ($http, Page) {
+kekkoApp.controller('MainController', function ($scope, $http, Page) {
     var mainCtrl = this;
     Page.setTitle("Dashboard");
     mainCtrl.Page = Page;
     mainCtrl.pairs = [];
     mainCtrl.signalArray = [];
-    toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": true,
-        "progressBar": true,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "60000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut",
-        "escapeHtml": true
-    };
     mainCtrl.getPairs = function () {
         $http({
             method: 'GET',
@@ -100,7 +82,28 @@ kekkoApp.controller('MainController', function ($http, Page) {
     mainCtrl.getAllApis = function () {
 
     };
+    mainCtrl.showList = function(){
+        console.log(mainCtrl.signalArray);
+    }
     mainCtrl.openSignals = function () {
+        toastr.options = {
+            closeButton: true,
+            debug: false,
+            newestOnTop: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            preventDuplicates: false,
+            onclick: null,
+            showDuration: "300",
+            hideDuration: "1000",
+            timeOut: "120000",
+            extendedTimeOut: "1000",
+            showEasing: "swing",
+            hideEasing: "linear",
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+            escapeHtml: true
+        };
         var socket = io.connect("http://localhost:50000");
 
         var hitbtcCallback;
@@ -126,14 +129,13 @@ kekkoApp.controller('MainController', function ($http, Page) {
         });
 
         socket.on('message', function (data) {
-            alert(data);
-
             socket.emit('message', { message: 'bambam message emit from client ;)' });
         });
         socket.on('signal', function (data) {
-            toastr.info("<b>" + data.pair + "</b>", data.type + " / " + data.lastClosePrice + " / " + data.interval);
+            toastr.info(data.type + " / " + data.lastClosePrice + " / " + data.interval, data.pair);
             console.log(data);
             mainCtrl.signalArray.push(data);
+            $scope.$apply();
         });
     };
     mainCtrl.openSignals();

@@ -1,47 +1,64 @@
 <div class="row">
-    <section class="content-header">
-        <h1>
-            Signals
-            <small>list</small>
-        </h1>
-    </section>
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Signals</h3>
+            <div class="box-tools">
 
-    <div class="table-responsive">
-        <table class="table no-margin">
-            <thead>
-                <tr>
-                    <th>pair</th>
-                    <th>type</th>
-                    <th>longTermAvarage</th>
-                    <th>midTermAvarage</th>
-                    <th>shortTermAvarage</th>
-                    <th>quickTermAvarage</th>
-                    <th>longTermMin</th>
-                    <th>longTermMax</th>
-                    <th>CCI</th>
-                    <th>action</th>
-                    <th>lastTime</th>
-                    <th>lastClosePrice</th>
-                    <th>interval</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in mainCtrl.signalsArray">
-                        <td>{{item.pair}}</td>
-                        <td>{{item.type}}</td>
-                        <td>{{item.longTermAvarage}}</td>
-                        <td>{{item.midTermAvarage}}</td>
-                        <td>{{item.shortTermAvarage}}</td>
-                        <td>{{item.quickTermAvarage}}</td>
-                        <td>{{item.longTermMin}}</td>
-                        <td>{{item.longTermMax}}</td>
-                        <td>{{item.CCI}}</td>
-                        <td>{{item.action}}</td>
-                        <td>{{item.lastTime}}</td>
-                        <td>{{item.lastClosePrice}}</td>
-                        <td>{{item.interval}}</td>
-                </tr>
-            </tbody>
-        </table>
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body dataTables_wrapper form-inline dt-bootstrap">
+            <div class="row">
+                <div class="col-sm-6">
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-right">
+                        <label>Search by Pair:
+                            <input type="search" class="form-control input-sm" placeholder="BTC" ng-model="search.pair">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 table-responsive">
+                    <table class="table table-hover no-margin">
+                        <thead>
+                            <tr>
+                                <th>pair</th>
+                                <th>type</th>
+                                <th>longTermAvarage</th>
+                                <th>midTermAvarage</th>
+                                <th>shortTermAvarage</th>
+                                <th>quickTermAvarage</th>
+                                <th>longTermMin</th>
+                                <th>longTermMax</th>
+                                <th>CCI</th>
+                                <th>action</th>
+                                <th>lastTime</th>
+                                <th>lastClosePrice</th>
+                                <th>interval</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in $parent.mainCtrl.signalArray | filter:search track by $index">
+                                <td>{{item.pair}}</td>
+                                <td>{{item.type}}</td>
+                                <td>{{item.longTermAvarage | number : 9}}</td>
+                                <td>{{item.midTermAvarage | number : 9}}</td>
+                                <td>{{item.shortTermAvarage | number : 9}}</td>
+                                <td>{{item.quickTermAvarage | number : 9}}</td>
+                                <td>{{item.longTermMin | number : 9}}</td>
+                                <td>{{item.longTermMax | number : 9}}</td>
+                                <td>{{item.CCI}}</td>
+                                <td>{{item.action}}</td>
+                                <td>{{item.lastTime}}</td>
+                                <td>{{item.lastClosePrice | number : 9}}</td>
+                                <td>{{item.interval}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
