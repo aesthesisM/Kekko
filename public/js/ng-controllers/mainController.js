@@ -5,7 +5,7 @@ kekkoApp.factory('Page', function () {
         title: function () { return title; },
         setTitle: function (newTitle) { title = newTitle; },
         showMessage: function (type, title, message) {
-            console.log(type,title,message);
+            console.log(type, title, message);
             swal({
                 type: type,
                 title: title,
@@ -24,6 +24,10 @@ kekkoApp.config(function ($routeProvider) {
             controller: 'APIController as apiCtrl',
             templateUrl: 'home/dashboard.html'
             //resolve: function () { return []; }
+        })
+        .when('/signals', {
+            templateUrl: 'order/bittrex.html'
+            //resolve: function () { return null; }
         })
         .when('/dashboard/api', {
             controller: 'APIController as apiCtrl',
@@ -51,9 +55,28 @@ kekkoApp.config(function ($routeProvider) {
 });
 kekkoApp.controller('MainController', function ($http, Page) {
     var mainCtrl = this;
+    Page.setTitle("Dashboard");
     mainCtrl.Page = Page;
     mainCtrl.pairs = [];
-    Page.setTitle("Dashboard");
+    mainCtrl.signalArray = [];
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "60000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut",
+        "escapeHtml": true
+    };
     mainCtrl.getPairs = function () {
         $http({
             method: 'GET',
@@ -77,5 +100,42 @@ kekkoApp.controller('MainController', function ($http, Page) {
     mainCtrl.getAllApis = function () {
 
     };
+    mainCtrl.openSignals = function () {
+        var socket = io.connect("http://localhost:50000");
+
+        var hitbtcCallback;
+        var bittrexCallback;
+        var poloniexCallback;
+
+        socket.on("callback", function (data) {
+            if (data != null && data != undefined) {
+                var error = null;
+                if (_has(data, "error")) {
+                    error = data.error;
+                }
+                switch (data.api) {
+                    case 1: hitbtcCallback(data, error);
+                        break;
+                    case 2: bittrexCallback(data, error);
+                        break;
+                    case 3: poloniexCallback(data, error);
+                        break;
+
+                }
+            }
+        });
+
+        socket.on('message', function (data) {
+            alert(data);
+
+            socket.emit('message', { message: 'bambam message emit from client ;)' });
+        });
+        socket.on('signal', function (data) {
+            toastr.info("<b>" + data.pair + "</b>", data.type + " / " + data.lastClosePrice + " / " + data.interval);
+            console.log(data);
+            mainCtrl.signalArray.push(data);
+        });
+    };
+    mainCtrl.openSignals();
 });
 
