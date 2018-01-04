@@ -135,6 +135,7 @@ kekkoApp.controller('MainController', function ($scope, $http, Page) {
             console.log(data);
             mainCtrl.signalArray.push(data);
             $scope.$apply();
+            document.getElementById('signalSound').play();
         });
     };
     mainCtrl.openSignals();
