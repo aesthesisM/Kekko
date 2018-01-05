@@ -13,6 +13,12 @@ var CCI_Constant = 0.015;
 var pairs = [];
 var signals = [];
 
+//these datas will be held in memory
+//30min and 1 day essentials for our signal search
+
+var pairDataQueDay = [];
+var pairDataQueThirtyMin = [];
+
 var bittrexClient = null;
 
 function checkMA(data, pair, interval) { //calculate depending on C which means close price
@@ -56,6 +62,17 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
     if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
+        switch (interval) {
+            case "day":
+                console.log(pair + " - " + interval + " switch case");
+                break;
+            case "thirtyMin":
+                console.log(pair + " - " + interval + " switch case");
+                break;
+            default:
+                break;
+        }
+
         if ((long_mid_difference > 9) && (mid_short_difference > 9) && (short_quick_difference > 9)) { //last part of dump
             var signalObj = {
                 "pair": pair,
@@ -133,6 +150,10 @@ function runIndicators(data, pair, interval) {
 }
 
 function runner(interval) {
+    //ar2 = arrayDeneme.slice(arrayDeneme.length-200,arrayDeneme.length); 200luk verileri almak için
+    //ar2.shift()
+    //ar2.push(lastTick)
+    //getting lasttick and adding it to last of the array
     console.log("running at " + new Date().toLocaleString() + " | interval :" + interval);
     bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
 }
@@ -143,6 +164,13 @@ function recursive(data, err, pair, interval, index) {
         console.error(err);
         bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
     } else {
+        //getting data with interval
+        //we control if interval with pairDataQue.... is null,
+        //then wil will append its last 200 data into this arrays pair
+        //then we will send pairDataQue... to runIndicators method
+        //Also there will be control of intervals because
+        //daily control and 30min control  values may differ in percentage
+        //we wont send data.result we will send pairDataQue...[pair];
         try {
             console.log("working pair " + pair + " | interval: " + interval + " | index: " + index);
             runIndicators(data.result, pair, interval);
