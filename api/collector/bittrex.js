@@ -161,7 +161,7 @@ function recursive(data, err, pair, interval, index) {
     try {
         if (err) {
             console.error(err);
-        } else {
+        } else if (data.result != null && data.result != undefined && data.result.length > 0) {
             if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
