@@ -240,13 +240,13 @@ module.exports = {
                     }
                 },
                 function (callback) {
-                    //runner("thirtyMin");
+                    runner("thirtyMin");
                     intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     callback();
                 },
                 function (callback) {
-                    //setTimeout(function () { runner("day"); }, 15 * 60 * 1000);//15min delay
-                    runner("day");
+                    setTimeout(function () { runner("day"); }, 15 * 60 * 1000);//15min delay
+                    //runner("day");
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
