@@ -139,14 +139,14 @@ function runIndicators(data, pair, interval) {
 }
 
 function runner(interval) {
-
-    if (interval == "thirtyMin") {
+    console.log("bittrex collector started for " + interval + " interval.");
+    if (interval === "thirtyMin") {
         if (pairDataQueThirtyMin.length == 0 || pairDataQueThirtyMin[pairs[0]] == undefined || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
             bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         } else {
             bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         }
-    } else if (interval == "day") {
+    } else if (interval === "day") {
         if (pairDataQueDay.length == 0 || pairDataQueDay[pairs[0]] == undefined || pairDataQueDay[pairs[0]] == null || pairDataQueDay[pairs[0]].length == 0) {
             bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         } else {
@@ -162,7 +162,7 @@ function recursive(data, err, pair, interval, index) {
         if (err) {
             console.error(err);
         } else {
-            if (interval == "thirtyMin") {
+            if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1) {
@@ -172,7 +172,7 @@ function recursive(data, err, pair, interval, index) {
                     //doesnt care
                 }
                 runIndicators(pairDataQueThirtyMin[pairs[index]], pair, interval);
-            } else if (interval == "day") {
+            } else if (interval === "day") {
                 if (data.result.length > 200) { //historical
                     pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1) {
@@ -228,7 +228,6 @@ module.exports = {
                                 } else if (Object.keys(data.result).length > 0) {
                                     console.log("pairs");
                                     for (var i = 0; i < data.result.length; i++) {
-
                                         if ((data.result[i]["MarketName"]).startsWith("BTC-")) {
                                             pairs.push(data.result[i]["MarketName"]);
                                         }
@@ -242,14 +241,11 @@ module.exports = {
                 },
                 function (callback) {
                     runner("thirtyMin");
-                    console.log("thirty");
                     intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     callback();
                 },
                 function (callback) {
                     setTimeout(function () { runner("day"); }, 15 * 60 * 1000);//15min delay
-                    runner("day");
-                    console.log("day");
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
@@ -258,7 +254,7 @@ module.exports = {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log("started successfully");
+                    console.log("bittirex collector started successfully");
                 }
             })
 
