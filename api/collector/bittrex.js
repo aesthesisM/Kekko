@@ -125,7 +125,9 @@ function checkCCI(data, pair, interval) {
     console.log(signals[pair]);
     if (signalCallback != null) {
         signalCallback(signals[pair]);
+        signals[pair] = null;
     }
+
 }
 
 
