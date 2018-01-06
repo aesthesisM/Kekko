@@ -165,7 +165,7 @@ function recursive(data, err, pair, interval, index) {
             if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
-                } else if (data.result.length == 1) {
+                } else if (data.result.length == 1 && pairDataQueThirtyMin[pairs[index]] != null && pairDataQueThirtyMin[pairs[index]] != undefined) {
                     pairDataQueThirtyMin[pairs[index]].shift();
                     pairDataQueThirtyMin[pairs[index]].push(data.result);
                 } else {
@@ -175,7 +175,7 @@ function recursive(data, err, pair, interval, index) {
             } else if (interval === "day") {
                 if (data.result.length > 200) { //historical
                     pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
-                } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] !=undefined) {
+                } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] != undefined) {
                     pairDataQueDay[pairs[index]].shift();
                     pairDataQueDay[pairs[index]].push(data.result);
                 } else {
