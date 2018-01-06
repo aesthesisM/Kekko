@@ -139,7 +139,7 @@ function runIndicators(data, pair, interval) {
 }
 
 function runner(interval) {
-    console.log("bittrex collector started for " + interval + " interval.");
+    console.log("bittrex collector started for " + interval + " interval at" + new Date().toLocaleString("tr"));
     if (interval === "thirtyMin") {
         if (pairDataQueThirtyMin.length == 0 || pairDataQueThirtyMin[pairs[0]] == undefined || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
             bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
