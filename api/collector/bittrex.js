@@ -130,7 +130,7 @@ function checkCCI(data, pair, interval) {
 
 
 function runIndicators(data, pair, interval) {
-    if (data == undefined || data.length == 0) {
+    if (data == null && data == undefined || data.length == 0) {
         console.log("socket null data");
         return;
     }
@@ -157,7 +157,7 @@ function runner(interval) {
 
 // }, 1800000);//30 min
 function recursive(data, err, pair, interval, index) {
-    console.log("working pair:" + pair + "| thirty |" + " length:" + data.result.length + "| interval:" + interval + "| index:" + index);
+    console.log("working pair:" + pair + "| interval:" + interval + "| index:" + index);
     try {
         if (err) {
             console.error(err);
@@ -175,7 +175,7 @@ function recursive(data, err, pair, interval, index) {
             } else if (interval === "day") {
                 if (data.result.length > 200) { //historical
                     pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
-                } else if (data.result.length == 1) {
+                } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] !=undefined) {
                     pairDataQueDay[pairs[index]].shift();
                     pairDataQueDay[pairs[index]].push(data.result);
                 } else {
@@ -240,12 +240,13 @@ module.exports = {
                     }
                 },
                 function (callback) {
-                    runner("thirtyMin");
+                    //runner("thirtyMin");
                     intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     callback();
                 },
                 function (callback) {
-                    setTimeout(function () { runner("day"); }, 15 * 60 * 1000);//15min delay
+                    //setTimeout(function () { runner("day"); }, 15 * 60 * 1000);//15min delay
+                    runner("day");
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
