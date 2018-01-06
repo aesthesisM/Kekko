@@ -62,7 +62,7 @@ poloniexListener = new PoloniexListener(function(order){
     socketObj.data = order;
     socketIO.emit('order',JSON.stringify(socketObj.data));
 });
-*/
+
 socketIO.on("chainDump", function (data) { //api = 1,2,3 | type : dump,chain 
     if (data.api != undefined && data.api != null)
         try {
@@ -85,6 +85,7 @@ socketIO.on("chainDump", function (data) { //api = 1,2,3 | type : dump,chain
         }
 });
 
+*/
 socketIO.sockets.on('connection', function (socket) {
     console.log("a user connected");
     socket.emit('message', 'you are connected the socket');
