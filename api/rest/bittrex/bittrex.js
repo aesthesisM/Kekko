@@ -82,7 +82,7 @@ BittrexClient.prototype._getHistoricalData = function (params, callback) {
     this._get("/Api/v2.0/pub/market/GetTicks", params, callback);
 }
 
-BittrexClient().prototype._getLatestTick = function (params, callback) {
+BittrexClient.prototype._getLatestTick = function (params, callback) {
     this._get("/Api/v2.0/pub/market/GetLatestTick", params, callback);
 }
 

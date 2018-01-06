@@ -241,6 +241,12 @@ module.exports = {
     stopRunner: function () {
         clearInterval(intervalHandlerThirtyMin);
         clearInterval(intervalHandlerDay);
+    },
+    getDailySignals: function () {
+
+    },
+    getThirtyMinSignals: function () {
+
     }
 }
 

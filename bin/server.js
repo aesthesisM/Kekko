@@ -7,20 +7,87 @@ var port = 50000;
 app.set('port', port);
 
 var socketIO = require('socket.io')(server);
+/*collectors*/
+
+//var hitbtcCollector = require('../api/collector/hitbtc');
 var bittrexCollector = require('../api/collector/bittrex');
-//var hitbtcListener = require('../api/socket/hitbtc');
-bittrexCollector.startRunner(function(data){
-    socketIO.emit('signal',data);
+//var poloniexCollector = require('../api/collector/poloniex');
+/*
+hitbtcCollector.startRunner(function (data) {
+    var signalObj = {};
+    signalObj.data = data;
+    signalObj.api = 1;
+    socketIO.emit('signal', signalObj);
 });
+*/
+
+bittrexCollector.startRunner(function (data) {
+    var signalObj = {};
+    signalObj.data = data;
+    signalObj.api = 2;
+    socketIO.emit('signal', data);
+});
+
+/*
+poloniexCollector.startRunner(function (data) {
+    var signalObj = {};
+    signalObj.data = data;
+    signalObj.api = 1;
+    socketIO.emit('signal', signalObj);
+});
+*/
+
+/*listeners*/
+//var HitBtcListener = require('../api/socket/hitbtc');
+//var BittirexListener = require('../api/rest/bittrexListener);
+//var PoloniexListener = require('../api/rest/poloniexListener);/*  */
+/*
+hitbtcListener = new HitbtcListener(function(order){
+    var socketObj = {};
+    socketObj.api=1;
+    socketObj.data = order;
+    socketIO.emit('order',JSON.stringify(socketObj.data));
+});
+
+bittirexListener = new BittrexListener(function(order){
+    var socketObj = {};
+    socketObj.api=1;
+    socketObj.data = order;
+    socketIO.emit('order',JSON.stringify(socketObj.data));
+});
+
+poloniexListener = new PoloniexListener(function(order){
+    var socketObj = {};
+    socketObj.api=1;
+    socketObj.data = order;
+    socketIO.emit('order',JSON.stringify(socketObj.data));
+});
+*/
+socketIO.on("chainDump", function (data) { //api = 1,2,3 | type : dump,chain 
+    if (data.api != undefined && data.api != null)
+        try {
+            switch (data.api) {
+                case 1:
+                    //hitbtcListener.chain(data);
+                    break;
+                case 2:
+                    //bittrexListener.chain(data);
+                    break;
+                case 3:
+                    //poloniexListener.chain(data);
+                    break;
+            }
+            var resultObj = { api: data.api, result: 1, message="chain started and order placed", data: null };
+            socketIO.emit("chainCallback", JSON.stringify(resultObj));
+        } catch (err) {
+            var resultObj = { api: data.api, result: -1, message="error occured", data: null };
+            socketIO.emit("chainCallback", JSON.stringify(resultObj));
+        }
+});
+
 socketIO.sockets.on('connection', function (socket) {
     console.log("a user connected");
-
     socket.emit('message', 'you are connected the socket');
-
-    socket.on('message', function (data) {
-        console.log("message sended from client is :" + JSON.stringify(data));
-    });
-
 });
 /**
  * Listen on provided port, on all network interfaces.
