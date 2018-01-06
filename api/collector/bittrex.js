@@ -167,12 +167,11 @@ function recursive(data, err, pair, interval, index) {
                 pairDataQueDay[pair[index]] = null;
             }
         } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
+            console.log("pair:" + pair + " | interval:" + interval + " | index:" + index);
             if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
-                    console.log("pair:" + pair + "|interval:" + interval + "|historical:200|index:" + index);
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1 && pairDataQueThirtyMin[pairs[index]] != null && pairDataQueThirtyMin[pairs[index]] != undefined) {
-                    console.log("pair:" + pair + "|interval:" + interval + "|historical:1|index:" + index);
                     pairDataQueThirtyMin[pairs[index]].shift();
                     pairDataQueThirtyMin[pairs[index]].push(data.result);
                 } else {
@@ -180,11 +179,10 @@ function recursive(data, err, pair, interval, index) {
                 }
                 runIndicators(pairDataQueThirtyMin[pairs[index]], pair, interval);
             } else if (interval === "day") {
-                if (data.result.length > 200) { //historical
-                    console.log("pair:" + pair + "|interval:" + interval + "|historical:200|index:" + index);
+                if (data.result.length > 200) { //historica
                     pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] != undefined) {
-                    console.log("pair:" + pair + "|interval:" + interval + "|historical:1");
+
                     pairDataQueDay[pairs[index]].shift();
                     pairDataQueDay[pairs[index]].push(data.result);
                 } else {
