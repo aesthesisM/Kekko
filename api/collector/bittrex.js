@@ -115,7 +115,7 @@ function checkCCI(data, pair, interval) {
     mean /= CCI_period;
 
     for (var i = 0; i < CCI_period; i++) {
-        meanDeviation += Math.abs(mean - data[data.length - CCI_period + i].C)
+        meanDeviation += Math.abs(mean - data[data.length - CCI_period + i].C);
     }
     meanDeviation /= CCI_period;
 
@@ -157,15 +157,22 @@ function runner(interval) {
 
 // }, 1800000);//30 min
 function recursive(data, err, pair, interval, index) {
-    console.log("working pair:" + pair + "| interval:" + interval + "| index:" + index);
     try {
         if (err) {
             console.error(err);
-        } else if (data.result != null && data.result != undefined && data.result.length > 0) {
+            //if there is an error then remove all data about this index. otherwise we will work with corrupted data.
+            if (interval === "thirtyMin") {
+                pairDataQueThirtyMin[pair[index]] = null;
+            } else if (interval === "day") {
+                pairDataQueDay[pair[index]] = null;
+            }
+        } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
             if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
+                    console.log("pair:" + pair + "|interval:" + interval + "|historical:200|index:" + index);
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1 && pairDataQueThirtyMin[pairs[index]] != null && pairDataQueThirtyMin[pairs[index]] != undefined) {
+                    console.log("pair:" + pair + "|interval:" + interval + "|historical:1|index:" + index);
                     pairDataQueThirtyMin[pairs[index]].shift();
                     pairDataQueThirtyMin[pairs[index]].push(data.result);
                 } else {
@@ -174,8 +181,10 @@ function recursive(data, err, pair, interval, index) {
                 runIndicators(pairDataQueThirtyMin[pairs[index]], pair, interval);
             } else if (interval === "day") {
                 if (data.result.length > 200) { //historical
+                    console.log("pair:" + pair + "|interval:" + interval + "|historical:200|index:" + index);
                     pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] != undefined) {
+                    console.log("pair:" + pair + "|interval:" + interval + "|historical:1");
                     pairDataQueDay[pairs[index]].shift();
                     pairDataQueDay[pairs[index]].push(data.result);
                 } else {
