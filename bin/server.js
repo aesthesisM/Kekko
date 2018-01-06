@@ -32,7 +32,7 @@ bittrexCollector.startRunner(function (data) {
 poloniexCollector.startRunner(function (data) {
     var signalObj = {};
     signalObj.data = data;
-    signalObj.api = 1;
+    signalObj.api = 3;
     socketIO.emit('signal', signalObj);
 });
 */
@@ -51,14 +51,14 @@ hitbtcListener = new HitbtcListener(function(order){
 
 bittirexListener = new BittrexListener(function(order){
     var socketObj = {};
-    socketObj.api=1;
+    socketObj.api=2;
     socketObj.data = order;
     socketIO.emit('order',JSON.stringify(socketObj.data));
 });
 
 poloniexListener = new PoloniexListener(function(order){
     var socketObj = {};
-    socketObj.api=1;
+    socketObj.api=3;
     socketObj.data = order;
     socketIO.emit('order',JSON.stringify(socketObj.data));
 });
