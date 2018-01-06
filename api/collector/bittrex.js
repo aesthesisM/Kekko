@@ -62,17 +62,6 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
     if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
-        switch (interval) {
-            case "day":
-                console.log(pair + " - " + interval + " switch case");
-                break;
-            case "thirtyMin":
-                console.log(pair + " - " + interval + " switch case");
-                break;
-            default:
-                break;
-        }
-
         if ((long_mid_difference > 9) && (mid_short_difference > 9) && (short_quick_difference > 9)) { //last part of dump
             var signalObj = {
                 "pair": pair,
@@ -112,7 +101,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
 
 }
 
-function checkCCI(data, pair) {
+function checkCCI(data, pair, interval) {
     if (signals[pair] == undefined || signals[pair] == null) {
         return;
     }
@@ -146,44 +135,79 @@ function runIndicators(data, pair, interval) {
         return;
     }
     checkMA(data, pair, interval);
-    checkCCI(data, pair);
+    checkCCI(data, pair, interval);
 }
 
 function runner(interval) {
-    //ar2 = arrayDeneme.slice(arrayDeneme.length-200,arrayDeneme.length); 200luk verileri almak için
-    //ar2.shift()
-    //ar2.push(lastTick)
-    //getting lasttick and adding it to last of the array
-    console.log("running at " + new Date().toLocaleString() + " | interval :" + interval);
-    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+
+    if (interval == "thirtyMin") {
+        if (pairDataQueThirtyMin.length == 0 || pairDataQueThirtyMin[pairs[0]] == undefined || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
+    } else if (interval == "day") {
+        if (pairDataQueDay.length == 0 || pairDataQueDay[pairs[0]] == undefined || pairDataQueDay[pairs[0]] == null || pairDataQueDay[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
+    }
 }
 
 // }, 1800000);//30 min
 function recursive(data, err, pair, interval, index) {
-    if (err) {
-        console.error(err);
-        bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
-    } else {
-        //getting data with interval
-        //we control if interval with pairDataQue.... is null,
-        //then wil will append its last 200 data into this arrays pair
-        //then we will send pairDataQue... to runIndicators method
-        //Also there will be control of intervals because
-        //daily control and 30min control  values may differ in percentage
-        //we wont send data.result we will send pairDataQue...[pair];
-        try {
-            console.log("working pair " + pair + " | interval: " + interval + " | index: " + index);
-            runIndicators(data.result, pair, interval);
-        } catch (err) {
+    console.log("working pair:" + pair + "| thirty |" + " length:" + data.result.length + "| interval:" + interval + "| index:" + index);
+    try {
+        if (err) {
             console.error(err);
-        }
-        if (index < pairs.length - 1) {
-            index++;
-            bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
         } else {
-            console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
+            if (interval == "thirtyMin") {
+                if (data.result.length > 200) { //historical
+                    pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1) {
+                    pairDataQueThirtyMin[pairs[index]].shift();
+                    pairDataQueThirtyMin[pairs[index]].push(data.result);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueThirtyMin[pairs[index]], pair, interval);
+            } else if (interval == "day") {
+                if (data.result.length > 200) { //historical
+                    pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1) {
+                    pairDataQueDay[pairs[index]].shift();
+                    pairDataQueDay[pairs[index]].push(data.result);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueDay[pairs[index]], pair, interval);
+            }
         }
+    } catch (err) {
+        console.error(err);
     }
+
+    if (index < pairs.length - 1) {
+        index++;
+        if (interval == "thirtyMin") {
+            if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        } else if (interval == "day") {
+            if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        }
+
+    } else {
+        console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
+    }
+
 }
 
 var intervalHandlerThirtyMin, intervalHandlerDay;
@@ -223,7 +247,7 @@ module.exports = {
                     callback();
                 },
                 function (callback) {
-                    runner("day");
+                    setTimeout(function () { runner("day"); }, 300 * 1000);//5min
                     console.log("day");
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
