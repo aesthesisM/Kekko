@@ -25,11 +25,11 @@ Currently only mysql:
 ### Edit .env file 
 ```
 ENVIRONMENT=Development
-DB_NAME=<db_name>
-DB_USER=<db_user>
-DB_PASSWORD=<db_password>
-DB_HOST=<db_host>
-DB_PORT=<db_port>
+DB_NAME=kekko
+DB_USER=kekkoDB
+DB_PASSWORD=11231123
+DB_HOST=172.16.169.129
+DB_PORT=3306
 
 ```
 ## Installing
