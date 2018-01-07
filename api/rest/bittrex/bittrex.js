@@ -16,7 +16,9 @@ BittrexClient.prototype._get = function (destination, params, callback) {
         method: "GET",
         headers: {
             'User-Agent': 'Mozilla/4.0 (compatible; Bittrex node.js client)',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Connection": "close",
+            "Proof": "close"
         }
     }
 
