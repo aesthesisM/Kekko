@@ -2,7 +2,7 @@ var Bittrex = require('../rest/bittrex/bittrex');
 var async = require('async');
 
 const { WebClient } = require('@slack/client');
-const bot_token='xoxb-292895720725-VVNmQ9280P0OEPvEhgEeSE4i';
+const bot_token='token-slack-kanalında';
 const web = new WebClient(bot_token);
 const channelId = 'C8BNHBG1W';
 //MA
