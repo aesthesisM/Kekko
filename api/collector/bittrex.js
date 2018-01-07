@@ -127,9 +127,7 @@ function checkCCI(data, pair, interval) {
         signalCallback(signals[pair]);
         signals[pair] = null;
     }
-
 }
-
 
 function runIndicators(data, pair, interval) {
     if (data == null && data == undefined || data.length == 0) {
@@ -169,7 +167,7 @@ function recursive(data, err, pair, interval, index) {
                 pairDataQueDay[pair[index]] = null;
             }
         } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
-            console.log("pair:" + pair + " | interval:" + interval + " | index:" + index);
+            console.log("pair:" + pair + " | interval:" + interval + " | index:" + index + " | data.length:" + data.result.length);
             if (interval === "thirtyMin") {
                 if (data.result.length > 200) { //historical
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
