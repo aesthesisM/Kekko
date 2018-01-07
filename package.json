@@ -4,6 +4,7 @@
     "start": "node bin/server.js"
   },
   "dependencies": {
+    "@slack/client": "^3.15.0",
     "async": "^2.6.0",
     "body-parser": "^1.18.2",
     "dotenv": "^4.0.0",

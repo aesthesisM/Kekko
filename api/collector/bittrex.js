@@ -1,5 +1,12 @@
 var Bittrex = require('../rest/bittrex/bittrex');
 var async = require('async');
+require('dotenv').config();
+var conf = process.env;
+
+const { WebClient } = require('@slack/client');
+const bot_token='token-slack-kanalında';
+const web = new WebClient(conf.BITTREX_BOT_TOKEN);
+const channelId = 'C8BNHBG1W';
 //MA
 var MA_longTermPeriod = 200;
 var MA_midTermPeriod = 90;
@@ -95,6 +102,12 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
                 "lastClosePrice": data[data.length - 1].C,
                 "interval": interval
             }
+            web.chat.postMessage(channelId, signalObj)
+                .then((res) => {
+                    // `res` contains information about the posted message
+                    console.log('Message sent: ', res.ts);
+                })
+                .catch(console.error);
             signals[pair] = signalObj;
         }
     }
