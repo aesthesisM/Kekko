@@ -1,6 +1,6 @@
 var async = require('async')
 var mongodb = require('mongodb').MongoClient;
-var dbURL = "mongodb://localhost:27017/";
+var dbURL = "mongodb://172.16.169.129:27017";
 
 mongodb.connect(dbURL, function (err, data) {
     if (err) {
