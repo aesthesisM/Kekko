@@ -1,9 +1,11 @@
 var Bittrex = require('../rest/bittrex/bittrex');
 var async = require('async');
+require('dotenv').config();
+var conf = process.env;
 
 const { WebClient } = require('@slack/client');
 const bot_token='token-slack-kanalında';
-const web = new WebClient(bot_token);
+const web = new WebClient(conf.BITTREX_TOKEN);
 const channelId = 'C8BNHBG1W';
 //MA
 var MA_longTermPeriod = 200;
