@@ -29,7 +29,7 @@ var pairDataQueThirtyMin = [];
 //signals for ui
 //will be united
 var signalsDay = [];
-var signalThirtyMin = [];
+var signalsThirtyMin = [];
 //collector
 var bittrexClient = null;
 
@@ -178,7 +178,6 @@ function runner(interval) {
     }
 }
 
-// }, 1800000);//30 min
 function recursive(data, err, pair, interval, index) {
     try {
         if (err) {
@@ -292,10 +291,10 @@ module.exports = {
     },
     getSignals: function () {
         var signalArray = [];
-        signalArray.push(signalsThirtyMin);
-        signalArray.push(signalsDay);
+
+        signalArray.push(Object.values(signalsThirtyMin));
+        signalArray.push(Object.values(signalsDay));
+
         return ({ api: "bittrex", result: signalArray });
     }
 }
-
-//module.exports.startRunner();
