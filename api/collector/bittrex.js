@@ -1,5 +1,12 @@
 var Bittrex = require('../rest/bittrex/bittrex');
 var async = require('async');
+require('dotenv').config();
+var conf = process.env;
+
+const { WebClient } = require('@slack/client');
+const bot_token='token-slack-kanalında';
+const web = new WebClient(conf.BITTREX_BOT_TOKEN);
+const channelId = 'C8BNHBG1W';
 //MA
 var MA_longTermPeriod = 200;
 var MA_midTermPeriod = 90;
@@ -12,6 +19,12 @@ var CCI_Constant = 0.015;
 
 var pairs = [];
 var signals = [];
+
+//these datas will be held in memory
+//30min and 1 day essentials for our signal search
+
+var pairDataQueDay = [];
+var pairDataQueThirtyMin = [];
 
 var bittrexClient = null;
 
@@ -89,13 +102,19 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
                 "lastClosePrice": data[data.length - 1].C,
                 "interval": interval
             }
+            web.chat.postMessage(channelId, signalObj)
+                .then((res) => {
+                    // `res` contains information about the posted message
+                    console.log('Message sent: ', res.ts);
+                })
+                .catch(console.error);
             signals[pair] = signalObj;
         }
     }
 
 }
 
-function checkCCI(data, pair) {
+function checkCCI(data, pair, interval) {
     if (signals[pair] == undefined || signals[pair] == null) {
         return;
     }
@@ -109,7 +128,7 @@ function checkCCI(data, pair) {
     mean /= CCI_period;
 
     for (var i = 0; i < CCI_period; i++) {
-        meanDeviation += Math.abs(mean - data[data.length - CCI_period + i].C)
+        meanDeviation += Math.abs(mean - data[data.length - CCI_period + i].C);
     }
     meanDeviation /= CCI_period;
 
@@ -119,43 +138,96 @@ function checkCCI(data, pair) {
     console.log(signals[pair]);
     if (signalCallback != null) {
         signalCallback(signals[pair]);
+        signals[pair] = null;
     }
 }
 
-
 function runIndicators(data, pair, interval) {
-    if (data == undefined || data.length == 0) {
+    if (data == null && data == undefined || data.length == 0) {
         console.log("socket null data");
         return;
     }
     checkMA(data, pair, interval);
-    checkCCI(data, pair);
+    checkCCI(data, pair, interval);
 }
 
 function runner(interval) {
-    console.log("running at " + new Date().toLocaleString() + " | interval :" + interval);
-    bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+    console.log("bittrex collector started for " + interval + " interval at" + new Date().toLocaleString("tr"));
+    if (interval === "thirtyMin") {
+        if (pairDataQueThirtyMin.length == 0 || pairDataQueThirtyMin[pairs[0]] == undefined || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
+    } else if (interval === "day") {
+        if (pairDataQueDay.length == 0 || pairDataQueDay[pairs[0]] == undefined || pairDataQueDay[pairs[0]] == null || pairDataQueDay[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
+    }
 }
 
 // }, 1800000);//30 min
 function recursive(data, err, pair, interval, index) {
-    if (err) {
-        console.error(err);
-        bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
-    } else {
-        try {
-            console.log("working pair " + pair + " | interval: " + interval + " | index: " + index);
-            runIndicators(data.result, pair, interval);
-        } catch (err) {
+    try {
+        if (err) {
             console.error(err);
+            //if there is an error then remove all data about this index. otherwise we will work with corrupted data.
+            if (interval === "thirtyMin") {
+                pairDataQueThirtyMin[pair[index]] = null;
+            } else if (interval === "day") {
+                pairDataQueDay[pair[index]] = null;
+            }
+        } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
+            console.log("pair:" + pair + " | interval:" + interval + " | index:" + index + " | data.length:" + data.result.length);
+            if (interval === "thirtyMin") {
+                if (data.result.length > 200) { //historical
+                    pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1 && pairDataQueThirtyMin[pairs[index]] != null && pairDataQueThirtyMin[pairs[index]] != undefined) {
+                    pairDataQueThirtyMin[pairs[index]].shift();
+                    pairDataQueThirtyMin[pairs[index]].push(data.result);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueThirtyMin[pairs[index]], pair, interval);
+            } else if (interval === "day") {
+                if (data.result.length > 200) { //historica
+                    pairDataQueDay[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] != undefined) {
+
+                    pairDataQueDay[pairs[index]].shift();
+                    pairDataQueDay[pairs[index]].push(data.result);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueDay[pairs[index]], pair, interval);
+            }
         }
-        if (index < pairs.length - 1) {
-            index++;
-            bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
-        } else {
-            console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
-        }
+    } catch (err) {
+        console.error(err);
     }
+
+    if (index < pairs.length - 1) {
+        index++;
+        if (interval === "thirtyMin") {
+            if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        } else if (interval === "day") {
+            if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        }
+
+    } else {
+        console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
+    }
+
 }
 
 var intervalHandlerThirtyMin, intervalHandlerDay;
@@ -176,7 +248,6 @@ module.exports = {
                                 } else if (Object.keys(data.result).length > 0) {
                                     console.log("pairs");
                                     for (var i = 0; i < data.result.length; i++) {
-
                                         if ((data.result[i]["MarketName"]).startsWith("BTC-")) {
                                             pairs.push(data.result[i]["MarketName"]);
                                         }
@@ -190,13 +261,8 @@ module.exports = {
                 },
                 function (callback) {
                     runner("thirtyMin");
-                    console.log("thirty");
-                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
-                    callback();
-                },
-                function (callback) {
                     runner("day");
-                    console.log("day");
+                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
@@ -205,7 +271,7 @@ module.exports = {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log("started successfully");
+                    console.log("bittirex collector started successfully");
                 }
             })
 
@@ -213,6 +279,12 @@ module.exports = {
     stopRunner: function () {
         clearInterval(intervalHandlerThirtyMin);
         clearInterval(intervalHandlerDay);
+    },
+    getDailySignals: function () {
+
+    },
+    getThirtyMinSignals: function () {
+
     }
 }
 

@@ -16,7 +16,9 @@ BittrexClient.prototype._get = function (destination, params, callback) {
         method: "GET",
         headers: {
             'User-Agent': 'Mozilla/4.0 (compatible; Bittrex node.js client)',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Connection": "close",
+            "Proof": "close"
         }
     }
 
@@ -59,7 +61,7 @@ BittrexClient.prototype._get = function (destination, params, callback) {
     });
 
     req.on('socket', function (socket) {
-        socket.setTimeout(30000); //10 sec
+        //socket.setTimeout(7500); //7.5 sec
         socket.on('timeout', function () {
             req.abort();
         });
@@ -80,6 +82,10 @@ BittrexClient.prototype._getPair = function (params, callback) {
 
 BittrexClient.prototype._getHistoricalData = function (params, callback) {
     this._get("/Api/v2.0/pub/market/GetTicks", params, callback);
+}
+
+BittrexClient.prototype._getLatestTick = function (params, callback) {
+    this._get("/Api/v2.0/pub/market/GetLatestTick", params, callback);
 }
 
 

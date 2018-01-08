@@ -29,7 +29,7 @@ app.use(logger('dev'));
 //// view engine setup
 app.engine('html', handleBars({
     extname: 'html',
-    defaultLayout: 'layout',
+    defaultLayout: 'index',
     layoutsDir: path.join(__dirname, '/public/views/')
 }));
 
