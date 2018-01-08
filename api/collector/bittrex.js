@@ -107,12 +107,6 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
                 "lastClosePrice": data[data.length - 1].C,
                 "interval": interval
             }
-            web.chat.postMessage(channelId, signalObj)
-                .then((res) => {
-                    // `res` contains information about the posted message
-                    console.log('Message sent: ', res.ts);
-                })
-                .catch(console.error);
             signals[pair] = signalObj;
         }
     }
@@ -143,6 +137,12 @@ function checkCCI(data, pair, interval) {
     console.log(signals[pair]);
     if (signalCallback != null) {
         signalCallback(signals[pair]);
+        web.chat.postMessage(channelId, ""+JSON.stringify(signals[pair]))
+        .then((res) => {
+            // `res` contains information about the posted message
+            console.log('Message sent: ', res.ts);
+        })
+        .catch(console.error);
         if (interval === "thirtyMin") {
             signalsThirtyMin[pair] = signals[pair];
         } else if (interval === "day") {
