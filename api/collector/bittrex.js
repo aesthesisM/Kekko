@@ -4,7 +4,7 @@ require('dotenv').config();
 var conf = process.env;
 
 const { WebClient } = require('@slack/client');
-const bot_token='token-slack-kanalında';
+const bot_token = 'token-slack-kanalında';
 const web = new WebClient(conf.BITTREX_BOT_TOKEN);
 const channelId = 'C8BNHBG1W';
 //MA
@@ -26,6 +26,11 @@ var signals = [];
 var pairDataQueDay = [];
 var pairDataQueThirtyMin = [];
 
+//signals for ui
+//will be united
+var signalsDay = [];
+var signalThirtyMin = [];
+//collector
 var bittrexClient = null;
 
 function checkMA(data, pair, interval) { //calculate depending on C which means close price
@@ -138,6 +143,11 @@ function checkCCI(data, pair, interval) {
     console.log(signals[pair]);
     if (signalCallback != null) {
         signalCallback(signals[pair]);
+        if (interval === "thirtyMin") {
+            signalsThirtyMin[pair] = signals[pair];
+        } else if (interval === "day") {
+            signalsDay[pair] = signals[pair];
+        }
         signals[pair] = null;
     }
 }
@@ -280,11 +290,11 @@ module.exports = {
         clearInterval(intervalHandlerThirtyMin);
         clearInterval(intervalHandlerDay);
     },
-    getDailySignals: function () {
-
-    },
-    getThirtyMinSignals: function () {
-
+    getSignals: function () {
+        var signalArray = [];
+        signalArray.push(signalsThirtyMin);
+        signalArray.push(signalsDay);
+        return ({ api: "bittrex", result: signalArray });
     }
 }
 

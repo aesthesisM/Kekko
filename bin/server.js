@@ -88,7 +88,7 @@ socketIO.on("chainDump", function (data) { //api = 1,2,3 | type : dump,chain
 */
 socketIO.sockets.on('connection', function (socket) {
     console.log("a user connected");
-    socket.emit('message', 'you are connected the socket');
+    socket.emit('connection', bittrexCollector.getSignals());
 });
 /**
  * Listen on provided port, on all network interfaces.
