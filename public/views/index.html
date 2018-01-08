@@ -667,40 +667,7 @@
     <script>
         function _has(object, key) {
             return object ? hasOwnProperty.call(object, key) : false;
-        } var socket = io.connect("http://localhost:50000");
-        var signalArray = [];
-
-        var hitbtcCallback;
-        var bittrexCallback;
-        var poloniexCallback;
-
-        socket.on("callback", function (data) {
-            if (data != null && data != undefined) {
-                var error = null;
-                if (_has(data, "error")) {
-                    error = data.error;
-                }
-                switch (data.api) {
-                    case 1: hitbtcCallback(data, error);
-                        break;
-                    case 2: bittrexCallback(data, error);
-                        break;
-                    case 3: poloniexCallback(data, error);
-                        break;
-
-                }
-            }
-        });
-
-        socket.on('message', function (data) {
-            alert(data);
-
-            socket.emit('message', { message: 'bambam message emit from client ;)' });
-        });
-        socket.on('signal', function (data) {
-            alert("new signals came" + JSON.stringify(data));
-            signalArray.push(data);
-        });
+        }        
     </script>
 </body>
 

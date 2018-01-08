@@ -40,7 +40,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in $parent.mainCtrl.signalArray | filter:search track by $index">
+                            <tr ng-repeat="item in $parent.mainCtrl.signalArray | filter:search track by $index" ng-click="$parent.mainCtrl.showSignalChart(item)"
+                                style="cursor:pointer">
                                 <td>{{item.pair}}</td>
                                 <td>{{item.type}}</td>
                                 <td>{{item.longTermAvarage | number : 9}}</td>
@@ -61,4 +62,31 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="modal-signalChart">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="fa fa-remove"></i>
+                    </span>
+                </button>
+                <h4 class="modal-title">{{$parent.mainCtrl.signalChart.pair}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <iframe ng-src="{{$parent.mainCtrl.signalChart.url}}" style="width:98%;height:630px;"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>

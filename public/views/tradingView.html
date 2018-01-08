@@ -5,6 +5,18 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        #tdChart {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -24,11 +36,11 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
         var val = getParameterByName("value");
+        var site = getParameterByName("site");
         var widget = new TradingView.widget({
             "container_id": "tdChart",
-            "width": 980,
-            "height": 610,
-            "symbol": "HITBTC:" + val,
+            "autosize": true,
+            "symbol": site + ":" + val,
             "interval": "30",
             "timezone": "Europe/Istanbul",
             "theme": "Dark",
@@ -41,9 +53,6 @@
             "details": false,
             "hideideas": true,
             "studies": [
-                "MASimple@tv-basicstudies",
-                "MASimple@tv-basicstudies",
-                "MASimple@tv-basicstudies",
                 "MASimple@tv-basicstudies",
                 "CCI@tv-basicstudies"
             ],

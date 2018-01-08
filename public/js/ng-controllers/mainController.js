@@ -53,7 +53,7 @@ kekkoApp.config(function ($routeProvider) {
             redirectTo: '/'
         });
 });
-kekkoApp.controller('MainController', function ($scope, $http, Page) {
+kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
     var mainCtrl = this;
     Page.setTitle("Dashboard");
     mainCtrl.Page = Page;
@@ -82,8 +82,15 @@ kekkoApp.controller('MainController', function ($scope, $http, Page) {
     mainCtrl.getAllApis = function () {
 
     };
-    mainCtrl.showList = function(){
+    mainCtrl.showList = function () {
         console.log(mainCtrl.signalArray);
+    }
+
+    mainCtrl.showSignalChart = function (data) {
+        mainCtrl.signalChart = data;
+        var pp = data.pair.split("-")[1] + data.pair.split("-")[0];
+        mainCtrl.signalChart.url = $sce.trustAsResourceUrl("/views/tradingView.html?site=BITTREX&value=" + pp);
+        $('#modal-signalChart').modal('toggle');
     }
     mainCtrl.openSignals = function () {
         toastr.options = {
@@ -126,7 +133,9 @@ kekkoApp.controller('MainController', function ($scope, $http, Page) {
                 }
             }
         });
-
+        socket.on("connect", function (data) {
+            //mainCtrl.signalArray = data;
+        });
         socket.on('message', function (data) {
             socket.emit('message', { message: 'bambam message emit from client ;)' });
         });
