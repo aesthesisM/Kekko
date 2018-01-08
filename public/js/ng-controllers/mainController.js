@@ -134,7 +134,8 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
             }
         });
         socket.on("connection", function (data) {
-            mainCtrl.signalArray = data;
+            //mainCtrl.signalArray = data;
+            console.log(data);
         });
         socket.on('message', function (data) {
             socket.emit('message', { message: 'bambam message emit from client ;)' });
