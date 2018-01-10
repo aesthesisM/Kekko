@@ -135,7 +135,7 @@ function checkCCI(data, pair, interval) {
 
     signals[pair]["CCI"] = CCIRate;
     console.log(signals[pair]);
-    if (signalCallback != null) {
+    if (CCIRate < -80 && signalCallback != null) {
         signalCallback(signals[pair]);
         web.chat.postMessage(channelId, ""+JSON.stringify(signals[pair]))
         .then((res) => {
