@@ -134,8 +134,8 @@ function checkCCI(data, pair, interval) {
     CCIRate = (data[data.length - 1].C - mean) / (CCI_Constant * meanDeviation);
 
     signals[pair]["CCI"] = CCIRate;
-    console.log(signals[pair]);
     if (CCIRate < -80 && signalCallback != null) {
+        console.log(signals[pair]);
         signalCallback(signals[pair]);
         web.chat.postMessage(channelId, ""+JSON.stringify(signals[pair]))
         .then((res) => {
@@ -272,7 +272,7 @@ module.exports = {
                 function (callback) {
                     runner("thirtyMin");
                     runner("day");
-                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 11 * 60 * 1000); //30min
+                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
