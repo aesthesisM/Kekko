@@ -164,13 +164,13 @@ function runIndicators(data, pair, interval) {
 function runner(interval) {
     console.log("bittrex collector started for " + interval + " interval at" + new Date().toLocaleString("tr"));
     if (interval === "thirtyMin") {
-        if (pairDataQueThirtyMin.length == 0 || pairDataQueThirtyMin[pairs[0]] == undefined || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
+        if ((pairDataQueThirtyMin.length == 0 && pairDataQueThirtyMin[pairs[0]] == undefined) || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
             bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         } else {
             bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         }
     } else if (interval === "day") {
-        if (pairDataQueDay.length == 0 || pairDataQueDay[pairs[0]] == undefined || pairDataQueDay[pairs[0]] == null || pairDataQueDay[pairs[0]].length == 0) {
+        if ((pairDataQueDay.length == 0 && pairDataQueDay[pairs[0]] == undefined) || pairDataQueDay[pairs[0]] == null || pairDataQueDay[pairs[0]].length == 0) {
             bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         } else {
             bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
@@ -195,7 +195,7 @@ function recursive(data, err, pair, interval, index) {
                     pairDataQueThirtyMin[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
                 } else if (data.result.length == 1 && pairDataQueThirtyMin[pairs[index]] != null && pairDataQueThirtyMin[pairs[index]] != undefined) {
                     pairDataQueThirtyMin[pairs[index]].shift();
-                    pairDataQueThirtyMin[pairs[index]].push(data.result);
+                    pairDataQueThirtyMin[pairs[index]].push(data.result[0]);
                 } else {
                     //doesnt care
                 }
@@ -206,7 +206,7 @@ function recursive(data, err, pair, interval, index) {
                 } else if (data.result.length == 1 && pairDataQueDay[pairs[index]] != null && pairDataQueDay[pairs[index]] != undefined) {
 
                     pairDataQueDay[pairs[index]].shift();
-                    pairDataQueDay[pairs[index]].push(data.result);
+                    pairDataQueDay[pairs[index]].push(data.result[0]);
                 } else {
                     //doesnt care
                 }
@@ -265,13 +265,14 @@ module.exports = {
                                 }
                             }
                         );
-
+                        // pairs[0]="BTC-LMC";
+                        // callback();
                     }
                 },
                 function (callback) {
                     runner("thirtyMin");
                     runner("day");
-                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 11 * 60 * 1000); //30min
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
