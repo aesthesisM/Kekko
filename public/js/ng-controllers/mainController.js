@@ -91,7 +91,16 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
         var pp = data.pair.split("-")[1] + data.pair.split("-")[0];
         mainCtrl.signalChart.url = $sce.trustAsResourceUrl("/views/tradingView.html?site=BITTREX&value=" + pp);
         $('#modal-signalChart').modal('toggle');
-    }
+    };
+    mainCtrl.getLatestTickBittrex = function (pair) {
+        var proxy = 'https://cors-anywhere.herokuapp.com/';
+        var url = $sce.trustAsResourceUrl("https://bittrex.com/api/v1.1/public/getmarketsummary?market=" + pair.pair);
+
+        return $http({
+            method: "GET",
+            url: proxy + url
+        });
+    };
     mainCtrl.openSignals = function () {
         toastr.options = {
             closeButton: true,
@@ -135,15 +144,15 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
         });
         socket.on("connection", function (data) {
             //mainCtrl.signalArray = data;
-            for(i=0;i<data.result[0].length;i++){
+            for (i = 0; i < data.result[0].length; i++) {
                 mainCtrl.signalArray.push((data.result[0])[i])
             }
-            for(i=0;i<data.result[1].length;i++){
+            for (i = 0; i < data.result[1].length; i++) {
                 mainCtrl.signalArray.push((data.result[1])[i])
             }
+            mainCtrl.updatePercentages();
             $scope.$apply();
             console.log(data);
-
         });
         socket.on('message', function (data) {
             socket.emit('message', { message: 'bambam message emit from client ;)' });
@@ -152,10 +161,45 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
             toastr["info"](data.type + " / " + data.lastClosePrice + " / " + data.interval, "<a href='#!/signals' style='color:#ffffff;text-decoration:underline;'>" + data.pair + "</a>");
             console.log(data);
             mainCtrl.signalArray.push(data);
+            mainCtrl.getLatestTickBittrex(data)
+                .then(function successCallback(response) {
+                    // pair.last = response.result[0].Last;
+                    data.value = response.data.result[0].Last;
+                    mainCtrl.calcPercentage(data);
+                    $scope.$apply();
+                }, function errorCallback(response) {
+                    console.log("Err", response);
+                });
             $scope.$apply();
             document.getElementById('signalSound').play();
         });
     };
     mainCtrl.openSignals();
+    mainCtrl.calcPercentage = function (item) {
+        var diff = 0;
+        if (item.value > item.lastClosePrice) {
+            diff = item.value - item.lastClosePrice;
+            item.change = "+";
+        } else {
+            diff = item.lastClosePrice - item.value;
+            item.change = "-";
+        }
+        item.percentage = diff / item.lastClosePrice * 100;
+    };
+    mainCtrl.updatePercentages = function () {
+        angular.forEach(mainCtrl.signalArray, function (item) {
+            mainCtrl.getLatestTickBittrex(item)
+                .then(function successCallback(response) {
+                    // pair.last = response.result[0].Last;
+                    item.value = response.data.result[0].Last;
+                    mainCtrl.calcPercentage(item);
+                }, function errorCallback(response) {
+                    item.value = "Err";
+                });
+        });
+    };
+    setInterval(function () {
+        mainCtrl.updatePercentages();
+    }, 30 * 6000);
 });
 

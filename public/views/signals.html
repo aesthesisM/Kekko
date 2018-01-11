@@ -24,36 +24,33 @@
                     <table class="table table-hover no-margin">
                         <thead>
                             <tr>
-                                <th>pair</th>
+                                <th># pair</th>
                                 <th>type</th>
-                                <th>longTermAvarage</th>
-                                <th>midTermAvarage</th>
-                                <th>shortTermAvarage</th>
-                                <th>quickTermAvarage</th>
-                                <th>longTermMin</th>
-                                <th>longTermMax</th>
-                                <th>CCI</th>
-                                <th>action</th>
-                                <th>lastTime</th>
                                 <th>lastClosePrice</th>
+                                <th>Current value</th>
+                                <th>ShortTermAvarage</th>
+                                <th>longTerm Max/Min</th>
+                                <th>CCI</th>
+                                <th>lastTime</th>
                                 <th>interval</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="item in $parent.mainCtrl.signalArray | filter:search track by $index" ng-click="$parent.mainCtrl.showSignalChart(item)"
                                 style="cursor:pointer">
-                                <td>{{item.pair}}</td>
+                                <td>{{($index+1) + "." + item.pair}}</td>
                                 <td>{{item.type}}</td>
-                                <td>{{item.longTermAvarage | number : 9}}</td>
-                                <td>{{item.midTermAvarage | number : 9}}</td>
-                                <td>{{item.shortTermAvarage | number : 9}}</td>
-                                <td>{{item.quickTermAvarage | number : 9}}</td>
-                                <td>{{item.longTermMin | number : 9}}</td>
-                                <td>{{item.longTermMax | number : 9}}</td>
-                                <td>{{item.CCI | number : 1}}</td>
-                                <td>{{item.action}}</td>
+                                <td>{{item.lastClosePrice | number : 8}}</td>
+                                <td class="box" ng-class="[{'+':'success', '-':'danger'}[item.change]]" style="width:auto;">
+                                    {{item.value | number : 8}} / {{item.change}}%{{item.percentage | number : 2}}
+                                    <div class="overlay" ng-show="!item.value">
+                                        <i class="fa fa-refresh fa-spin"></i>
+                                    </div>
+                                </td>
+                                <td>{{item.shortTermAvarage | number : 8}}</td>
+                                <td>{{item.longTermMax | number : 8}} / {{item.longTermMin | number : 8}}</td>
+                                <td>{{item.CCI | number : 0}}</td>
                                 <td>{{item.lastTime}}</td>
-                                <td>{{item.lastClosePrice | number : 9}}</td>
                                 <td>{{item.interval}}</td>
                             </tr>
                         </tbody>
@@ -77,6 +74,39 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-hover no-margin">
+                            <thead>
+                                <tr>
+                                    <th># pair</th>
+                                    <th>type</th>
+                                    <th>Long/Mid/Short/Quick TermAvarage</th>
+                                    <th>longTerm Max/Min</th>
+                                    <th>CCI</th>
+                                    <th>lastTime</th>
+                                    <th>lastClosePrice</th>
+                                    <th>interval</th>
+                                    <th>value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{$parent.mainCtrl.signalChart.pair}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.type}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.longTermAvarage | number : 8}} / {{$parent.mainCtrl.signalChart.midTermAvarage
+                                        | number : 8}} / {{$parent.mainCtrl.signalChart.shortTermAvarage | number : 8}} /
+                                        {{$parent.mainCtrl.signalChart.quickTermAvarage | number : 8}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.longTermMax | number : 8}} / {{$parent.mainCtrl.signalChart.longTermMin
+                                        | number : 8}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.CCI | number : 1}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.lastTime}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.lastClosePrice | number : 8}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.interval}}</td>
+                                    <td>{{$parent.mainCtrl.signalChart.value | number : 8}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="col-sm-12">
                         <iframe ng-src="{{$parent.mainCtrl.signalChart.url}}" style="width:98%;height:630px;"></iframe>
                     </div>
