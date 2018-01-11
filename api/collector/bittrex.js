@@ -180,8 +180,8 @@ function checkCCI(data, pair, interval) {
     CCIRate = (data[data.length - 1].C - mean) / (CCI_Constant * meanDeviation);
 
     signals[pair]["CCI"] = CCIRate;
-    console.log(signals[pair]);
     if (CCIRate < CCI_decision_avarage && signalCallback != null) {
+        console.log(signals[pair]);
         signalCallback(signals[pair]);
         web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
             .then((res) => {
