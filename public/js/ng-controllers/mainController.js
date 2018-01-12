@@ -53,7 +53,7 @@ kekkoApp.config(function ($routeProvider) {
             redirectTo: '/'
         });
 });
-kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
+kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
     var mainCtrl = this;
     Page.setTitle("Dashboard");
     mainCtrl.Page = Page;
@@ -150,8 +150,9 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
             for (i = 0; i < data.result[1].length; i++) {
                 mainCtrl.signalArray.push((data.result[1])[i])
             }
-            mainCtrl.updatePercentages();
-            $scope.$apply();
+            mainCtrl.updatePercentages().then(function (data) {
+                $scope.$apply();
+            });;
             console.log(data);
         });
         socket.on('message', function (data) {
@@ -169,8 +170,8 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
                     $scope.$apply();
                 }, function errorCallback(response) {
                     console.log("Err", response);
+                    $scope.$apply();
                 });
-            $scope.$apply();
             document.getElementById('signalSound').play();
         });
     };
@@ -187,19 +188,28 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce) {
         item.percentage = diff / item.lastClosePrice * 100;
     };
     mainCtrl.updatePercentages = function () {
-        angular.forEach(mainCtrl.signalArray, function (item) {
+        var deferred = $q.defer();
+        angular.forEach(mainCtrl.signalArray, function (item, i) {
+            // item.value = undefined;
             mainCtrl.getLatestTickBittrex(item)
                 .then(function successCallback(response) {
                     // pair.last = response.result[0].Last;
                     item.value = response.data.result[0].Last;
                     mainCtrl.calcPercentage(item);
+                    if (i == mainCtrl.signalArray.length - 1) {
+                        console.log("Last item in list", item.pair);
+                        deferred.resolve("ok");
+                    }
                 }, function errorCallback(response) {
                     item.value = "Err";
                 });
         });
+        return deferred.promise;
     };
     setInterval(function () {
-        mainCtrl.updatePercentages();
+        mainCtrl.updatePercentages().then(function (data) {
+            $scope.$apply();
+        });
     }, 30 * 6000);
 });
 
