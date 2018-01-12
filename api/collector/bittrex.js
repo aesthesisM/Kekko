@@ -338,10 +338,12 @@ module.exports = {
     },
     getSignals: function () {
         var signalArray = [];
-
-        signalArray.push(Object.values(signalsThirtyMin));
-        signalArray.push(Object.values(signalsDay));
-
+        try {
+            signalArray.push(Object.values(signalsThirtyMin));
+            signalArray.push(Object.values(signalsDay));
+        }catch (err){
+            console.log(err)
+        }
         return ({ api: "bittrex", result: signalArray });
     }
 }
