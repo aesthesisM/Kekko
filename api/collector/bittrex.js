@@ -339,8 +339,9 @@ module.exports = {
     getSignals: function () {
         var signalArray = [];
         try {
-            signalArray.push(Object.values(signalsThirtyMin));
-            signalArray.push(Object.values(signalsDay));
+            ;
+            signalArray.push(signalsThirtyMin.map(d=>{ return Object.keys(d) }));
+            signalArray.push(signalsDay.map(d=>{ return Object.keys(d) }));
         }catch (err){
             console.log(err)
         }
