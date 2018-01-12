@@ -198,7 +198,7 @@ function runIndicators(data, pair, interval) {
     checkCCI(data, pair, interval);
     checkCrossPattern(data, pair, interval);
 
-    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null) {
+    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < -10 && signalCallback != null) {
         console.log(signals[pair]);
         signalCallback(signals[pair]);
         web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
