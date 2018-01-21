@@ -18,6 +18,7 @@
     "mysql-migrations": "^1.0.4",
     "redis": "^2.8.0",
     "socket.io": "^2.0.4",
+    "typescript": "^2.6.2",
     "ws": "^3.3.2"
   },
   "name": "kekko",
