@@ -77,6 +77,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
     mid_short_difference = ((midTermAvarage - shortTermAvarage) / shortTermAvarage) * 100;
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
+    long_quick_difference = ((longTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
     if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
 
         var signalObj = {
@@ -91,16 +92,16 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             "CCI": 0,
             "action": 0,
             "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
-            "lastClosePrice": data[data.length - 1].C,
+            "lastClosePrice": data[data.length - 1].L,
             "signalPrice": 0,
             "interval": interval,
             "timeOut": new Date().getTime() + 7 * 24 * 60 * 60 * 1000
         }
 
-        if ((long_mid_difference > 9) && (mid_short_difference > 9) && (short_quick_difference > 9)) { //last part of dump
+        if (long_quick_difference > 30) { //last part of dump
             signalObj["type"] = "LPOD (last part of dump)";
             signals[pair] = signalObj;
-        } else if ((long_mid_difference < 4) && (mid_short_difference < 4) && (short_quick_difference < 4)) { //normal cycle of coin
+        } else if (long_quick_difference < 10) { //normal cycle of coin
             signalObj["type"] = "NCOP (normal cycle of price)";
             signals[pair] = signalObj;
         }
@@ -198,7 +199,7 @@ function runIndicators(data, pair, interval) {
     checkCCI(data, pair, interval);
     checkCrossPattern(data, pair, interval);
 
-    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < -10 && signalCallback != null) {
+    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null) {
         console.log(signals[pair]);
         signalCallback(signals[pair]);
         web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
