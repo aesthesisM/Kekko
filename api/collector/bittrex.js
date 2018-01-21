@@ -25,15 +25,19 @@ var signals = [];
 //30min and 1 day essentials for our signal search
 
 var pairDataQueDay = [];
+var pairDataQueHour = [];
 var pairDataQueThirtyMin = [];
 
 //signals for ui
 //will be united
 var signalsDay = [];
+var signalsHour = [];
 var signalsThirtyMin = [];
 //signals for crossing MA
-var signalCrossThirtyMin = [];
+
 var signalCrossDay = [];
+var signalCrossHour = [];
+var signalCrossThirtyMin = [];
 //collector
 var bittrexClient = null;
 
@@ -112,6 +116,8 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             signalCrossThirtyMin[pair] = signalObj;
         } else if (interval === "day") {
             signalCrossDay[pair] = signalObj;
+        } else if (interval === "hour") {
+            signalCrossHour[pair] = signalObj;
         }
 
     } else {
@@ -154,8 +160,27 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             } else if (quickTermAvarage < longTermAvarage || signalCrossDay[pair]["timeOut"] < new Date().getTime()) {//remove cross from array. unwanted position
                 signalCrossDay[pair] = null;
             }
-        }
+        } else if (interval === "hout" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null) {
 
+            signalCrossHour[pair]["quickTermAvarage"] = quickTermAvarage;
+            signalCrossHour[pair]["shortTermAvarage"] = shortTermAvarage;
+            signalCrossHour[pair]["midTermAvarage"] = midTermAvarage;
+            signalCrossHour[pair]["longTermAvarage"] = longTermAvarage;
+
+            if (quickTermAvarage > shortTermAvarage && signalCrossHour[pair]["action"] == 0) {
+                signalCrossHour[pair]["action"] = 1;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage > midTermAvarage && signalCrossHour[pair]["action"] == 1) {
+                signalCrossHour[pair]["action"] = 2;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage > longTermAvarage && signalCrossHour[pair]["action"] == 2) {
+                signalCrossHour[pair]["action"] = 3;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage < longTermAvarage || signalCrossHour[pair]["timeOut"] < new Date().getTime()) {//remove cross from array. unwanted position
+                signalCrossHour[pair] = null;
+            }
+
+        }
     }
 }
 
@@ -187,6 +212,8 @@ function checkCrossPattern(data, pair, interval) {
         signals[pair] = signalCrossThirtyMin[pair];
     } else if (interval === "day" && signalCrossDay[pair] != undefined && signalCrossDay[pair] != null && signalCrossDay[pair].action > 0) {
         signals[pair] = signalCrossDay[pair];
+    } else if (interval === "hour" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null && signalCrossHour[pair].action > 0) {
+        signals[pair] = signalCrossHour[pair];
     }
 }
 
@@ -211,6 +238,8 @@ function runIndicators(data, pair, interval) {
             signalsThirtyMin[pair] = signals[pair];
         } else if (interval === "day") {
             signalsDay[pair] = signals[pair];
+        } else if (interval === "hour") {
+            signalsHour[pair] = signals[pair];
         }
         signals[pair] = null;
     }
@@ -230,6 +259,12 @@ function runner(interval) {
         } else {
             bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         }
+    } else if (interval === "hour") {
+        if ((pairDataQueHour.length == 0 && pairDataQueHour[pairs[0]] == undefined) || pairDataQueHour[pairs[0]] == null || pairDataQueHour[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
     }
 }
 
@@ -242,6 +277,8 @@ function recursive(data, err, pair, interval, index) {
                 pairDataQueThirtyMin[pair[index]] = null;
             } else if (interval === "day") {
                 pairDataQueDay[pair[index]] = null;
+            } else if (interval === "hour") {
+                pairDataQueHour[pair[index]] = null;
             }
         } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
             console.log("pair:" + pair + " | interval:" + interval + " | index:" + index + " | data.length:" + data.result.length);
@@ -266,6 +303,17 @@ function recursive(data, err, pair, interval, index) {
                     //doesnt care
                 }
                 runIndicators(pairDataQueDay[pairs[index]], pair, interval);
+            } else if (interval === "hour") {
+                if (data.result.length > 200) { //historica
+                    pairDataQueHour[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1 && pairDataQueHour[pairs[index]] != null && pairDataQueHour[pairs[index]] != undefined) {
+
+                    pairDataQueHour[pairs[index]].shift();
+                    pairDataQueHour[pairs[index]].push(data.result[0]);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueHour[pairs[index]], pair, interval);
             }
         }
     } catch (err) {
@@ -282,6 +330,12 @@ function recursive(data, err, pair, interval, index) {
             }
         } else if (interval === "day") {
             if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        } else if (interval === "hour") {
+            if (pairDataQueHour[pairs[index]] == undefined || pairDataQueHour[pairs[index]] == null || pairDataQueHour[pairs[index]].length == 0) {
                 bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
             } else {
                 bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
@@ -325,7 +379,8 @@ module.exports = {
                 function (callback) {
                     runner("thirtyMin");
                     runner("day");
-                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    //intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
@@ -340,13 +395,15 @@ module.exports = {
 
     },
     stopRunner: function () {
-        clearInterval(intervalHandlerThirtyMin);
+        //clearInterval(intervalHandlerThirtyMin);
+        clearInterval(intervalHandlerHour);
         clearInterval(intervalHandlerDay);
     },
     getSignals: function () {
         var signalArray = [];
         try {
-            signalArray.push(signalsThirtyMin.map(d => { return Object.keys(d) }));
+            //signalArray.push(signalsThirtyMin.map(d => { return Object.keys(d) }));
+            signalArray.push(signalsHour.map(d => { return Object.keys(d) }));
             signalArray.push(signalsDay.map(d => { return Object.keys(d) }));
         } catch (err) {
             console.log(err)
