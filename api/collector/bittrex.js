@@ -377,7 +377,7 @@ module.exports = {
                     }
                 },
                 function (callback) {
-                    runner("thirtyMin");
+                    runner("hour");
                     runner("day");
                     //intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
