@@ -160,7 +160,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             } else if (quickTermAvarage < longTermAvarage || signalCrossDay[pair]["timeOut"] < new Date().getTime()) {//remove cross from array. unwanted position
                 signalCrossDay[pair] = null;
             }
-        } else if (interval === "hout" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null) {
+        } else if (interval === "hour" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null) {
 
             signalCrossHour[pair]["quickTermAvarage"] = quickTermAvarage;
             signalCrossHour[pair]["shortTermAvarage"] = shortTermAvarage;
