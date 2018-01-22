@@ -25,15 +25,19 @@ var signals = [];
 //30min and 1 day essentials for our signal search
 
 var pairDataQueDay = [];
+var pairDataQueHour = [];
 var pairDataQueThirtyMin = [];
 
 //signals for ui
 //will be united
 var signalsDay = [];
+var signalsHour = [];
 var signalsThirtyMin = [];
 //signals for crossing MA
-var signalCrossThirtyMin = [];
+
 var signalCrossDay = [];
+var signalCrossHour = [];
+var signalCrossThirtyMin = [];
 //collector
 var bittrexClient = null;
 
@@ -77,6 +81,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
     mid_short_difference = ((midTermAvarage - shortTermAvarage) / shortTermAvarage) * 100;
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
+    long_quick_difference = ((longTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
     if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
 
         var signalObj = {
@@ -91,17 +96,16 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             "CCI": 0,
             "action": 0,
             "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
-            "lastClosePrice": data[data.length - 1].C,
+            "lastClosePrice": data[data.length - 1].L,
             "signalPrice": 0,
             "interval": interval,
-            "cross": 0,
             "timeOut": new Date().getTime() + 7 * 24 * 60 * 60 * 1000
         }
 
-        if ((long_mid_difference > 9) && (mid_short_difference > 9) && (short_quick_difference > 9)) { //last part of dump
+        if (long_quick_difference > 30) { //last part of dump
             signalObj["type"] = "LPOD (last part of dump)";
             signals[pair] = signalObj;
-        } else if ((long_mid_difference < 4) && (mid_short_difference < 4) && (short_quick_difference < 4)) { //normal cycle of coin
+        } else if (long_quick_difference < 10) { //normal cycle of coin
             signalObj["type"] = "NCOP (normal cycle of price)";
             signals[pair] = signalObj;
         }
@@ -111,7 +115,9 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
         if (interval === "thirtyMin") {
             signalCrossThirtyMin[pair] = signalObj;
         } else if (interval === "day") {
-            signalCrossThirtyMin[pair] = signalObj;
+            signalCrossDay[pair] = signalObj;
+        } else if (interval === "hour") {
+            signalCrossHour[pair] = signalObj;
         }
 
     } else {
@@ -123,14 +129,14 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             signalCrossThirtyMin[pair]["midTermAvarage"] = midTermAvarage;
             signalCrossThirtyMin[pair]["longTermAvarage"] = longTermAvarage;
 
-            if (quickTermAvarage > shortTermAvarage && signalCrossThirtyMin[pair]["cross"] == 0) {
-                signalCrossThirtyMin[pair]["cross"] = 1;
+            if (quickTermAvarage > shortTermAvarage && signalCrossThirtyMin[pair]["action"] == 0) {
+                signalCrossThirtyMin[pair]["action"] = 1;
                 signalCrossThirtyMin[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
-            } else if (quickTermAvarage > midTermAvarage && signalCrossThirtyMin[pair]["cross"] == 1) {
-                signalCrossThirtyMin[pair]["cross"] = 2;
+            } else if (quickTermAvarage > midTermAvarage && signalCrossThirtyMin[pair]["action"] == 1) {
+                signalCrossThirtyMin[pair]["action"] = 2;
                 signalCrossThirtyMin[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
-            } else if (quickTermAvarage > longTermAvarage && signalCrossThirtyMin[pair]["cross"] == 2) {
-                signalCrossThirtyMin[pair]["cross"] = 3;
+            } else if (quickTermAvarage > longTermAvarage && signalCrossThirtyMin[pair]["action"] == 2) {
+                signalCrossThirtyMin[pair]["action"] = 3;
                 signalCrossThirtyMin[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
             } else if (quickTermAvarage < longTermAvarage) { //remove cross from array. unwanted position
                 signalCrossThirtyMin[pair] = null;
@@ -142,20 +148,39 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             signalCrossDay[pair]["midTermAvarage"] = midTermAvarage;
             signalCrossDay[pair]["longTermAvarage"] = longTermAvarage;
 
-            if (quickTermAvarage > shortTermAvarage && signalCrossDay[pair]["cross"] == 0) {
-                signalCrossDay[pair]["cross"] = 1;
+            if (quickTermAvarage > shortTermAvarage && signalCrossDay[pair]["action"] == 0) {
+                signalCrossDay[pair]["action"] = 1;
                 signalCrossDay[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
-            } else if (quickTermAvarage > midTermAvarage && signalCrossDay[pair]["cross"] == 1) {
-                signalCrossDay[pair]["cross"] = 2;
+            } else if (quickTermAvarage > midTermAvarage && signalCrossDay[pair]["action"] == 1) {
+                signalCrossDay[pair]["action"] = 2;
                 signalCrossDay[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
-            } else if (quickTermAvarage > longTermAvarage && signalCrossDay[pair]["cross"] == 2) {
-                signalCrossDay[pair]["cross"] = 3;
+            } else if (quickTermAvarage > longTermAvarage && signalCrossDay[pair]["action"] == 2) {
+                signalCrossDay[pair]["action"] = 3;
                 signalCrossDay[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
-            } else if (quickTermAvarage < longTermAvarage) {//remove cross from array. unwanted position
+            } else if (quickTermAvarage < longTermAvarage || signalCrossDay[pair]["timeOut"] < new Date().getTime()) {//remove cross from array. unwanted position
                 signalCrossDay[pair] = null;
             }
-        }
+        } else if (interval === "hour" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null) {
 
+            signalCrossHour[pair]["quickTermAvarage"] = quickTermAvarage;
+            signalCrossHour[pair]["shortTermAvarage"] = shortTermAvarage;
+            signalCrossHour[pair]["midTermAvarage"] = midTermAvarage;
+            signalCrossHour[pair]["longTermAvarage"] = longTermAvarage;
+
+            if (quickTermAvarage > shortTermAvarage && signalCrossHour[pair]["action"] == 0) {
+                signalCrossHour[pair]["action"] = 1;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage > midTermAvarage && signalCrossHour[pair]["action"] == 1) {
+                signalCrossHour[pair]["action"] = 2;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage > longTermAvarage && signalCrossHour[pair]["action"] == 2) {
+                signalCrossHour[pair]["action"] = 3;
+                signalCrossHour[pair]["timeOut"] = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+            } else if (quickTermAvarage < longTermAvarage || signalCrossHour[pair]["timeOut"] < new Date().getTime()) {//remove cross from array. unwanted position
+                signalCrossHour[pair] = null;
+            }
+
+        }
     }
 }
 
@@ -180,21 +205,15 @@ function checkCCI(data, pair, interval) {
     CCIRate = (data[data.length - 1].C - mean) / (CCI_Constant * meanDeviation);
 
     signals[pair]["CCI"] = CCIRate;
-    if (CCIRate < CCI_decision_avarage && signalCallback != null) {
-        console.log(signals[pair]);
-        signalCallback(signals[pair]);
-        web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
-            .then((res) => {
-                // `res` contains information about the posted message
-                console.log('Message sent: ', res.ts);
-            })
-            .catch(console.error);
-        if (interval === "thirtyMin") {
-            signalsThirtyMin[pair] = signals[pair];
-        } else if (interval === "day") {
-            signalsDay[pair] = signals[pair];
-        }
-        signals[pair] = null;
+}
+
+function checkCrossPattern(data, pair, interval) {
+    if (interval === "thirtyMin" && signalCrossThirtyMin[pair] != undefined && signalCrossThirtyMin[pair] != null && signalCrossThirtyMin[pair].action > 0) {
+        signals[pair] = signalCrossThirtyMin[pair];
+    } else if (interval === "day" && signalCrossDay[pair] != undefined && signalCrossDay[pair] != null && signalCrossDay[pair].action > 0) {
+        signals[pair] = signalCrossDay[pair];
+    } else if (interval === "hour" && signalCrossHour[pair] != undefined && signalCrossHour[pair] != null && signalCrossHour[pair].action > 0) {
+        signals[pair] = signalCrossHour[pair];
     }
 }
 
@@ -205,6 +224,25 @@ function runIndicators(data, pair, interval) {
     }
     checkMA(data, pair, interval);
     checkCCI(data, pair, interval);
+    checkCrossPattern(data, pair, interval);
+
+    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null) {
+        console.log(signals[pair]);
+        signalCallback(signals[pair]);
+        web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
+            .then((res) => {
+                console.log('Message sent: ', res.ts);
+            })
+            .catch(console.error);
+        if (interval === "thirtyMin") {
+            signalsThirtyMin[pair] = signals[pair];
+        } else if (interval === "day") {
+            signalsDay[pair] = signals[pair];
+        } else if (interval === "hour") {
+            signalsHour[pair] = signals[pair];
+        }
+        signals[pair] = null;
+    }
 }
 
 function runner(interval) {
@@ -221,6 +259,12 @@ function runner(interval) {
         } else {
             bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
         }
+    } else if (interval === "hour") {
+        if ((pairDataQueHour.length == 0 && pairDataQueHour[pairs[0]] == undefined) || pairDataQueHour[pairs[0]] == null || pairDataQueHour[pairs[0]].length == 0) {
+            bittrexClient._getHistoricalData({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        } else {
+            bittrexClient._getLatestTick({ marketName: pairs[0], tickInterval: interval, _: new Date().getTime(), index: 0 }, recursive);
+        }
     }
 }
 
@@ -233,6 +277,8 @@ function recursive(data, err, pair, interval, index) {
                 pairDataQueThirtyMin[pair[index]] = null;
             } else if (interval === "day") {
                 pairDataQueDay[pair[index]] = null;
+            } else if (interval === "hour") {
+                pairDataQueHour[pair[index]] = null;
             }
         } else if (data != null && data.result != null && data.result != undefined && data.result.length > 0) {
             console.log("pair:" + pair + " | interval:" + interval + " | index:" + index + " | data.length:" + data.result.length);
@@ -257,6 +303,17 @@ function recursive(data, err, pair, interval, index) {
                     //doesnt care
                 }
                 runIndicators(pairDataQueDay[pairs[index]], pair, interval);
+            } else if (interval === "hour") {
+                if (data.result.length > 200) { //historica
+                    pairDataQueHour[pairs[index]] = data.result.splice(data.result.length - 200, data.result.length);
+                } else if (data.result.length == 1 && pairDataQueHour[pairs[index]] != null && pairDataQueHour[pairs[index]] != undefined) {
+
+                    pairDataQueHour[pairs[index]].shift();
+                    pairDataQueHour[pairs[index]].push(data.result[0]);
+                } else {
+                    //doesnt care
+                }
+                runIndicators(pairDataQueHour[pairs[index]], pair, interval);
             }
         }
     } catch (err) {
@@ -273,6 +330,12 @@ function recursive(data, err, pair, interval, index) {
             }
         } else if (interval === "day") {
             if (pairDataQueThirtyMin[pairs[index]] == undefined || pairDataQueThirtyMin[pairs[index]] == null || pairDataQueThirtyMin[pairs[index]].length == 0) {
+                bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            } else {
+                bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
+            }
+        } else if (interval === "hour") {
+            if (pairDataQueHour[pairs[index]] == undefined || pairDataQueHour[pairs[index]] == null || pairDataQueHour[pairs[index]].length == 0) {
                 bittrexClient._getHistoricalData({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
             } else {
                 bittrexClient._getLatestTick({ marketName: pairs[index], tickInterval: interval, _: new Date().getTime(), index: index }, recursive);
@@ -311,14 +374,13 @@ module.exports = {
                                 }
                             }
                         );
-                        // pairs[0]="BTC-LMC";
-                        // callback();
                     }
                 },
                 function (callback) {
-                    runner("thirtyMin");
+                    runner("hour");
                     runner("day");
-                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    //intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
                     intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
@@ -333,15 +395,19 @@ module.exports = {
 
     },
     stopRunner: function () {
-        clearInterval(intervalHandlerThirtyMin);
+        //clearInterval(intervalHandlerThirtyMin);
+        clearInterval(intervalHandlerHour);
         clearInterval(intervalHandlerDay);
     },
     getSignals: function () {
         var signalArray = [];
-
-        signalArray.push(Object.values(signalsThirtyMin));
-        signalArray.push(Object.values(signalsDay));
-
+        try {
+            //signalArray.push(signalsThirtyMin.map(d => { return Object.keys(d) }));
+            signalArray.push(signalsHour.map(d => { return Object.keys(d) }));
+            signalArray.push(signalsDay.map(d => { return Object.keys(d) }));
+        } catch (err) {
+            console.log(err)
+        }
         return ({ api: "bittrex", result: signalArray });
     }
 }
