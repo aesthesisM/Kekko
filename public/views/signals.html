@@ -34,10 +34,9 @@
                                 <th>type</th>
                                 <th>lastClosePrice</th>
                                 <th>Current value</th>
-                                <th>ShortTermAvarage</th>
                                 <th>longTerm Max/Min</th>
-                                <th>CCI</th>
                                 <th>lastTime</th>
+                                <th>CrossCheck</th>
                                 <th>interval</th>
                             </tr>
                         </thead>
@@ -54,10 +53,9 @@
                                         <i class="fa fa-refresh fa-spin"></i>
                                     </div>
                                 </td>
-                                <td>{{item.shortTermAvarage | number : 8}}</td>
                                 <td>{{item.longTermMax | number : 8}} / {{item.longTermMin | number : 8}}</td>
-                                <td>{{item.CCI | number : 0}}</td>
                                 <td>{{item.lastTime}}</td>
+                                <td ng-class="[{1:'info', 2:'warning',3:'danger'}[item.action]]">{{item.action}}</td>
                                 <td>{{item.interval}}</td>
                             </tr>
                         </tbody>
