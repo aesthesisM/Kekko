@@ -10,7 +10,8 @@
         <div class="box-body dataTables_wrapper form-inline dt-bootstrap">
             <div class="row">
                 <div class="col-md-12">
-                        <iframe scrolling="no" allowtransparency="true" frameborder="0" width="100%" height="80" src="https://s.tradingview.com/tickerswidgetembed/#%7B%22symbols%22%3A%5B%7B%22description%22%3A%22Bitcoin%20%2F%20USDT%22%2C%22proName%22%3A%22BITTREX%3ABTCUSDT%22%7D%2C%7B%22description%22%3A%22Ethereum%20%2F%20BTC%22%2C%22proName%22%3A%22BITTREX%3AETHBTC%22%7D%2C%7B%22description%22%3A%22Ethereum%20%2F%20USDT%22%2C%22proName%22%3A%22BITTREX%3AETHUSDT%22%7D%5D%2C%22locale%22%3A%22en%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A104%2C%22utm_source%22%3A%22www.tradingview.com%22%2C%22utm_medium%22%3A%22widget%22%2C%22utm_campaign%22%3A%22tickers%22%7D" style="box-sizing: border-box;"></iframe>
+                    <iframe scrolling="no" allowtransparency="true" frameborder="0" width="100%" height="80" src="https://s.tradingview.com/tickerswidgetembed/#%7B%22symbols%22%3A%5B%7B%22description%22%3A%22Bitcoin%20%2F%20USDT%22%2C%22proName%22%3A%22BITTREX%3ABTCUSDT%22%7D%2C%7B%22description%22%3A%22Ethereum%20%2F%20BTC%22%2C%22proName%22%3A%22BITTREX%3AETHBTC%22%7D%2C%7B%22description%22%3A%22Ethereum%20%2F%20USDT%22%2C%22proName%22%3A%22BITTREX%3AETHUSDT%22%7D%5D%2C%22locale%22%3A%22en%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A104%2C%22utm_source%22%3A%22www.tradingview.com%22%2C%22utm_medium%22%3A%22widget%22%2C%22utm_campaign%22%3A%22tickers%22%7D"
+                        style="box-sizing: border-box;"></iframe>
                 </div>
             </div>
             <div class="row">
@@ -46,7 +47,8 @@
                                 <td>{{($index+1) + "." + item.pair}}</td>
                                 <td>{{item.type}}</td>
                                 <td>{{item.lastClosePrice | number : 8}}</td>
-                                <td class="box" ng-class="[{'+':'success', '-':'danger'}[item.change]]" style="width:auto;">
+                                <td class="box" ng-class="[{'+':'success', '-':'danger'}[item.change]]" style="width:auto;" data-toggle="tooltip" data-original-title="Max Value After Signal: {{item.maxValueAfterSignal | number:8}}"
+                                    data-container="body" data-replacement="bottom">
                                     {{item.value | number : 8}} / {{item.change}}%{{item.percentage | number : 2}}
                                     <div class="overlay" ng-show="!item.value">
                                         <i class="fa fa-refresh fa-spin"></i>

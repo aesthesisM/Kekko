@@ -151,7 +151,9 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
                 mainCtrl.signalArray.push((data.result[1])[i])
             }
             mainCtrl.updatePercentages().then(function (data) {
-                $scope.$apply();
+                //$scope.$apply();
+                // UpdateUIBindings();
+                console.log(mainCtrl.signalArray);
             });;
             console.log(data);
         });
@@ -167,10 +169,16 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
                     // pair.last = response.result[0].Last;
                     data.value = response.data.result[0].Last;
                     mainCtrl.calcPercentage(data);
-                    $scope.$apply();
+                    // if (data.maxValueAfterSignal < response.data.result[0].Last) {
+                    //     console.log("Got max value: ", item.maxValueAfterSignal, response.data.result[0].Last);
+                    //     data.maxValueAfterSignal = response.data.result[0].Last + " " + data.percentage;
+                    // } else if (data.maxValueAfterSignal == undefined)
+                    //     data.maxValueAfterSignal = data.value;
+                    // //$scope.$apply();
+                    // UpdateUIBindings();
                 }, function errorCallback(response) {
                     console.log("Err", response);
-                    $scope.$apply();
+                    //$scope.$apply();
                 });
             document.getElementById('signalSound').play();
         });
@@ -189,27 +197,34 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
     };
     mainCtrl.updatePercentages = function () {
         var deferred = $q.defer();
+        var arr = [];
         angular.forEach(mainCtrl.signalArray, function (item, i) {
             // item.value = undefined;
-            mainCtrl.getLatestTickBittrex(item)
+            var req = mainCtrl.getLatestTickBittrex(item)
                 .then(function successCallback(response) {
                     // pair.last = response.result[0].Last;
                     item.value = response.data.result[0].Last;
                     mainCtrl.calcPercentage(item);
-                    if (i == mainCtrl.signalArray.length - 1) {
-                        console.log("Last item in list", item.pair);
-                        deferred.resolve("ok");
-                    }
+                    // if (item.maxValueAfterSignal < response.data.result[0].Last) {
+                    //     console.log("Got max value: ", item.pair, item.maxValueAfterSignal, response.data.result[0].Last, item.percentage);
+                    //     item.maxValueAfterSignal = response.data.result[0].Last + " / " + item.percentage;
+                    // } else if (item.maxValueAfterSignal == undefined)
+                    //     item.maxValueAfterSignal = response.data.result[0].Last;
                 }, function errorCallback(response) {
                     item.value = "Err";
                 });
+            arr.push(req);
+        });
+        $q.all(arr).then(function (ret) {
+            deferred.resolve("ok");
         });
         return deferred.promise;
     };
     setInterval(function () {
         mainCtrl.updatePercentages().then(function (data) {
-            $scope.$apply();
+            console.log("Pair values updated");
+            //$scope.$apply();
         });
-    }, 30 * 6000);
+    }, 1 * 60000);
 });
 
