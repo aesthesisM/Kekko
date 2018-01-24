@@ -12,8 +12,8 @@ var orders = [];
 var wallet = 1;
 
 const MAX_ORDER_COUNT = 10;
-const SELL_HIGHER_PERCENT = 2;
-const STOP_LOSS_PERCENT = 2;
+const SELL_HIGHER_PERCENT = 0.02;
+const STOP_LOSS_PERCENT = 0.02;
 var current_order_count = 0;
 
 
@@ -108,3 +108,7 @@ function checkOrders() {
 }
 
 setInterval(function () { checkOrders() }, 1 * 60 * 1000);
+
+
+{"side":"sell","price":0.0012062400000000001,"quantity":248.0849582172702,"pair":"BTC-IOC","stopLossPrice":-0.0012062400000000001,"interval":"oneMin","timeOut":1516843294054}
+{"side":"buy","price":0.00040208,"quantity":248.0849582172702,"pair":"BTC-IOC","stopLossPrice":0,"interval":"oneMin","timeOut":1516830662174}
