@@ -67,7 +67,8 @@ function checkOrders() {
                                 order.price = order.price + order.price * SELL_HIGHER_PERCENT;
                                 order.stopLossPrice = order.price - order.price * STOP_LOSS_PERCENT;
                                 order.timeOut = new Date().getTime() + 8 * 30 * 60 * 1000;//sell timeout
-                                orders[i] = order;
+                                orders.splice(i, 1);
+                                orders.push(order);
                             }
                         } else if (order.side === "sell") {
                             if (order.stopLossPrice > orderStatus.result[0].L) { //stoploss worked
@@ -110,5 +111,3 @@ function checkOrders() {
 setInterval(function () { checkOrders() }, 1 * 60 * 1000);
 
 
-{"side":"sell","price":0.0012062400000000001,"quantity":248.0849582172702,"pair":"BTC-IOC","stopLossPrice":-0.0012062400000000001,"interval":"oneMin","timeOut":1516843294054}
-{"side":"buy","price":0.00040208,"quantity":248.0849582172702,"pair":"BTC-IOC","stopLossPrice":0,"interval":"oneMin","timeOut":1516830662174}
