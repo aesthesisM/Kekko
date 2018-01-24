@@ -66,18 +66,18 @@ function checkOrders() {
                                 order.price = order.price + order.price * SELL_HIGHER_PERCENT;
                                 order.stopLossPrice = order.price - order.price * STOP_LOSS_PERCENT;
                                 order.timeOut = new Date().getTime() + 8 * 30 * 60 * 1000;//sell timeout
-                                orders.splice(i, 1);
+                                orders.splice(i--, 1);
                                 orders.push(order);
                             }
                         } else if (order.side === "sell") {
                             if (order.stopLossPrice > orderStatus.result[0].L) { //stoploss worked
                                 wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.0025;
-                                orders.splice(i, 1);
+                                orders.splice(i--, 1);
                                 current_order_count--;
                                 happenedOrders.push({ "order": order, "stopLoss": true, "wallet": wallet });
                             } else if (order.price < orderStatus.result[0].H) { //sell happened
                                 wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.0025;
-                                orders.splice(i, 1);
+                                orders.splice(i--, 1);
                                 current_order_count--;
                                 happenedOrders.push({ "order": order, "stopLoss": false, "wallet": wallet });
                             }
