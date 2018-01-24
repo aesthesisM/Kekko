@@ -19,7 +19,7 @@ var current_order_count = 0;
 
 function runSignalOrder(data) {
     if (current_order_count < MAX_ORDER_COUNT) {
-        placeOrder(data, "buy", new Date(new Date().getTime() + 30 * 60 * 1000).toLocaleString("tr")); //time+30 min for buy timeout);
+        placeOrder(data, "buy", new Date().getTime() + 30 * 60 * 1000); //time+30 min for buy timeout);
         current_order_count++;
     }
 }
@@ -66,7 +66,7 @@ function checkOrders() {
                                 order.side = "sell";
                                 order.price = order.price + order.price * SELL_HIGHER_PERCENT;
                                 order.stopLossPrice = order.price - order.price * STOP_LOSS_PERCENT;
-                                order.timeOut = new Date(new Date().getTime() + 8 * 30 * 60 * 1000).toLocaleString("tr");//sell timeout
+                                order.timeOut = new Date().getTime() + 8 * 30 * 60 * 1000;//sell timeout
                                 orders[i] = order;
                             }
                         } else if (order.side === "sell") {
@@ -103,7 +103,8 @@ function checkOrders() {
         }
 
     }
-    console.log(happenedOrders);
+    if (happenedOrders.length > 0)
+        console.log(happenedOrders);
 }
 
 setInterval(function () { checkOrders() }, 1 * 60 * 1000);
