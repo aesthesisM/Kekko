@@ -6,9 +6,8 @@ io.on('signal', function (data) {
     console.log(data);
     runSignalOrder(data);
 });
-var happenedOrders = [];
-var signals = [];
-var orders = [];
+var happenedOrders = new Array();
+var orders = new Array();
 var wallet = 1;
 
 const MAX_ORDER_COUNT = 10;
