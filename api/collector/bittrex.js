@@ -229,11 +229,12 @@ function runIndicators(data, pair, interval) {
     if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null) {
         console.log(signals[pair]);
         signalCallback(signals[pair]);
-        web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
-            .then((res) => {
-                console.log('Message sent: ', res.ts);
-            })
-            .catch(console.error);
+        /* web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
+             .then((res) => {
+                 console.log('Message sent: ', res.ts);
+             })
+             .catch(console.error);
+             */
         if (interval === "thirtyMin") {
             signalsThirtyMin[pair] = signals[pair];
         } else if (interval === "day") {
@@ -378,10 +379,10 @@ module.exports = {
                 },
                 function (callback) {
                     runner("hour");
-                    runner("day");
+                    //runner("day");
                     //intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
                     intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
-                    intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
+                    //intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
             ],
