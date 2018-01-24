@@ -62,8 +62,6 @@ function checkOrders() {
                     function (callback) {
                         if (order.side === "buy") {
                             if (orderStatus.result[0].L < order.price) {//buy happened....
-                                //update wallet
-                                wallet = wallet - order.price * order.quantity;
                                 //put place order
                                 order.side = "sell";
                                 order.price = order.price + order.price * SELL_HIGHER_PERCENT;
@@ -73,12 +71,12 @@ function checkOrders() {
                             }
                         } else if (order.side === "sell") {
                             if (order.stopLossPrice > orderStatus.result[0].L) { //stoploss worked
-                                wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.25;
+                                wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.0025;
                                 orders.splice(i, 1);
                                 current_order_count--;
                                 happenedOrders.push({ "order": order, "stopLoss": true, "wallet": wallet });
                             } else if (order.price < orderStatus.result[0].H) { //sell happened
-                                wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.25;
+                                wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.0025;
                                 orders.splice(i, 1);
                                 current_order_count--;
                                 happenedOrders.push({ "order": order, "stopLoss": false, "wallet": wallet });
