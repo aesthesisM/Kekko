@@ -378,10 +378,10 @@ module.exports = {
                     }
                 },
                 function (callback) {
-                    runner("hour");
+                    runner("thirtyMin");
                     //runner("day");
-                    //intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
-                    intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
+                    intervalHandlerThirtyMin = setInterval(function () { runner("thirtyMin"); }, 30 * 60 * 1000); //30min
+                    //intervalHandlerHour = setInterval(function () { runner("hour"); }, 60 * 60 * 1000); //30min
                     //intervalHandlerDay = setInterval(function () { runner("day"); }, 24 * 60 * 60 * 1000); //day
                     callback();
                 }
