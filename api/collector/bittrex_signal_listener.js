@@ -3,7 +3,6 @@ var async = require("async");
 var Bittrex = require("../rest/bittrex/bittrex");
 var bittrexClient = new Bittrex();
 io.on("signal", function (data) {
-	console.log(data);
 	runSignalOrder(data);
 });
 var happenedOrders = [];
@@ -91,7 +90,7 @@ function recursive(orderStatus, err, pair, interval, index) {
 				order.timeOut = new Date().getTime() + 16 * 30 * 60 * 1000; //sell timeout
 				orders[index] = order;
 				console.log("buy happened" + JSON.stringify(order));
-			} else if (order.side === "sell" && order.price < orderStatus.result[0].H) {//hodl forever :D :D :D or sell it with current price
+			} else if (order.side === "sell" && order.price < orderStatus.result[0].H) {
 				//sell happened
 				wallet = wallet + order.price * order.quantity - order.price * order.quantity * 0.0025;
 				orders.splice(index, 1);
