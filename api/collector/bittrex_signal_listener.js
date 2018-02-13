@@ -1,27 +1,30 @@
-var io = require("socket.io-client")("http://localhost:50000");
+var io = require("socket.io-client")("http://localhost:50000")//"http://gravja.com:8080");
 var async = require("async");
 var Bittrex = require("../rest/bittrex/bittrex");
 var bittrexClient = new Bittrex();
-io.on("signal", function (data) {
-	runSignalOrder(data);
-});
+var orderSignature = "Bam";
 var happenedOrders = [];
-var holdingOrders = [];
 var orders = [];
 var wallet = 1;
 
 const MAX_ORDER_COUNT = 10;
-const SELL_HIGHER_PERCENT = 0.009;
+const SELL_HIGHER_PERCENT = 0.01;
 const STOP_LOSS_PERCENT = 0.05;
 
 const SELL_HIGHER_CCI_100_150 = 0.01;
 const SELL_HIGHER_CCI_150_200 = 0.012;
-const SELL_HIGHER_CCI_200_000 = 0.015;
+const SELL_HIGHER_CCI_200_250 = 0.014;
+const SELL_HIGHER_CCI_250_000 = 0.016;
 
 var current_order_count = 0;
 
+
+io.on("signal", function (data) {
+	runSignalOrder(data);
+});
+
 function runSignalOrder(data) {
-	if (current_order_count < MAX_ORDER_COUNT) {
+	if (current_order_count < MAX_ORDER_COUNT && data.lastClosePrice < 0.01) { //dont work with expensive coins
 		placeOrder(data, "buy", new Date().getTime() + 30 * 60 * 1000); //time+30 min for buy timeout);
 		current_order_count++;
 	}
@@ -30,18 +33,19 @@ function runSignalOrder(data) {
 function placeOrder(data, side, timeOut) {
 	var quantity = parseFloat(wallet / (MAX_ORDER_COUNT - orders.length) / data.lastClosePrice);
 	wallet = wallet - quantity * data.lastClosePrice;
-	quantity = quantity - quantity * 0.0025;
+	quantity = (quantity - quantity * 0.0025).toFixed(8);
 	var orderObj = {
 		side: side, //"sell"
-		price: data.lastClosePrice,
-		quantity: quantity,
 		pair: data.pair,
-		stopLossPrice: 0,
+		price: parseFloat(data.lastClosePrice).toFixed(8),
+		quantity: quantity,
+		stopLossPrice: parseFloat(data.lastClosePrice- data.lastClosePrice * STOP_LOSS_PERCENT).toFixed(8),
 		interval: "oneMin",
 		timeOut: timeOut,
 		boughtPrice: 0,
 		soldPrice: 0,
-		cci: data.CCI
+		cci: data.CCI,
+		clientOrderId: orderSignature + new Date().getTime()
 	};
 
 	orders.push(orderObj);
@@ -49,10 +53,15 @@ function placeOrder(data, side, timeOut) {
 		"Current orders :\nOrderLength : " +
 		orders.length +
 		"\n" +
-		JSON.stringify(orders) +
+		JSON.stringify(orders,null,"\t") +
 		"\nWallet : " +
 		wallet
 	);
+}
+
+function cancelOrder(data) {
+
+
 }
 
 function checkOrders() {
@@ -69,7 +78,12 @@ function checkOrders() {
 
 function recursive(orderStatus, err, pair, interval, index) {
 	var order = orders[index];
-	if (orderStatus != null && orderStatus.result != null && orderStatus.result != undefined && orderStatus.result.length > 0)
+	if (orderStatus != null &&
+		orderStatus.result != null && orderStatus.result != undefined &&
+		orderStatus.result.length > 0 &&
+		orderStatus.result[0] != undefined && orderStatus.result[0] != null &&
+		orderStatus.result[0].H != undefined && orderStatus.result[0].H != null &&
+		orderStatus.result[0].L != undefined && orderStatus.result[0].L != null)
 		if (order.timeOut > new Date().getTime()) {
 			//if result data is not null
 			if (order.side === "buy" && orderStatus.result[0].L < order.price) {
@@ -77,8 +91,10 @@ function recursive(orderStatus, err, pair, interval, index) {
 				//put place order
 				order.side = "sell";
 				order.boughtPrice = order.price;
-				if (order.cci > SELL_HIGHER_CCI_200_000) {
-					order.price = order.price + order.price * SELL_HIGHER_CCI_200_000;
+				if (order.cci > SELL_HIGHER_CCI_250_000) {
+					order.price = order.price + order.price * SELL_HIGHER_CCI_250_000;
+				} else if (order.cci > SELL_HIGHER_CCI_200_250) {
+					order.price = order.price + order.price * SELL_HIGHER_CCI_200_250;
 				} else if (order.cci > SELL_HIGHER_CCI_150_200) {
 					order.price = order.price + order.price * SELL_HIGHER_CCI_150_200;
 				} else if (order.cci > SELL_HIGHER_CCI_100_150) {
@@ -86,8 +102,7 @@ function recursive(orderStatus, err, pair, interval, index) {
 				} else {
 					order.price = order.price + order.price * SELL_HIGHER_PERCENT;
 				}
-				order.stopLossPrice = order.price - order.price * STOP_LOSS_PERCENT;
-				order.timeOut = new Date().getTime() + 16 * 30 * 60 * 1000; //sell timeout
+				order.timeOut = new Date().getTime() + 7 * 24 * 60 * 60 * 1000; //sell timeout 1 week o.O
 				orders[index] = order;
 				console.log("buy happened" + JSON.stringify(order));
 			} else if (order.side === "sell" && order.price < orderStatus.result[0].H) {
@@ -102,37 +117,34 @@ function recursive(orderStatus, err, pair, interval, index) {
 					stopLoss: false,
 					wallet: wallet,
 					activeOrders: orders,
-					holdingOrders: holdingOrders
 				});
 				console.log("sell happened" + JSON.stringify(order));
 			} else if (order.side === "sell" && order.stopLossPrice > orderStatus.result[0].L) {
 				//stoploss worked
-				wallet = wallet + order.stopLossPrice * order.quantity - order.stopLossPrice * order.quantity * 0.0025;
+				wallet = wallet + order.stopLossPrice * order.quantity;
 				orders.splice(index, 1);
 				index--;
 				current_order_count--;
-				order.soldPrice = order.stopLoss;
+				order.soldPrice = order.stopLossPrice;
 				happenedOrders.push({
 					order: order,
 					stopLoss: true,
 					wallet: wallet,
 					activeOrders: orders,
-					holdingOrders: holdingOrders
 				});
 			}
 		} else {
-			//timeout remove order
-			orders.splice(index, 1);
-			index--;
+			//timeout remove order 
+			//dont remove sell orders.
+			//sell with profit or stop loss no other less
 			if (order.side === "buy") {
 				wallet = wallet + order.price * (order.quantity + order.quantity * 0.0025); //at first removed 0.0025 quantity as fee
-			} else {
-				//hodl forever :D :D :D or sell it with current price
-				holdingOrders.push(order);
+				orders.splice(index, 1);
+				index--;
 			}
 		}
 
-	if (happenedOrders.length > 0) console.log(happenedOrders);
+	if (happenedOrders.length > 0) console.log("happened Orders: \n"+JSON.stringify(happenedOrders,null,"\t"));
 	if (index < orders.length - 1) {
 		index++;
 		bittrexClient._getLatestTick(

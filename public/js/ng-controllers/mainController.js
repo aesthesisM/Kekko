@@ -119,7 +119,7 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
             showMethod: "fadeIn",
             hideMethod: "fadeOut"
         };
-        var socket = io.connect("http://localhost:50000");
+        var socket = io.connect("http://gravja.com:8080");
 
         var hitbtcCallback;
         var bittrexCallback;
