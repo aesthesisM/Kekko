@@ -93,7 +93,10 @@ socketIO.sockets.on('connection', function (socket) {
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port);
+server.listen(port,"0.0.0.0",function(){
+    var host = server.address().address;
+    console.log("server listening at port:"+port+" and  host is :"+host);
+});
 server.on('error', onError);
 server.on('listening', onListening);
 
