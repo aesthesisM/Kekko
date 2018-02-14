@@ -91,6 +91,7 @@ function recursive(orderStatus, err, pair, interval, index) {
 				//put place order
 				order.side = "sell";
 				order.boughtPrice = order.price;
+				order.price = parseFloat(order.price);
 				if (order.cci > SELL_HIGHER_CCI_250_000) {
 					order.price = order.price + order.price * SELL_HIGHER_CCI_250_000;
 				} else if (order.cci > SELL_HIGHER_CCI_200_250) {
