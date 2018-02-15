@@ -111,7 +111,7 @@ function recursive(orderStatus, err, pair, interval, index) {
 		}
 	} else if (orderStatus != null && orderStatus.result != null && orderStatus.result != undefined && orderStatus.result.length > 0 && orderStatus.result[0] != undefined && orderStatus.result[0] != null) {
 		orderStatus = orderStatus.result[0];
-		console.log("order.pair :" + order.pair + " | currentTimeText :" + new Date().toLocaleDateString("tr") +" "+ new Date().toLocaleTimeString("tr") + " | order.timeOutText :" + order.timeOutText);
+		console.log("order.pair :" + order.pair + " | currentTimeText :" + new Date().toLocaleDateString("tr") + " " + new Date().toLocaleTimeString("tr") + " | order.timeOutText :" + order.timeOutText);
 		if (order.timeOut > new Date().getTime()) {
 			//if result data is not null
 			if (order.side === "buy" && orderStatus != null && orderStatus != undefined && orderStatus.L != undefined && orderStatus.L != null && orderStatus.L < order.price) {
@@ -131,9 +131,17 @@ function recursive(orderStatus, err, pair, interval, index) {
 					order.price = order.price + order.price * SELL_HIGHER_PERCENT;
 				}
 				order.price = order.price.toFixed(8);
-				order.timeOut = new Date().getTime() + 7 * 24 * 60 * 60 * 1000; //sell timeout 1 week o.O
+				order.timeOut = new Date().getTime() + 30 * 24 * 60 * 60 * 1000; //sell timeout 1 month o.O // no need to check for stop loss.
+				order.timeOutText = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
 				orders[index] = order;
 				console.log("buy happened" + JSON.stringify(order));
+				console.log("Current orders :\nOrderLength : " +
+					orders.length +
+					"\n" +
+					JSON.stringify(orders, null, "\t") +
+					"\nWallet : " +
+					wallet
+				);
 			} else if (order.side === "sell" && orderStatus != null && orderStatus != undefined && orderStatus.H != undefined && orderStatus.H != null && order.price < orderStatus.H) {
 				//sell happened
 				wallet = parseFloat(wallet) + parseFloat(order.price) * parseFloat(order.quantity) - parseFloat(order.fee);
