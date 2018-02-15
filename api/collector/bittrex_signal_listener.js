@@ -54,7 +54,7 @@ function placeOrder(data, side, timeOut) {
 		stopLossPrice: parseFloat(data.lastClosePrice - data.lastClosePrice * STOP_LOSS_PERCENT).toFixed(8),
 		interval: "oneMin",
 		timeOut: timeOut,
-		timeOutText: new Date(timeOut).toLocaleDateString("tr") + " " + new Date(timeOut).toLocaleTimeString("tr"),
+		timeOutText: new Date(timeout),
 		boughtPrice: 0,
 		soldPrice: 0,
 		cci: data.CCI,
@@ -111,7 +111,7 @@ function recursive(orderStatus, err, pair, interval, index) {
 		}
 	} else if (orderStatus != null && orderStatus.result != null && orderStatus.result != undefined && orderStatus.result.length > 0 && orderStatus.result[0] != undefined && orderStatus.result[0] != null) {
 		orderStatus = orderStatus.result[0];
-		console.log("order.pair :" + order.pair + " | currentTimeText :" + new Date().toLocaleDateString("tr") + " " + new Date().toLocaleTimeString("tr") + " | order.timeOutText :" + order.timeOutText);
+		console.log("order.pair :" + order.pair + " | currentTimeText :" + new Date()+ " | order.timeOutText :" + order.timeOutText);
 		if (order.timeOut > new Date().getTime()) {
 			//if result data is not null
 			if (order.side === "buy" && orderStatus != null && orderStatus != undefined && orderStatus.L != undefined && orderStatus.L != null && orderStatus.L < order.price) {
