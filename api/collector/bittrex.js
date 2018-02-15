@@ -82,7 +82,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
     short_quick_difference = ((shortTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
 
     long_quick_difference = ((longTermAvarage - quickTermAvarage) / quickTermAvarage) * 100;
-    if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage)) {
+    if ((longTermAvarage > midTermAvarage) && (midTermAvarage > shortTermAvarage) && (shortTermAvarage > quickTermAvarage) || pair === "USDT-BTC") {
 
         var signalObj = {
             "pair": pair,
@@ -226,7 +226,7 @@ function runIndicators(data, pair, interval) {
     checkCCI(data, pair, interval);
     checkCrossPattern(data, pair, interval);
 
-    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null) {
+    if (signals[pair] != undefined && signals[pair] != null && signals[pair]["CCI"] < CCI_decision_avarage && signalCallback != null || pair === "USDT-BTC") {
         console.log(signals[pair]);
         signalCallback(signals[pair]);
         /* web.chat.postMessage(channelId, "" + JSON.stringify(signals[pair]))
@@ -365,7 +365,7 @@ module.exports = {
                                 if (err) {
                                     console.error(err);
                                 } else if (Object.keys(data.result).length > 0) {
-                                    console.log("pairs");
+                                    pairs.push("USDT-BTC");//added for collector
                                     for (var i = 0; i < data.result.length; i++) {
                                         if ((data.result[i]["MarketName"]).startsWith("BTC-")) {
                                             pairs.push(data.result[i]["MarketName"]);

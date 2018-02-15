@@ -161,26 +161,30 @@ kekkoApp.controller('MainController', function ($scope, $http, Page, $sce, $q) {
             socket.emit('message', { message: 'bambam message emit from client ;)' });
         });
         socket.on('signal', function (data) {
-            toastr["info"](data.type + " / " + data.lastClosePrice + " / " + data.interval, "<a href='#!/signals' style='color:#ffffff;text-decoration:underline;'>" + data.pair + "</a>");
-            console.log(data);
-            mainCtrl.signalArray.push(data);
-            mainCtrl.getLatestTickBittrex(data)
-                .then(function successCallback(response) {
-                    // pair.last = response.result[0].Last;
-                    data.value = response.data.result[0].Last;
-                    mainCtrl.calcPercentage(data);
-                    // if (data.maxValueAfterSignal < response.data.result[0].Last) {
-                    //     console.log("Got max value: ", item.maxValueAfterSignal, response.data.result[0].Last);
-                    //     data.maxValueAfterSignal = response.data.result[0].Last + " " + data.percentage;
-                    // } else if (data.maxValueAfterSignal == undefined)
-                    //     data.maxValueAfterSignal = data.value;
-                    // //$scope.$apply();
-                    // UpdateUIBindings();
-                }, function errorCallback(response) {
-                    console.log("Err", response);
-                    //$scope.$apply();
-                });
-            document.getElementById('signalSound').play();
+            if (data.pair === 'USDT-BTC') {
+                //btc signal send to only bittrex collector 
+                //collector uses btc-usdt avarages for working
+            } else {
+                toastr["info"](data.type + " / " + data.lastClosePrice + " / " + data.interval, "<a href='#!/signals' style='color:#ffffff;text-decoration:underline;'>" + data.pair + "</a>");
+                mainCtrl.signalArray.push(data);
+                mainCtrl.getLatestTickBittrex(data)
+                    .then(function successCallback(response) {
+                        // pair.last = response.result[0].Last;
+                        data.value = response.data.result[0].Last;
+                        mainCtrl.calcPercentage(data);
+                        // if (data.maxValueAfterSignal < response.data.result[0].Last) {
+                        //     console.log("Got max value: ", item.maxValueAfterSignal, response.data.result[0].Last);
+                        //     data.maxValueAfterSignal = response.data.result[0].Last + " " + data.percentage;
+                        // } else if (data.maxValueAfterSignal == undefined)
+                        //     data.maxValueAfterSignal = data.value;
+                        // //$scope.$apply();
+                        // UpdateUIBindings();
+                    }, function errorCallback(response) {
+                        console.log("Err", response);
+                        //$scope.$apply();
+                    });
+                document.getElementById('signalSound').play();
+            }
         });
     };
     mainCtrl.openSignals();
