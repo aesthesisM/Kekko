@@ -50,7 +50,7 @@ function placeOrder(data, side, timeOut) {
 		side: side, //"sell"
 		pair: data.pair,
 		price: parseFloat(data.lastClosePrice).toFixed(8),
-		quantity: parseFloat(quantity),
+		quantity: parseFloat(newQuantity).toFixed(8),
 		stopLossPrice: parseFloat(data.lastClosePrice - data.lastClosePrice * STOP_LOSS_PERCENT).toFixed(8),
 		interval: "oneMin",
 		timeOut: timeOut,
