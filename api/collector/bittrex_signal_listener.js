@@ -1,13 +1,4 @@
-var io = require("socket.io-client")("http://localhost:50000"
-	/*,
-		{
-			reconnection: true,
-			reconnectionDelay: 1000,
-			reconnectionDelayMax: 5000,
-			reconnectionAttempts: 99999
-		}
-	*/
-)//"http://gravja.com:8080");
+var io = require("socket.io-client")("http://localhost:50000", { forceNew: true })//"http://gravja.com:8080");
 var logger = require('morgan');
 var async = require("async");
 var Bittrex = require("../rest/bittrex/bittrex");
@@ -22,7 +13,7 @@ const SELL_HIGHER_CCI_100_150 = 0.012;
 const SELL_HIGHER_CCI_150_200 = 0.015;
 const SELL_HIGHER_CCI_200_250 = 0.02;
 const SELL_HIGHER_CCI_250_000 = 0.025;
-const USE_BTC_PROPERTIES = false;
+const USE_BTC_PROPERTIES = true;
 
 var BTC_QUICK_TERM_AVARAGE = 0;
 var BTC_SHORT_TERM_AVARAGE = 0;
@@ -48,7 +39,7 @@ function log(args) {
 }
 
 io.on("connect", function () {
-	console.log("socket connection established at " + new Date().getTime());
+	console.log("socket connection established at " + new Date());
 })
 
 io.on("error", function () {
@@ -71,7 +62,7 @@ io.on("signal", function (data) {
 	}
 
 	if (USE_BTC_PROPERTIES) {//run with btc checks
-		if (BTC_QUICK_TERM_AVARAGE > BTC_SHORT_TERM_AVARAGE || (ABS_BTC_CHECK_RATE < 2 && BTC_PRICE_CHECK_RATE < 0)) {
+		if ((BTC_QUICK_TERM_AVARAGE > BTC_SHORT_TERM_AVARAGE || (ABS_BTC_CHECK_RATE < 2 && BTC_PRICE_CHECK_RATE < 0)) && !(data.pair==="USDT-BTC")) {
 			runSignalOrder(data);
 		}
 	} else if (!(data.pair === "USDT-BTC")) { //run in any case
