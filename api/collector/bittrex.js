@@ -97,6 +97,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             "action": 0,
             "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
             "lastClosePrice": data[data.length - 1].L,
+            "lastCloseHighPrice": data[data.length - 1].H,
             "signalPrice": 0,
             "interval": interval,
             "timeOut": new Date().getTime() + 7 * 24 * 60 * 60 * 1000
@@ -344,6 +345,12 @@ function recursive(data, err, pair, interval, index) {
         }
 
     } else {
+        try {
+            global.gc();
+        } catch (err) {
+            console.log("You must run program with 'node --expose-gc index.js' or 'npm start'");
+            process.exit();
+        }
         console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
     }
 
