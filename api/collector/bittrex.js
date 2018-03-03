@@ -275,6 +275,10 @@ function recursive(data, err, pair, interval, index) {
     try {
         if (err) {
             console.error(err);
+            if (err.code === "ENOENT" && err.syscall === "getaddrinfo") {
+                console.log("DNS lookup error. firewall problem. closing the app");
+                process.exit(-1);
+            }
             //if there is an error then remove all data about this index. otherwise we will work with corrupted data.
             if (interval === "thirtyMin") {
                 pairDataQueThirtyMin[pair[index]] = null;
@@ -346,6 +350,12 @@ function recursive(data, err, pair, interval, index) {
         }
 
     } else {
+        try {
+            global.gc();
+        } catch (err) {
+            console.log("You must run program with 'node --expose-gc index.js' or 'npm start'");
+            process.exit();
+        }
         console.log("finished for now ;) at " + new Date().toLocaleString() + " | interval: " + interval);
     }
 
