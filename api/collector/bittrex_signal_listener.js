@@ -1,4 +1,4 @@
-var io = require("socket.io-client")("http://localhost:50000", { forceNew: true })//"http://gravja.com:8080");
+var io = require("socket.io-client")("http://localhost:50000", { forceNew: true ,handshakeTimeout: 5500})//"http://gravja.com:8080");
 var logger = require('morgan');
 var async = require("async");
 var Bittrex = require("../rest/bittrex/bittrex");
@@ -20,6 +20,7 @@ var BTC_SHORT_TERM_AVARAGE = 0;
 var BTC_MID_TERM_AVARAGE = 0;
 var BTC_LONG_TERM_AVARAGE = 0;
 var BTC_CURRENT_PRICE = 0;
+var BTC_CURRENT_HIGH_PRICE = 0;
 var BTC_PRICE_CHECK_RATE = 0;
 var ABS_BTC_CHECK_RATE = 0;
 
@@ -56,13 +57,24 @@ io.on("signal", function (data) {
 		BTC_SHORT_TERM_AVARAGE = data.shortTermAvarage;
 		BTC_MID_TERM_AVARAGE = data.midTermAvarage;
 		BTC_LONG_TERM_AVARAGE = data.longTermAvarage;
-		BTC_CURRENT_PRICE = parseFloat(data.price).toFixed(2);
+		BTC_CURRENT_PRICE = parseFloat(data.lastClosePrice).toFixed(2);
+		BTC_CURRENT_HIGH_PRICE = parseFloat(data.lastCloseHighPrice).toFixed(2);
 		BTC_PRICE_CHECK_RATE = parseFloat(((BTC_CURRENT_PRICE - BTC_SHORT_TERM_AVARAGE) / BTC_CURRENT_PRICE) * 100);
 		ABS_BTC_CHECK_RATE = Math.abs(BTC_PRICE_CHECK_RATE).toFixed(2);
+
+		console.log("BTC_QUICK_TERM_AVARAGE:" + BTC_QUICK_TERM_AVARAGE +"\n"+
+					"BTC_SHORT_TERM_AVARAGE:"+BTC_SHORT_TERM_AVARAGE+"\n"+
+					"BTC_MID_TERM_AVARAGE:"+BTC_MID_TERM_AVARAGE+"\n"+
+					"BTC_LONG_TERM_AVARAGE:"+BTC_LONG_TERM_AVARAGE+"\n"+
+					"BTC_CURRENT_PRICE:"+BTC_CURRENT_PRICE+"\n"+
+					"BTC_CURRENT_HIGH_PRICE:"+BTC_CURRENT_HIGH_PRICE+"\n"+
+					"BTC_PRICE_CHECK_RATE:"+BTC_PRICE_CHECK_RATE+"\n"+
+					"ABS_BTC_CHECK_RATE:"+ABS_BTC_CHECK_RATE+"\n");
+
 	}
 
 	if (USE_BTC_PROPERTIES) {//run with btc checks
-		if ((BTC_QUICK_TERM_AVARAGE > BTC_SHORT_TERM_AVARAGE || (ABS_BTC_CHECK_RATE < 2 && BTC_PRICE_CHECK_RATE < 0)) && !(data.pair==="USDT-BTC")) {
+		if ((BTC_CURRENT_HIGH_PRICE > BTC_QUICK_TERM_AVARAGE || (ABS_BTC_CHECK_RATE < 2 && BTC_PRICE_CHECK_RATE < 0)) && !(data.pair==="USDT-BTC")) {
 			runSignalOrder(data);
 		}
 	} else if (!(data.pair === "USDT-BTC")) { //run in any case
@@ -126,13 +138,11 @@ function cancelOrder(data) {
 function checkOrders() {
 
 	if (USE_BTC_PROPERTIES) {
-		if (BTC_QUICK_TERM_AVARAGE < BTC_SHORT_TERM_AVARAGE) {
+		if (BTC_CURRENT_HIGH_PRICE < BTC_QUICK_TERM_AVARAGE && (ABS_BTC_CHECK_RATE > 2 && BTC_PRICE_CHECK_RATE < 0)) {
 			console.log("BTC IS NOW ON DOWN TREND. CANCEL ALL BUY ORDERS");
 			for (var i = 0; i < orders.length; i++) {
 				if (orders[i].side === "buy") {
-					var cancelledOrder = orders.slice(i, 1);
-					i--;
-					console.log("cancelled buy order is " + JSON.stringify(cancelledOrder, null, "\t"));
+					orders.slice(i--, 1);
 				}
 			}
 		}

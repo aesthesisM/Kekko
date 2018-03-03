@@ -97,6 +97,7 @@ function checkMA(data, pair, interval) { //calculate depending on C which means 
             "action": 0,
             "lastTime": new Date(new Date(data[data.length - 1].T).getTime() + 180 * 60000).toLocaleString("tr"),
             "lastClosePrice": data[data.length - 1].L,
+            "lastCloseHighPrice":data[data.length-1].H,
             "signalPrice": 0,
             "interval": interval,
             "timeOut": new Date().getTime() + 7 * 24 * 60 * 60 * 1000
@@ -247,6 +248,7 @@ function runIndicators(data, pair, interval) {
 }
 
 function runner(interval) {
+
     console.log("bittrex collector started for " + interval + " interval at" + new Date().toLocaleString("tr"));
     if (interval === "thirtyMin") {
         if ((pairDataQueThirtyMin.length == 0 && pairDataQueThirtyMin[pairs[0]] == undefined) || pairDataQueThirtyMin[pairs[0]] == null || pairDataQueThirtyMin[pairs[0]].length == 0) {
